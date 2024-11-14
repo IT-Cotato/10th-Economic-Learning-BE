@@ -1,5 +1,5 @@
 ---
-name: "[Feat] Template"
+name: Feature Template
 about: 기능 추가에 대한 Issue 템플릿
 title: "[Feat]"
 labels: ''
