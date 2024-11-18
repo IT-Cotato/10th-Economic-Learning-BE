@@ -31,7 +31,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	private static final String LOG_FORMAT_ERROR = "\n[🔴ERROR] - ({} {})\n(id: {}, role: {})";
 
 	/**
-	 * DTO @Valid 관련 exception 처리
+	 * @Valid 관련 예외 처리 (DTO 검증 실패 시 발생)
+	 * @param e MethodArgumentNotValidException 예외 객체
+	 * @param headers 요청 헤더
+	 * @param status HTTP 상태 코드
+	 * @param request WebRequest 객체
+	 * @return 처리된 예외 응답
 	 */
 	@Override
 	public ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -48,17 +53,33 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return handleExceptionInternal(GlobalErrorCode.INVALID_PARAMETER);
 	}
 
+	/**
+	 * 모든 예외를 처리하는 기본 예외 처리기
+	 * @param e 발생한 예외 객체
+	 * @param request HTTP 요청 객체
+	 * @return 처리된 예외 응답
+	 */
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Object> handleAllException(Exception e, HttpServletRequest request) {
 		logError(e, request);
 		return handleExceptionInternal(GlobalErrorCode.INTERNAL_SERVER_ERROR);
 	}
 
+	/**
+	 * 예외 처리 결과를 생성하는 내부 메서드
+	 * @param errorCode 처리할 에러 코드
+	 * @return 생성된 ErrorResponse 객체
+	 */
 	private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode) {
 		return ResponseEntity.status(errorCode.getHttpStatus())
 			.body(makeErrorResponse(errorCode));
 	}
 
+	/**
+	 * ErrorResponse 객체를 생성하는 메서드
+	 * @param errorCode 처리할 에러 코드
+	 * @return 생성된 ErrorResponse 객체
+	 */
 	private ErrorResponse makeErrorResponse(ErrorCode errorCode) {
 		return ErrorResponse.builder()
 			.isSuccess(false)
@@ -68,12 +89,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			.build();
 	}
 
-	// DTO @Valid 관련 exception 처리
+	/**
+	 * BindException (DTO 검증 실패) 처리
+	 * @param e BindException 예외 객체
+	 * @return 처리된 예외 응답
+	 */
 	private ResponseEntity<Object> handleExceptionInternal(BindException e) {
 		return ResponseEntity.status(GlobalErrorCode.INVALID_PARAMETER.getHttpStatus())
 			.body(makeErrorResponse(e));
 	}
 
+	/**
+	 * BindException에서 발생한 유효성 오류를 ErrorResponse로 변환
+	 * @param e BindException 예외 객체
+	 * @return 생성된 ErrorResponse 객체
+	 */
 	private ErrorResponse makeErrorResponse(BindException e) {
 		final List<ValidationError> validationErrorList = e.getBindingResult()
 			.getFieldErrors()
