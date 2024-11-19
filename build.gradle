@@ -1,50 +1,101 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.3.5'
-	id 'io.spring.dependency-management' version '1.1.6'
+    id 'java'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'com.diffplug.spotless' version '6.23.3'
 }
 
 group = 'com.ripple'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	//Spring Boot
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+    //Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
-	//Lombok
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+    //Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
-	//Database
-	runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
+    //Database
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    runtimeOnly 'com.mysql:mysql-connector-j'
 
-	// swagger
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+    // swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 
-	//Test
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    //Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
+}
+
+/**
+ * Spotless 설정
+ */
+spotless {
+    java {
+        importOrder(
+                "java",
+                "javax",
+                "lombok",
+                "org.springframework",
+                "",
+                "\\#",
+                "org.junit",
+                "\\#org.junit",
+                "com.guide",
+                "\\#com.guide"
+        )                        // import 순서 정의
+        removeUnusedImports()    // 사용하지 않는 import 제거
+        googleJavaFormat()       // 구글 자바 포맷 적용
+        indentWithTabs(2)
+        indentWithSpaces(4)
+        trimTrailingWhitespace() // 공백 제거
+        endWithNewline()         // 끝부분 New Line 처리
+    }
+}
+
+/**
+ * pre-commit hook 설정, 커밋 or Push 시 spotlessApply task 실행
+ */
+tasks.register('updateGitHooks', Copy) {
+    from new File(rootProject.rootDir, 'scripts/pre-commit')
+    into { new File(rootProject.rootDir, '.git/hooks') }
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        Runtime.getRuntime().exec("cmd /c chmod -R +x .git/hooks/")
+    } else {
+        Runtime.getRuntime().exec("chmod -R +x .git/hooks/")
+    }
+}
+
+/**
+ * compileJava task에 spotlessApply, updateGitHooks task 추가
+ */
+tasks.named('compileJava') {
+    dependsOn 'spotlessApply'
+    dependsOn 'updateGitHooks'
 }
