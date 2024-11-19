@@ -1,0 +1,14 @@
+# ?? ??
+spring:
+  application:
+    name: Ripple
+  profiles:
+    active: local
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    groups-order: DESC # path, query, body, response ? ??
+    tags-sorter: alpha # ??? ??? ??? ??
+    operations-sorter: method # delete - get - patch - post - put ??? ??
+  use-fqn: true
