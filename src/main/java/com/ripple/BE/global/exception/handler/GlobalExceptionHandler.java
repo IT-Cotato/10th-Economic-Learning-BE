@@ -109,6 +109,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			.map(ValidationError::from)
 			.toList();
 
+		return getBuild(validationErrorList);
+	}
+
+	private static ErrorResponse getBuild(List<ValidationError> validationErrorList) {
 		return ErrorResponse.builder()
 			.isSuccess(false)
 			.code(GlobalErrorCode.INVALID_PARAMETER.name())
