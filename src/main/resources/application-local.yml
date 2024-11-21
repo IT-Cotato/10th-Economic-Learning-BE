@@ -1,0 +1,23 @@
+# 로컬 환경에서 사용할 설정 파일
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: 'jdbc:mysql://localhost:3306/Ripple'
+    username: ${SPRING_DATASOURCE_USERNAME} # ex) root
+    password: ${SPRING_DATASOURCE_PASSWORD} # ex) 0000
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
