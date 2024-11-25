@@ -45,7 +45,7 @@ public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
 
     @Size(min = 5, max = 50)
@@ -103,12 +103,6 @@ public class Member extends BaseEntity {
     @Column(name = "is_community_alarm_allowed", nullable = false)
     private boolean isCoummunityAlarmAllowed; // 커뮤니티 푸시 알람 여부
 
-    @Column(name = "finished_learning_sets")
-    private Long finishedLearningSets; // 완료한 학습세트 개수
-
-    @Column(name = "finished_quizzes")
-    private Long finishedQuizzes; // 완료한 퀴즈 개수
-
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> postList = new ArrayList<>(); // 작성한 게시글 목록
 
@@ -129,4 +123,5 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatSession> chatSessionList = new ArrayList<>(); // 채팅 세션 목록
+
 }
