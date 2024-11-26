@@ -1,4 +1,3 @@
 package com.ripple.BE.global.exception;
 
-public class ApiException {
-}
+public class ApiException {}
