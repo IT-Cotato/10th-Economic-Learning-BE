@@ -30,7 +30,7 @@ public class MemberProgress extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="member_progress_id", nullable = false)
+	@Column(name="member_progress_id")
 	private Long id;
 
 	@Enumerated(EnumType.STRING)

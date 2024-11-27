@@ -31,7 +31,7 @@ public class Concept extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "concept_id", nullable = false)
+	@Column(name = "concept_id")
 	private Long conceptId;
 
 	@Size(max = 255)

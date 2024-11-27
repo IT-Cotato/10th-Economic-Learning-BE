@@ -28,7 +28,7 @@ public class Attendance extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "attendance_id", nullable = false)
+	@Column(name = "attendance_id")
 	private Long id;
 
 	@Column(name = "monday")

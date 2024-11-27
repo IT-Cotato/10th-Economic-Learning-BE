@@ -33,7 +33,7 @@ public class Quiz extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "quiz_id", nullable = false)
+	@Column(name = "quiz_id")
 	private Long id;
 
 	@Enumerated(EnumType.STRING)

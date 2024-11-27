@@ -25,7 +25,7 @@ public class LearningSet extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="learning_set_id", nullable = false)
+	@Column(name="learning_set_id")
 	private Long id;
 
 	@Column(name = "name", nullable = false)
