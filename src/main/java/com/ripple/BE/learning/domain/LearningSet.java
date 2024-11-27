@@ -13,7 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "learning_set")
+@Table(name = "learning_sets")
 @Getter
 @Builder
 @Entity
