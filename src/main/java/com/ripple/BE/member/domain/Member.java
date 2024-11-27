@@ -123,5 +123,4 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatSession> chatSessionList = new ArrayList<>(); // 채팅 세션 목록
-
 }

@@ -2,7 +2,6 @@ package com.ripple.BE.learning.domain;
 
 import com.ripple.BE.global.entity.BaseEntity;
 import com.ripple.BE.member.domain.type.Level;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -21,7 +20,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name="concept")
+@Table(name = "concept")
 @Getter
 @Builder
 @Entity
@@ -29,28 +28,28 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Concept extends BaseEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "concept_id")
-	private Long conceptId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "concept_id")
+    private Long conceptId;
 
-	@Size(max = 255)
-	@Column(name = "name", nullable = false)
-	private String name;
+    @Size(max = 255)
+    @Column(name = "name", nullable = false)
+    private String name;
 
-	@Size(max = 255)
-	@Column(name = "explanation", nullable = false)
-	private String explanation;
+    @Size(max = 255)
+    @Column(name = "explanation", nullable = false)
+    private String explanation;
 
-	@Enumerated(EnumType.STRING)
-	@Column(name = "level")
-	private Level level;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "level")
+    private Level level;
 
-	@Size(max = 255)
-	@Column(name = "example")
-	private String example;
+    @Size(max = 255)
+    @Column(name = "example")
+    private String example;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "learning_set_id")
-	private LearningSet learningSet;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "learning_set_id")
+    private LearningSet learningSet;
 }
