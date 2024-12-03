@@ -58,18 +58,18 @@ public class Member extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private Role role;
+    private Role role = Role.USER;
 
     @Size(min = 2, max = 20)
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "nickname")
+    private String nickname;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "business_type", nullable = false)
+    @Column(name = "business_type")
     private BusinessType businessType; // 업종
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "job", nullable = false)
+    @Column(name = "job")
     private Job job; // 직무
 
     @Column(name = "age_range")

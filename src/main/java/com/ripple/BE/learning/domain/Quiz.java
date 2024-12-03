@@ -41,11 +41,11 @@ public class Quiz extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    private Type type; // 형식 - OX, 4지선다
+    private Type type; // 형식 - OX, 객관식(단답), 객관식(장문)
 
     @Enumerated(EnumType.STRING)
     @Column(name = "level")
-    private Level level;
+    private Level level; // 레벨테스트는 레벨 null
 
     @Size(max = 255)
     @Column(name = "question", nullable = false)
