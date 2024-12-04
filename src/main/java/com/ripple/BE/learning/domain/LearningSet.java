@@ -12,17 +12,14 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Table(name = "learning_sets")
 @Getter
-@Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class LearningSet extends BaseEntity {
 
     @Id
@@ -36,9 +33,15 @@ public class LearningSet extends BaseEntity {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "learning_sets", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "learningSet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Concept> concepts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "quizzes", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "learningSet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Quiz> quizzes = new ArrayList<>();
+
+    @Builder
+    public LearningSet(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 }

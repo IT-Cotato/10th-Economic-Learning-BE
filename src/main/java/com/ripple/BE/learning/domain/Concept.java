@@ -15,17 +15,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Table(name = "concepts")
 @Getter
-@Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class Concept extends BaseEntity {
 
     @Id
@@ -52,4 +49,12 @@ public class Concept extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "learning_set_id")
     private LearningSet learningSet;
+
+    @Builder
+    public Concept(String name, String explanation, Level level, String example) {
+        this.name = name;
+        this.explanation = explanation;
+        this.level = level;
+        this.example = example;
+    }
 }
