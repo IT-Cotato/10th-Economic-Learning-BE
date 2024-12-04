@@ -24,6 +24,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -45,7 +46,7 @@ public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     private Long id;
 
     @Size(min = 5, max = 50)
@@ -58,18 +59,18 @@ public class Member extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private Role role;
+    private Role role = Role.USER;
 
     @Size(min = 2, max = 20)
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "nickname")
+    private String nickname;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "business_type", nullable = false)
+    @Column(name = "business_type")
     private BusinessType businessType; // 업종
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "job", nullable = false)
+    @Column(name = "job")
     private Job job; // 직무
 
     @Column(name = "age_range")
@@ -103,12 +104,6 @@ public class Member extends BaseEntity {
     @Column(name = "is_community_alarm_allowed", nullable = false)
     private boolean isCoummunityAlarmAllowed; // 커뮤니티 푸시 알람 여부
 
-    @Column(name = "finished_learning_sets")
-    private Long finishedLearningSets; // 완료한 학습세트 개수
-
-    @Column(name = "finished_quizzes")
-    private Long finishedQuizzes; // 완료한 퀴즈 개수
-
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> postList = new ArrayList<>(); // 작성한 게시글 목록
 
@@ -129,4 +124,7 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatSession> chatSessionList = new ArrayList<>(); // 채팅 세션 목록
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Attendance attendance; // 출석 정보
 }

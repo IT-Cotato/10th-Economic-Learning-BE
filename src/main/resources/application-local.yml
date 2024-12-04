@@ -1,19 +1,20 @@
 # 로컬 환경에서 사용할 설정 파일
 spring:
   config:
+    import: optional:file:.env[.properties]  # .env import
     activate:
       on-profile: local
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: 'jdbc:mysql://localhost:3306/Ripple'
-    username: ${SPRING_DATASOURCE_USERNAME} # ex) root
-    password: ${SPRING_DATASOURCE_PASSWORD} # ex) 0000
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASS}
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQLDialect
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         format_sql: false
