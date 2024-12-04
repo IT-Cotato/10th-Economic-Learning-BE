@@ -1,6 +1,6 @@
 package com.ripple.BE.member.domain.type;
 
-public enum Category {
+public enum LearningType {
     CONCEPT_LEARNING,
     QUIZ
 }
