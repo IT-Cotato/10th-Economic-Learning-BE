@@ -1,7 +1,7 @@
 package com.ripple.BE.member.domain;
 
 import com.ripple.BE.global.entity.BaseEntity;
-import com.ripple.BE.member.domain.type.Category;
+import com.ripple.BE.member.domain.type.LearningType;
 import com.ripple.BE.member.domain.type.Level;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,8 +33,8 @@ public class MemberProgress extends BaseEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "category")
-    private Category category;
+    @Column(name = "learning_type")
+    private LearningType learningType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "level")
