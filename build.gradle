@@ -50,6 +50,17 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    //OAuth2
+    implementation 'org.springframework.security:spring-security-oauth2-client'
+    implementation platform('org.springframework.boot:spring-boot-dependencies:3.3.5')
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    //JWT
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.2'
+    implementation "io.jsonwebtoken:jjwt:0.9.1"
+
+
 }
 
 tasks.named('test') {
