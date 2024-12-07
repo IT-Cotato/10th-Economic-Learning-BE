@@ -50,8 +50,8 @@ public class User extends BaseEntity {
     private Long id;
 
     @Size(min = 5, max = 50)
-    @Column(name = "login_id", nullable = false)
-    private String loginId; // 식별 아이디
+    @Column(name = "account_email", nullable = false)
+    private String accountEmail; // 카카오에서 받는 이메일
 
     @Size(min = 8, max = 255)
     @Column(name = "password", nullable = false)
