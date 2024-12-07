@@ -2,8 +2,8 @@ package com.ripple.BE.post.domain;
 
 import com.ripple.BE.global.entity.BaseEntity;
 import com.ripple.BE.image.domain.Image;
-import com.ripple.BE.member.domain.Member;
 import com.ripple.BE.post.domain.type.PostType;
+import com.ripple.BE.user.domain.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,8 +42,8 @@ public class Post extends BaseEntity {
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member author; // 작성자
+    @JoinColumn(name = "user_id")
+    private User author; // 작성자
 
     @Size(min = 2, max = 500)
     @Column(name = "content", nullable = false)

@@ -1,4 +1,4 @@
-package com.ripple.BE.member.domain.type;
+package com.ripple.BE.user.domain.type;
 
 public enum BusinessType {
     MARKETING,

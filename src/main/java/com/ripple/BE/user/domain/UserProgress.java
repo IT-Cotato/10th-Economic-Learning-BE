@@ -1,8 +1,8 @@
-package com.ripple.BE.member.domain;
+package com.ripple.BE.user.domain;
 
 import com.ripple.BE.global.entity.BaseEntity;
-import com.ripple.BE.member.domain.type.LearningType;
-import com.ripple.BE.member.domain.type.Level;
+import com.ripple.BE.user.domain.type.LearningType;
+import com.ripple.BE.user.domain.type.Level;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class MemberProgress extends BaseEntity {
+public class UserProgress extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +44,6 @@ public class MemberProgress extends BaseEntity {
     private Long progress;
 
     @OneToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

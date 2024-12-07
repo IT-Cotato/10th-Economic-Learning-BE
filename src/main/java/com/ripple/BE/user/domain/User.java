@@ -1,20 +1,20 @@
-package com.ripple.BE.member.domain;
+package com.ripple.BE.user.domain;
 
 import com.ripple.BE.chatbot.domain.ChatSession;
 import com.ripple.BE.global.entity.BaseEntity;
-import com.ripple.BE.member.domain.type.AgeRange;
-import com.ripple.BE.member.domain.type.BusinessType;
-import com.ripple.BE.member.domain.type.Gender;
-import com.ripple.BE.member.domain.type.Job;
-import com.ripple.BE.member.domain.type.Level;
-import com.ripple.BE.member.domain.type.LoginType;
-import com.ripple.BE.member.domain.type.Role;
 import com.ripple.BE.news.domain.NewsScrap;
 import com.ripple.BE.post.domain.Comment;
 import com.ripple.BE.post.domain.Post;
 import com.ripple.BE.post.domain.PostLike;
 import com.ripple.BE.post.domain.PostScrap;
 import com.ripple.BE.term.domain.TermScrap;
+import com.ripple.BE.user.domain.type.AgeRange;
+import com.ripple.BE.user.domain.type.BusinessType;
+import com.ripple.BE.user.domain.type.Gender;
+import com.ripple.BE.user.domain.type.Job;
+import com.ripple.BE.user.domain.type.Level;
+import com.ripple.BE.user.domain.type.LoginType;
+import com.ripple.BE.user.domain.type.Role;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,13 +36,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "members")
+@Table(name = "users")
 @Getter
 @Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Member extends BaseEntity {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -107,24 +107,24 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> postList = new ArrayList<>(); // 작성한 게시글 목록
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostScrap> postScrapList = new ArrayList<>(); // 스크랩한 게시글 목록
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostLike> postLikeList = new ArrayList<>(); // 좋아요한 게시글 목록
 
     @OneToMany(mappedBy = "commenter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>(); // 작성한 댓글 목록
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<NewsScrap> newsScrapList = new ArrayList<>(); // 스크랩한 뉴스 목록
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TermScrap> termScrapList = new ArrayList<>(); // 스크랩한 용어 목록
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatSession> chatSessionList = new ArrayList<>(); // 채팅 세션 목록
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Attendance attendance; // 출석 정보
 }

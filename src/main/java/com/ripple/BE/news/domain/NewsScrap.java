@@ -1,7 +1,7 @@
 package com.ripple.BE.news.domain;
 
 import com.ripple.BE.global.entity.BaseEntity;
-import com.ripple.BE.member.domain.Member;
+import com.ripple.BE.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,8 +31,8 @@ public class NewsScrap extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "news_id")
