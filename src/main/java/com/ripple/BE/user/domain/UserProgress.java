@@ -1,7 +1,6 @@
 package com.ripple.BE.user.domain;
 
 import com.ripple.BE.global.entity.BaseEntity;
-import com.ripple.BE.user.domain.type.LearningType;
 import com.ripple.BE.user.domain.type.Level;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,10 +30,6 @@ public class UserProgress extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_progress_id")
     private Long id;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "learning_type")
-    private LearningType learningType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "level")
