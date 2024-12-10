@@ -1,7 +1,6 @@
 # 로컬 환경에서 사용할 설정 파일
 spring:
   config:
-    import: optional:file:.env[.properties]  # .env import
     activate:
       on-profile: local
   datasource:
