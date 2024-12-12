@@ -58,6 +58,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAllException(Exception e) {
+        e.printStackTrace(); // 터미널에 에러 메시지 출력
+        logger.error("Exception occurred:" + e.getMessage() + e); // 로그에 에러 메시지 출력
         return handleExceptionInternal(GlobalErrorCode.INTERNAL_SERVER_ERROR);
     }
 
