@@ -41,7 +41,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @Table(name = "users")
 @Getter
-@Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -57,8 +56,8 @@ public class User extends BaseEntity implements UserDetails {
     private String accountEmail; // 카카오에서 받는 이메일
 
     @Size(min = 8, max = 255)
-    @Column(name = "password", nullable = false)
-    private String password;
+    @Column(name = "password")
+    private String password; // 기본 로그인에서만 사용
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
@@ -101,10 +100,10 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "current_level")
     private Level currentLevel; // 현재 학습 단계
 
-    @Column(name = "is_learning_alarm_allowed", nullable = false)
+    @Column(name = "is_learning_alarm_allowed")
     private boolean isLearningAlarmAllowed; // 학습 푸시 알람 여부
 
-    @Column(name = "is_community_alarm_allowed", nullable = false)
+    @Column(name = "is_community_alarm_allowed")
     private boolean isCoummunityAlarmAllowed; // 커뮤니티 푸시 알람 여부
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -167,4 +166,13 @@ public class User extends BaseEntity implements UserDetails {
     }
 
     // Jwt 전용 설정 끝
+
+    @Builder
+    public User(String keyCode, String accountEmail, String profileImageUrl, LoginType loginType) {
+        this.keyCode = keyCode;
+        this.accountEmail = accountEmail;
+        this.profileImageUrl = profileImageUrl;
+        this.loginType = loginType;
+        this.role = Role.USER;
+    }
 }
