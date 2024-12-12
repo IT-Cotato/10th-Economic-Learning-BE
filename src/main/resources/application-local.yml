@@ -23,7 +23,5 @@ spring:
       port: 6379
 
 logging:
-  file:
-    name: logs/ripple.log
   level:
     root: INFO
