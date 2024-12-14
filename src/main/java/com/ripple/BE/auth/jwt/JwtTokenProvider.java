@@ -1,5 +1,6 @@
 package com.ripple.BE.auth.jwt;
 
+import com.ripple.BE.user.domain.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -12,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
@@ -49,8 +49,15 @@ public class JwtTokenProvider {
 
     // JWT 토큰에서 인증 정보 조회
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(token));
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        Claims claims =
+                Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+
+        CustomUserDetails customUserDetails =
+                new CustomUserDetails(
+                        Long.parseLong(claims.getSubject()), claims.get("nickname", String.class));
+
+        return new UsernamePasswordAuthenticationToken(
+                customUserDetails, "", customUserDetails.getAuthorities());
     }
 
     // 토큰에서 회원 구별 정보 추출
@@ -70,6 +77,10 @@ public class JwtTokenProvider {
 
     // Request의 Header에서 token 값을 가져오기
     public String resolveToken(HttpServletRequest request) {
-        return request.getHeader("X-AUTH-TOKEN");
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7); // "Bearer " 이후의 토큰을 반환
+        }
+        return null;
     }
 }

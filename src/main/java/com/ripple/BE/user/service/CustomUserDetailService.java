@@ -2,6 +2,8 @@ package com.ripple.BE.user.service;
 
 import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
+import com.ripple.BE.user.domain.CustomUserDetails;
+import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,10 +17,14 @@ public class CustomUserDetailService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    // keycode 받아서 해당 유저를 찾아 CustomUserDetails로 반환
     @Override
-    public UserDetails loadUserByUsername(String keyCode) throws UsernameNotFoundException {
-        return userRepository
-                .findByKeyCode(keyCode)
-                .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND.getMessage()));
+    public UserDetails loadUserByUsername(String keycode) throws UsernameNotFoundException {
+        User user =
+                userRepository
+                        .findByKeyCode(keycode)
+                        .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND.getMessage()));
+
+        return new CustomUserDetails(user.getId(), user.getNickname());
     }
 }
