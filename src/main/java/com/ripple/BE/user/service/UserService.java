@@ -1,8 +1,12 @@
 package com.ripple.BE.user.service;
 
+import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
+
 import com.ripple.BE.auth.dto.KakaoUserInfoResponse;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.LoginType;
+import com.ripple.BE.user.dto.AddUserProfileRequest;
+import com.ripple.BE.user.exception.UserException;
 import com.ripple.BE.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,5 +40,11 @@ public class UserService {
                         .build();
 
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public void updateProfile(AddUserProfileRequest request, Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new UserException(USER_NOT_FOUND));
+        user.updateProfile(request);
     }
 }
