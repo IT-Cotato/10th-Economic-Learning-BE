@@ -15,6 +15,7 @@ import com.ripple.BE.user.domain.type.Job;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.domain.type.LoginType;
 import com.ripple.BE.user.domain.type.Role;
+import com.ripple.BE.user.dto.AddUserProfileRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,22 +30,19 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Table(name = "users")
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class User extends BaseEntity implements UserDetails {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,6 +73,7 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "job")
     private Job job; // 직무
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "age_range")
     private AgeRange ageRange; // 연령대
 
@@ -101,10 +100,13 @@ public class User extends BaseEntity implements UserDetails {
     private Level currentLevel; // 현재 학습 단계
 
     @Column(name = "is_learning_alarm_allowed")
-    private boolean isLearningAlarmAllowed; // 학습 푸시 알람 여부
+    private boolean isLearningAlarmAllowed = false; // 학습 푸시 알람 여부
 
     @Column(name = "is_community_alarm_allowed")
-    private boolean isCoummunityAlarmAllowed; // 커뮤니티 푸시 알람 여부
+    private boolean isCoummunityAlarmAllowed = false; // 커뮤니티 푸시 알람 여부
+
+    @Column(name = "is_profile_completed")
+    private boolean isProfileCompleted = false; // 최초 1회 프로필 등록
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> postList = new ArrayList<>(); // 작성한 게시글 목록
@@ -130,42 +132,8 @@ public class User extends BaseEntity implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Attendance attendance; // 출석 정보
 
-    // Jwt 전용 설정 (UserDetails 인터페이스 구현)
-
     @Column(length = 100, nullable = false, unique = true)
     private String keyCode; // 카카오 로그인 시 발급되는 고유 코드
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
-
-    @Override
-    public String getUsername() {
-        return keyCode;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-    // Jwt 전용 설정 끝
 
     @Builder
     public User(String keyCode, String accountEmail, String profileImageUrl, LoginType loginType) {
@@ -174,5 +142,18 @@ public class User extends BaseEntity implements UserDetails {
         this.profileImageUrl = profileImageUrl;
         this.loginType = loginType;
         this.role = Role.USER;
+    }
+
+    public void updateProfile(AddUserProfileRequest request) {
+        this.nickname = request.nickname();
+        this.businessType = request.businessType();
+        this.job = request.job();
+        this.ageRange = request.ageRange();
+        this.birthday = request.birthDay();
+        this.gender = request.gender();
+        this.profileIntro = request.profileIntro();
+        this.isLearningAlarmAllowed = request.isLearningAlarmAllowed();
+        this.isCoummunityAlarmAllowed = request.isCommunityAlarmAllowed();
+        this.isProfileCompleted = true;
     }
 }
