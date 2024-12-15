@@ -1,4 +1,4 @@
-package com.ripple.BE.auth.dto;
+package com.ripple.BE.auth.dto.kakao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

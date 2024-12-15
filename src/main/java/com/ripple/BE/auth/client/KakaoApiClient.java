@@ -1,7 +1,7 @@
 package com.ripple.BE.auth.client;
 
-import com.ripple.BE.auth.dto.KakaoTokenResponse;
-import com.ripple.BE.auth.dto.KakaoUserInfoResponse;
+import com.ripple.BE.auth.dto.kakao.KakaoTokenResponse;
+import com.ripple.BE.auth.dto.kakao.KakaoUserInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

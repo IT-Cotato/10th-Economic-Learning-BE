@@ -1,12 +1,16 @@
 package com.ripple.BE.auth.service;
 
 import com.ripple.BE.auth.client.KakaoApiClient;
-import com.ripple.BE.auth.dto.KakaoUserInfoResponse;
+import com.ripple.BE.auth.dto.LoginRequest;
+import com.ripple.BE.auth.dto.SignupRequest;
+import com.ripple.BE.auth.dto.kakao.KakaoUserInfoResponse;
 import com.ripple.BE.auth.jwt.JwtTokenProvider;
+import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.service.UserService;
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Slf4j
 @Transactional(readOnly = true)
-public class KakaoAuthService {
+public class AuthService {
 
     private final KakaoApiClient kakaoApiClient;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public String kakaoLogin(String code) {
@@ -37,5 +42,21 @@ public class KakaoAuthService {
     public Long isSignedUp(String token) {
         KakaoUserInfoResponse userInfo = kakaoApiClient.getUserInfo(token);
         return userService.findOrCreateUser(userInfo);
+    }
+
+    @Transactional
+    public void BasicSignup(SignupRequest request) {
+        userService.createUser(request.accountEmail(), request.password());
+    }
+
+    public String BasicLogin(LoginRequest request) {
+        User user = userService.findUser(request.accountEmail());
+
+        // 비밀번호 확인
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+            throw new RuntimeException("Invalid credentials");
+        }
+
+        return jwtTokenProvider.createToken(user.getId().toString());
     }
 }

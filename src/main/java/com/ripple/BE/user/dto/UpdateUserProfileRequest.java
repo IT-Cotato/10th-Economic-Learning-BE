@@ -7,7 +7,7 @@ import com.ripple.BE.user.domain.type.Job;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-public record AddUserProfileRequest(
+public record UpdateUserProfileRequest(
         @NotNull String nickname,
         @NotNull BusinessType businessType,
         @NotNull Job job,

@@ -2,7 +2,7 @@ package com.ripple.BE.user.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
 import com.ripple.BE.user.domain.CustomUserDetails;
-import com.ripple.BE.user.dto.AddUserProfileRequest;
+import com.ripple.BE.user.dto.UpdateUserProfileRequest;
 import com.ripple.BE.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,10 +26,10 @@ public class UserController {
 
     private final UserService userService;
 
-    @Operation(summary = "프로필 등록", description = "카카오 로그인 후 유저의 프로필을 등록합니다.")
+    @Operation(summary = "프로필 등록", description = "로그인 후 유저의 프로필을 등록합니다.")
     @PostMapping("/profile")
     public ResponseEntity<ApiResponse<?>> profile(
-            @Valid @RequestBody AddUserProfileRequest request,
+            @Valid @RequestBody UpdateUserProfileRequest request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         userService.updateProfile(request, customUserDetails.getId());

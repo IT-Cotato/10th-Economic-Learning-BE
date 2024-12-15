@@ -15,7 +15,7 @@ import com.ripple.BE.user.domain.type.Job;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.domain.type.LoginType;
 import com.ripple.BE.user.domain.type.Role;
-import com.ripple.BE.user.dto.AddUserProfileRequest;
+import com.ripple.BE.user.dto.UpdateUserProfileRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -51,7 +51,7 @@ public class User extends BaseEntity {
 
     @Size(min = 5, max = 50)
     @Column(name = "account_email", nullable = false)
-    private String accountEmail; // 카카오에서 받는 이메일
+    private String accountEmail; // 카카오 로그인 시에는 카카오 서버에서 받아옴
 
     @Size(min = 8, max = 255)
     @Column(name = "password")
@@ -59,7 +59,7 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private Role role = Role.USER;
+    private Role role;
 
     @Size(min = 2, max = 20)
     @Column(name = "nickname")
@@ -132,10 +132,11 @@ public class User extends BaseEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Attendance attendance; // 출석 정보
 
-    @Column(length = 100, nullable = false, unique = true)
+    @Column(length = 100, unique = true, nullable = true)
     private String keyCode; // 카카오 로그인 시 발급되는 고유 코드
 
-    @Builder
+    // 카카오 로그인 시 사용
+    @Builder(builderMethodName = "kakaoBuilder", buildMethodName = "buildKakaoUser")
     public User(String keyCode, String accountEmail, String profileImageUrl, LoginType loginType) {
         this.keyCode = keyCode;
         this.accountEmail = accountEmail;
@@ -144,7 +145,16 @@ public class User extends BaseEntity {
         this.role = Role.USER;
     }
 
-    public void updateProfile(AddUserProfileRequest request) {
+    // 기본 로그인 시 사용
+    @Builder(builderMethodName = "basicBuilder", buildMethodName = "buildBasicUser")
+    public User(String accountEmail, String password) {
+        this.accountEmail = accountEmail;
+        this.password = password;
+        this.loginType = LoginType.BASIC;
+        this.role = Role.ADMIN;
+    }
+
+    public void updateProfile(UpdateUserProfileRequest request) {
         this.nickname = request.nickname();
         this.businessType = request.businessType();
         this.job = request.job();
