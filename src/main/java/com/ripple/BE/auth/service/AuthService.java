@@ -7,7 +7,6 @@ import com.ripple.BE.auth.dto.kakao.KakaoUserInfoResponse;
 import com.ripple.BE.auth.jwt.JwtTokenProvider;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.service.UserService;
-import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,10 +31,7 @@ public class AuthService {
 
         Long userId = isSignedUp(accessToken); // 2. Access Token을 이용해 사용자 정보를 가져오고 없으면 회원가입
 
-        HashMap<Long, String> map = new HashMap<>();
-        map.put(userId, jwtTokenProvider.createToken(userId.toString())); // 3. JWT 토큰을 생성하여 반환한다.
-
-        return map.get(userId);
+        return jwtTokenProvider.createToken(userId.toString()); // 3. JWT 토큰 생성 및 반환
     }
 
     @Transactional
