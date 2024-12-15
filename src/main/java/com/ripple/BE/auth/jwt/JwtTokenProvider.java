@@ -1,6 +1,6 @@
 package com.ripple.BE.auth.jwt;
 
-import com.ripple.BE.user.domain.CustomUserDetails;
+import com.ripple.BE.user.service.CustomUserDetailService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -13,20 +13,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
 
+    private final CustomUserDetailService customUserDetailService;
+
     @Value("${spring.jwt.secret}")
     private String secretKey;
 
     @Value("${spring.jwt.access.token.expiration}")
     private long accessTokenExpiration;
-
-    private final UserDetailsService userDetailsService;
 
     // 객체 초기화, secretKey를 Base64로 인코딩
     @PostConstruct
@@ -49,20 +49,8 @@ public class JwtTokenProvider {
 
     // JWT 토큰에서 인증 정보 조회
     public Authentication getAuthentication(String token) {
-        Claims claims =
-                Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
-
-        CustomUserDetails customUserDetails =
-                new CustomUserDetails(
-                        Long.parseLong(claims.getSubject()), claims.get("nickname", String.class));
-
-        return new UsernamePasswordAuthenticationToken(
-                customUserDetails, "", customUserDetails.getAuthorities());
-    }
-
-    // 토큰에서 회원 구별 정보 추출
-    private String getUserPk(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        UserDetails userDetails = customUserDetailService.loadUserByUsername(this.getUserPk(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     // JWT 토큰의 유효성 + 만료일자 확인
@@ -82,5 +70,10 @@ public class JwtTokenProvider {
             return bearerToken.substring(7); // "Bearer " 이후의 토큰을 반환
         }
         return null;
+    }
+
+    // 토큰에서 회원 정보 추출
+    public String getUserPk(String token) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 }

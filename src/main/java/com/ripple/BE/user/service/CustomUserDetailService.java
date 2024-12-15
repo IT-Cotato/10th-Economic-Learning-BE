@@ -17,12 +17,12 @@ public class CustomUserDetailService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    // keycode 받아서 해당 유저를 찾아 CustomUserDetails로 반환
+    // pk 받아서 해당 유저를 찾아 CustomUserDetails로 반환
     @Override
-    public UserDetails loadUserByUsername(String keycode) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
         User user =
                 userRepository
-                        .findByKeyCode(keycode)
+                        .findById(Long.parseLong(id))
                         .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND.getMessage()));
 
         return new CustomUserDetails(user.getId(), user.getNickname());
