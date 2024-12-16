@@ -3,7 +3,7 @@ package com.ripple.BE.learning.domain;
 import com.ripple.BE.global.entity.BaseEntity;
 import com.ripple.BE.learning.domain.type.Purpose;
 import com.ripple.BE.learning.domain.type.Type;
-import com.ripple.BE.member.domain.type.Level;
+import com.ripple.BE.user.domain.type.Level;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

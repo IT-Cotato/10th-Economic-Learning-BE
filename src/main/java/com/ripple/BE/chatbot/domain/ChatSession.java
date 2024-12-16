@@ -1,7 +1,7 @@
 package com.ripple.BE.chatbot.domain;
 
 import com.ripple.BE.global.entity.BaseEntity;
-import com.ripple.BE.member.domain.Member;
+import com.ripple.BE.user.domain.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,6 +38,6 @@ public class ChatSession extends BaseEntity {
     private List<ChatMessage> chatMessages = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member; // 챗봇 채팅 세션을 생성한 사용자
+    @JoinColumn(name = "user_id")
+    private User user; // 챗봇 채팅 세션을 생성한 사용자
 }

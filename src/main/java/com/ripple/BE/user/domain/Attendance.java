@@ -1,4 +1,4 @@
-package com.ripple.BE.member.domain;
+package com.ripple.BE.user.domain;
 
 import com.ripple.BE.global.entity.BaseEntity;
 import jakarta.persistence.Column;
@@ -60,6 +60,6 @@ public class Attendance extends BaseEntity {
     private LocalDateTime lastAttendedDate;
 
     @OneToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }
