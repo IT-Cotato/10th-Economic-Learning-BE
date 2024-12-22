@@ -28,7 +28,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -76,9 +75,6 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "age_range")
     private AgeRange ageRange; // 연령대
-
-    @Column(name = "birthday")
-    private LocalDateTime birthday;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "gender")
@@ -159,7 +155,6 @@ public class User extends BaseEntity {
         this.businessType = request.businessType();
         this.job = request.job();
         this.ageRange = request.ageRange();
-        this.birthday = request.birthDay();
         this.gender = request.gender();
         this.profileIntro = request.profileIntro();
         this.isLearningAlarmAllowed = request.isLearningAlarmAllowed();
