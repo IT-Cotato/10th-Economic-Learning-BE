@@ -1,4 +1,4 @@
-package com.ripple.BE.learning.dto;
+package com.ripple.BE.learning.dto.request;
 
 import com.ripple.BE.learning.domain.Quiz;
 import com.ripple.BE.learning.domain.type.Purpose;

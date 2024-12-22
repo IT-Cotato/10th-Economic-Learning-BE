@@ -1,14 +1,14 @@
-package com.ripple.BE.learning.dto;
+package com.ripple.BE.learning.dto.response;
 
 import com.ripple.BE.learning.domain.Quiz;
 import com.ripple.BE.learning.domain.type.Type;
 import lombok.Builder;
 
 @Builder
-public record LevelTestQuizResponse(
+public record LevelTestQuizListResponse(
         Long id, Type type, String question, String answer, String wrongAnswer) {
-    public static LevelTestQuizResponse from(Quiz quiz) {
-        return LevelTestQuizResponse.builder()
+    public static LevelTestQuizListResponse from(Quiz quiz) {
+        return LevelTestQuizListResponse.builder()
                 .id(quiz.getId())
                 .type(quiz.getType())
                 .question(quiz.getQuestion())
