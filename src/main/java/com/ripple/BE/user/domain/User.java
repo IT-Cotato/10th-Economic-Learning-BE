@@ -161,4 +161,8 @@ public class User extends BaseEntity {
         this.isCoummunityAlarmAllowed = request.isCommunityAlarmAllowed();
         this.isProfileCompleted = true;
     }
+
+    public void updateLevel(Level level) {
+        this.currentLevel = level;
+    }
 }

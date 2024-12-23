@@ -4,6 +4,7 @@ import com.ripple.BE.global.dto.response.ApiResponse;
 import com.ripple.BE.learning.dto.request.AddLevelTestQuizRequest;
 import com.ripple.BE.learning.dto.request.SubmitLevelTestRequest;
 import com.ripple.BE.learning.dto.response.LevelTestQuizListResponse;
+import com.ripple.BE.learning.dto.response.LevelTestResultResponse;
 import com.ripple.BE.learning.service.LevelTestService;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -54,6 +55,9 @@ public class LevelTestController {
             @Valid @RequestBody SubmitLevelTestRequest request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
+        LevelTestResultResponse levelTestResultResponse =
+                levelTestService.submitLevelTestResult(request, customUserDetails.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(levelTestResultResponse));
     }
 }
