@@ -3,7 +3,7 @@ package com.ripple.BE.learning.domain;
 import com.ripple.BE.global.entity.BaseEntity;
 import com.ripple.BE.learning.domain.type.Purpose;
 import com.ripple.BE.learning.domain.type.Type;
-import com.ripple.BE.user.domain.type.Level;
+import com.ripple.BE.learning.dto.QuizDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -43,10 +43,6 @@ public class Quiz extends BaseEntity {
     @Column(name = "type")
     private Type type; // 형식 - OX, 객관식(단답), 객관식(장문)
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "level")
-    private Level level; // 레벨테스트는 레벨 null
-
     @Size(max = 255)
     @Column(name = "question", nullable = false)
     private String question;
@@ -66,4 +62,20 @@ public class Quiz extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "learning_set_id")
     private LearningSet learningSet;
+
+    public static Quiz toQuiz(final QuizDTO quizDTO) {
+        return Quiz.builder()
+                .purpose(quizDTO.purpose())
+                .type(quizDTO.type())
+                .question(quizDTO.question())
+                .answer(quizDTO.answer())
+                .wrongAnswer(quizDTO.wrongAnswer())
+                .explanation(quizDTO.explanation())
+                .build();
+    }
+
+    public void setLearningSet(LearningSet learningSet) {
+        this.learningSet = learningSet;
+        learningSet.getQuizzes().add(this);
+    }
 }
