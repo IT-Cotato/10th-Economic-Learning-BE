@@ -2,6 +2,7 @@ package com.ripple.BE.user.domain;
 
 import com.ripple.BE.chatbot.domain.ChatSession;
 import com.ripple.BE.global.entity.BaseEntity;
+import com.ripple.BE.learning.domain.LearningSetComplete;
 import com.ripple.BE.news.domain.NewsScrap;
 import com.ripple.BE.post.domain.Comment;
 import com.ripple.BE.post.domain.Post;
@@ -124,6 +125,9 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatSession> chatSessionList = new ArrayList<>(); // 채팅 세션 목록
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LearningSetComplete> learningSetCompleteList = new ArrayList<>(); // 학습 완료 목록
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Attendance attendance; // 출석 정보
