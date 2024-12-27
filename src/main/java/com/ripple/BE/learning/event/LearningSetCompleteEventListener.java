@@ -19,6 +19,11 @@ public class LearningSetCompleteEventListener {
     private final LearningSetRepository learningSetRepository;
     private final UserRepository userRepository;
 
+    /**
+     * 사용자 추가 시 학습 세트 추가 이벤트 핸들러
+     *
+     * @param user
+     */
     @Transactional
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleLearningSetCompleteEvent(User user) {
@@ -34,6 +39,11 @@ public class LearningSetCompleteEventListener {
         userRepository.save(user);
     }
 
+    /**
+     * 학습 세트 추가 시 사용자에게 학습 세트 배포 이벤트 핸들러
+     *
+     * @param learningSetList
+     */
     @Transactional
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleLearningSetCompleteEvent(List<LearningSet> learningSetList) {
@@ -48,7 +58,5 @@ public class LearningSetCompleteEventListener {
                         .toList();
 
         userList.forEach(user -> user.getLearningSetCompleteList().addAll(learningSetCompletes));
-
-        // userRepository.saveAll(userList);
     }
 }
