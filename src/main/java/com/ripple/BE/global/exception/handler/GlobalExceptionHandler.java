@@ -5,6 +5,7 @@ import com.ripple.BE.global.exception.errorcode.GlobalErrorCode;
 import com.ripple.BE.global.exception.response.ErrorResponse;
 import com.ripple.BE.global.exception.response.ErrorResponse.ValidationError;
 import com.ripple.BE.global.exception.response.ErrorResponse.ValidationErrors;
+import com.ripple.BE.learning.exception.QuizException;
 import com.ripple.BE.learning.exception.LearningException;
 import com.ripple.BE.user.exception.UserException;
 import io.micrometer.common.lang.NonNull;
@@ -66,6 +67,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UserException.class)
     public ResponseEntity<Object> handleUserException(final UserException e) {
+        return handleExceptionInternal(e.getErrorCode());
+    }
+
+    @ExceptionHandler(QuizException.class)
+    public ResponseEntity<Object> handleQuizException(final QuizException e) {
         return handleExceptionInternal(e.getErrorCode());
     }
 

@@ -1,4 +1,4 @@
-package com.ripple.BE.learning.exception.errorcode;
+package com.ripple.BE.learning.exception;
 
 import com.ripple.BE.global.exception.errorcode.ErrorCode;
 import lombok.Getter;
