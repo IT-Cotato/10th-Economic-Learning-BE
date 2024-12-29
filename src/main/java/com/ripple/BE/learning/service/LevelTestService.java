@@ -6,7 +6,7 @@ import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 import com.ripple.BE.learning.domain.Quiz;
 import com.ripple.BE.learning.domain.type.Purpose;
 import com.ripple.BE.learning.domain.type.Type;
-import com.ripple.BE.learning.dto.request.AddLevelTestQuizRequest;
+import com.ripple.BE.learning.dto.QuizDTO;
 import com.ripple.BE.learning.dto.request.SubmitLevelTestRequest;
 import com.ripple.BE.learning.dto.response.LevelTestQuizListResponse;
 import com.ripple.BE.learning.dto.response.LevelTestResultResponse;
@@ -36,8 +36,8 @@ public class LevelTestService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void addLevelTestQuiz(AddLevelTestQuizRequest request) {
-        quizRepository.save(request.toEntity());
+    public void addLevelTestQuiz(QuizDTO quizDTO) {
+        quizRepository.save(Quiz.toQuiz(quizDTO));
     }
 
     public List<LevelTestQuizListResponse> getLevelTestQuizList() {

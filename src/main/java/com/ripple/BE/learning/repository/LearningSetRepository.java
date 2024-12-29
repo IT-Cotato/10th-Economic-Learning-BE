@@ -13,4 +13,7 @@ public interface LearningSetRepository extends JpaRepository<LearningSet, Long> 
 
     @Query("SELECT l.id FROM LearningSet l WHERE l.level = :level")
     List<Long> findIdsByLevel(@Param("level") Level level);
+
+    @Query("SELECT ls.learningSetNum FROM LearningSet ls")
+    List<String> findAllLearningSetNums();
 }

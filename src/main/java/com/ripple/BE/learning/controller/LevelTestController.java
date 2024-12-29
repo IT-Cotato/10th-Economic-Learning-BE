@@ -1,6 +1,7 @@
 package com.ripple.BE.learning.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
+import com.ripple.BE.learning.dto.QuizDTO;
 import com.ripple.BE.learning.dto.request.AddLevelTestQuizRequest;
 import com.ripple.BE.learning.dto.request.SubmitLevelTestRequest;
 import com.ripple.BE.learning.dto.response.LevelTestQuizListResponse;
@@ -34,7 +35,7 @@ public class LevelTestController {
     public ResponseEntity<ApiResponse<?>> addLevelTestQuiz(
             @Valid @RequestBody AddLevelTestQuizRequest request) {
 
-        levelTestService.addLevelTestQuiz(request);
+        levelTestService.addLevelTestQuiz(QuizDTO.toQuizDTO(request));
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
     }
@@ -44,6 +45,7 @@ public class LevelTestController {
             summary = "레벨 테스트 퀴즈 목록 조회",
             description = "레벨 테스트 퀴즈 목록 조회를 위한 API 입니다. 인증 없이 접근가능합니다.")
     public ResponseEntity<ApiResponse<?>> getLevelTestQuizList() {
+
         List<LevelTestQuizListResponse> levelTestQuizList = levelTestService.getLevelTestQuizList();
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(levelTestQuizList));

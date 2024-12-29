@@ -3,6 +3,7 @@ package com.ripple.BE.learning.dto;
 import com.ripple.BE.learning.domain.Quiz;
 import com.ripple.BE.learning.domain.type.Purpose;
 import com.ripple.BE.learning.domain.type.Type;
+import com.ripple.BE.learning.dto.request.AddLevelTestQuizRequest;
 import java.util.Map;
 
 public record QuizDTO(
@@ -45,5 +46,17 @@ public record QuizDTO(
                 excelData.get(WRONG_ANSWER),
                 excelData.get(EXPLANATION),
                 excelData.get(LEARNING_SET_NUM));
+    }
+
+    public static QuizDTO toQuizDTO(AddLevelTestQuizRequest request) {
+        return new QuizDTO(
+                null,
+                Purpose.LEVEL_TEST,
+                request.type(),
+                request.question(),
+                request.answer(),
+                request.wrongAnswer(),
+                request.explanation(),
+                null);
     }
 }

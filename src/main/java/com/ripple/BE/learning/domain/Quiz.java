@@ -63,6 +63,24 @@ public class Quiz extends BaseEntity {
     @JoinColumn(name = "learning_set_id")
     private LearningSet learningSet;
 
+    @Builder
+    public Quiz(
+            Purpose purpose,
+            Type type,
+            String question,
+            String answer,
+            String wrongAnswer,
+            String explanation,
+            LearningSet learningSet) {
+        this.purpose = purpose;
+        this.type = type;
+        this.question = question;
+        this.answer = answer;
+        this.wrongAnswer = wrongAnswer;
+        this.explanation = explanation;
+        this.learningSet = learningSet;
+    }
+
     public static Quiz toQuiz(final QuizDTO quizDTO) {
         return Quiz.builder()
                 .purpose(quizDTO.purpose())
