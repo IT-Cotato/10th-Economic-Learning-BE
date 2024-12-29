@@ -6,6 +6,7 @@ import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 import com.ripple.BE.learning.domain.Quiz;
 import com.ripple.BE.learning.domain.type.Purpose;
 import com.ripple.BE.learning.domain.type.Type;
+import com.ripple.BE.learning.dto.AnswerDTO;
 import com.ripple.BE.learning.dto.QuizDTO;
 import com.ripple.BE.learning.dto.QuizListDTO;
 import com.ripple.BE.learning.dto.QuizSubmitDTO;
@@ -73,7 +74,8 @@ public class LevelTestService {
 
         int correctCount = 0;
         int score = 0;
-        List<LevelTestResultResponse.Explanation> wrongAnswers = new ArrayList<>();
+
+        List<AnswerDTO> wrongAnswers = new ArrayList<>();
 
         for (QuizSubmitDTO.Answer answer : quizSubmitDTO.answers()) {
             Quiz quiz = quizMap.get(answer.quizId());
@@ -85,13 +87,13 @@ public class LevelTestService {
                 correctCount++;
                 score += scoreMap.get(quiz.getType());
             } else {
-                wrongAnswers.add(LevelTestResultResponse.Explanation.from(quiz));
+                wrongAnswers.add(AnswerDTO.toanswerDTO(quiz));
             }
         }
 
         Level level = updateLevel(userId, score);
 
-        return LevelTestResultResponse.from(correctCount, level, wrongAnswers);
+        return LevelTestResultResponse.toQuizResponse(correctCount, level, wrongAnswers);
     }
 
     /**
