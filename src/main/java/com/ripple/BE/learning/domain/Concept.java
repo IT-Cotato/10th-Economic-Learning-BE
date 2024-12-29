@@ -1,11 +1,9 @@
 package com.ripple.BE.learning.domain;
 
 import com.ripple.BE.global.entity.BaseEntity;
-import com.ripple.BE.user.domain.type.Level;
+import com.ripple.BE.learning.dto.ConceptDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -38,10 +36,6 @@ public class Concept extends BaseEntity {
     @Column(name = "explanation", nullable = false)
     private String explanation;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "level")
-    private Level level;
-
     @Size(max = 255)
     @Column(name = "example")
     private String example;
@@ -51,10 +45,23 @@ public class Concept extends BaseEntity {
     private LearningSet learningSet;
 
     @Builder
-    public Concept(String name, String explanation, Level level, String example) {
+    public Concept(String name, String explanation, String example) {
         this.name = name;
         this.explanation = explanation;
-        this.level = level;
         this.example = example;
+    }
+
+    public static Concept toConcept(final ConceptDTO conceptDTO) {
+
+        return Concept.builder()
+                .name(conceptDTO.name())
+                .explanation(conceptDTO.explanation())
+                .example(conceptDTO.example())
+                .build();
+    }
+
+    public void setLearningSet(LearningSet learningSet) {
+        this.learningSet = learningSet;
+        learningSet.getConcepts().add(this);
     }
 }
