@@ -36,19 +36,28 @@ public class LearningAdminService {
     @Transactional
     public void createLearningSetByExcel() {
         try {
+
             List<LearningSet> learningSetList = parseLearningSetsFromExcel();
             Map<String, LearningSet> learningSetMap =
                     learningSetList.stream()
                             .collect(
                                     Collectors.toMap(LearningSet::getLearningSetNum, learningSet -> learningSet));
 
+            // 기존에 존재하는 LearningSetNum 조회
+            List<String> existingLearningSetNums = learningSetRepository.findAllLearningSetNums();
+
+            // 새로운 학습 세트만 필터링
+            List<LearningSet> newLearningSets =
+                    learningSetList.stream()
+                            .filter(
+                                    learningSet -> !existingLearningSetNums.contains(learningSet.getLearningSetNum()))
+                            .collect(Collectors.toList());
+
             addConceptsToLearningSets(learningSetMap);
             addQuizzesToLearningSets(learningSetMap);
 
-            learningSetRepository.saveAll(learningSetList);
-
-            // 모든 사용자에게 학습 세트를 배포
-            learningSetCompleteEventListener.handleLearningSetCompleteEvent(learningSetList);
+            learningSetRepository.saveAll(newLearningSets);
+            learningSetCompleteEventListener.handleLearningSetCompleteEvent(newLearningSets);
 
         } catch (Exception e) {
             log.error("Failed to save learning set by excel", e);
