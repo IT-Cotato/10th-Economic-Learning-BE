@@ -103,7 +103,7 @@ public class QuizService {
      * 퀴즈 종료 및 퀴즈 완료 처리
      *
      * @param userId
-     * @return
+     * @return 퀴즈 결과 반환
      */
     @Transactional
     public QuizResultDTO finishQuiz(final long userId) {
@@ -133,7 +133,7 @@ public class QuizService {
     }
 
     // 퀴즈 목록 생성
-    private List<QuizDTO> createQuizList(LearningSet learningSet) {
+    private List<QuizDTO> createQuizList(final LearningSet learningSet) {
         List<Quiz> quizList = learningSet.getQuizzes();
         Collections.shuffle(quizList);
 
@@ -163,7 +163,7 @@ public class QuizService {
     }
 
     // 다른 퀴즈 보기 선지 생성
-    private List<String> generateOptions(Quiz quiz, List<Quiz> quizList) {
+    private List<String> generateOptions(final Quiz quiz, final List<Quiz> quizList) {
         return quizList.stream()
                 .filter(q -> !q.getId().equals(quiz.getId()))
                 .filter(q -> q.getType() == quiz.getType())
