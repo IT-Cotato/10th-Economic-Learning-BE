@@ -3,6 +3,7 @@ package com.ripple.BE.learning.dto;
 import com.ripple.BE.learning.domain.Quiz;
 import com.ripple.BE.learning.domain.type.Purpose;
 import com.ripple.BE.learning.domain.type.Type;
+import java.util.List;
 import java.util.Map;
 
 public record QuizDTO(
@@ -12,6 +13,7 @@ public record QuizDTO(
         String question,
         String answer,
         String wrongAnswer,
+        List<String> options,
         String explanation,
         String learningSetNum) {
 
@@ -31,6 +33,20 @@ public record QuizDTO(
                 quiz.getQuestion(),
                 quiz.getAnswer(),
                 quiz.getWrongAnswer(),
+                null,
+                quiz.getExplanation(),
+                null);
+    }
+
+    public static QuizDTO toQuizDTO(final Quiz quiz, final List<String> options) {
+        return new QuizDTO(
+                quiz.getId(),
+                quiz.getPurpose(),
+                quiz.getType(),
+                quiz.getQuestion(),
+                quiz.getAnswer(),
+                quiz.getWrongAnswer(),
+                options,
                 quiz.getExplanation(),
                 null);
     }
@@ -43,6 +59,7 @@ public record QuizDTO(
                 excelData.get(QUESTION),
                 excelData.get(ANSWER),
                 excelData.get(WRONG_ANSWER),
+                null,
                 excelData.get(EXPLANATION),
                 excelData.get(LEARNING_SET_NUM));
     }
