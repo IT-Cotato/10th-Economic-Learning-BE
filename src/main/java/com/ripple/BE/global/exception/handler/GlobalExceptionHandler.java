@@ -70,10 +70,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e.getErrorCode());
     }
 
+
     @ExceptionHandler(QuizException.class)
     public ResponseEntity<Object> handleQuizException(final QuizException e) {
         return handleExceptionInternal(e.getErrorCode());
     }
+
 
     @ExceptionHandler(LearningException.class)
     public ResponseEntity<Object> handleLearningException(final LearningException e) {
