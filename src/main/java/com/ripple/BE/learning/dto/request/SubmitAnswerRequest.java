@@ -1,10 +1,12 @@
 package com.ripple.BE.learning.dto.request;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import com.ripple.BE.learning.domain.type.Type;
+import com.ripple.BE.learning.validation.ValidAnswerIndex;
 import jakarta.validation.constraints.NotNull;
 
+@ValidAnswerIndex
 public record SubmitAnswerRequest(
         @NotNull Long quizId, // 퀴즈 ID
-        @Max(3) @Min(0) @NotNull int answerIndex // 답
+        @NotNull Type type, // 퀴즈 타입
+        @NotNull int answerIndex // 답
         ) {}
