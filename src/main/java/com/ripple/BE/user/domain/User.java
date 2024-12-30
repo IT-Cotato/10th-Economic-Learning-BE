@@ -135,6 +135,12 @@ public class User extends BaseEntity {
     @Column(length = 100, unique = true, nullable = true)
     private String keyCode; // 카카오 로그인 시 발급되는 고유 코드
 
+    @Column(name = "quiz_count")
+    private int quizCount = 0; // 퀴즈 푼 횟수
+
+    @Column(name = "correct_count")
+    private int correctCount = 0; // 정답 횟수
+
     // 카카오 로그인 시 사용
     @Builder(builderMethodName = "kakaoBuilder", buildMethodName = "buildKakaoUser")
     public User(String keyCode, String accountEmail, String profileImageUrl, LoginType loginType) {
@@ -164,5 +170,13 @@ public class User extends BaseEntity {
         this.isLearningAlarmAllowed = request.isLearningAlarmAllowed();
         this.isCoummunityAlarmAllowed = request.isCommunityAlarmAllowed();
         this.isProfileCompleted = true;
+    }
+
+    public void increaseQuizCount(int count) {
+        this.quizCount += count;
+    }
+
+    public void increaseCorrectCount(int count) {
+        this.correctCount += count;
     }
 }

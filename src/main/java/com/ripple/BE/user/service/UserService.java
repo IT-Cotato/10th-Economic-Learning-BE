@@ -48,10 +48,22 @@ public class UserService {
         user.updateProfile(request);
     }
 
+    @Transactional
+    public void updateQuizAndCorrectCount(User user, int quizCount, int correctCount) {
+        user.increaseQuizCount(quizCount);
+        user.increaseCorrectCount(correctCount);
+    }
+
+    @Transactional(readOnly = true)
     public User findUser(String accountEmail) {
         return userRepository
                 .findByAccountEmail(accountEmail)
                 .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public User findUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new UserException(USER_NOT_FOUND));
     }
 
     @Transactional
