@@ -44,6 +44,21 @@ public class LearningSetService {
     }
 
     /**
+     * 레벨, 학습 세트 이름으로 학습 세트 조회
+     *
+     * @param learningSetName
+     * @param level
+     * @return 학습 세트
+     */
+    @Transactional(readOnly = true)
+    protected LearningSet findLearningSetByNameAndLevel(
+            final String learningSetName, final Level level) {
+        return learningSetRepository
+                .findByNameAndLevel(learningSetName, level)
+                .orElseThrow(() -> new LearningException(LearningErrorCode.LEARNING_SET_NOT_FOUND));
+    }
+
+    /**
      * 학습 세트 미리보기 목록 조회
      *
      * @param userId

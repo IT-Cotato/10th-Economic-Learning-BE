@@ -4,6 +4,7 @@ import com.ripple.BE.learning.domain.LearningSet;
 import com.ripple.BE.user.domain.type.Level;
 import io.lettuce.core.dynamic.annotation.Param;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,4 +17,6 @@ public interface LearningSetRepository extends JpaRepository<LearningSet, Long> 
 
     @Query("SELECT ls.learningSetNum FROM LearningSet ls")
     List<String> findAllLearningSetNums();
+
+    Optional<LearningSet> findByNameAndLevel(String name, Level level);
 }
