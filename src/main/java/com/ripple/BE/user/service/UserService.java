@@ -54,6 +54,11 @@ public class UserService {
                 .orElseThrow(() -> new UserException(USER_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
+    public User findUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new UserException(USER_NOT_FOUND));
+    }
+
     @Transactional
     public void createUser(String accountEmail, String password) {
         // 이미 존재하는 이메일인지 확인
