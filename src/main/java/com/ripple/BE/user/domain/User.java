@@ -5,6 +5,7 @@ import com.ripple.BE.global.entity.BaseEntity;
 import com.ripple.BE.learning.domain.LearningSetComplete;
 import com.ripple.BE.news.domain.NewsScrap;
 import com.ripple.BE.post.domain.Comment;
+import com.ripple.BE.post.domain.CommentLike;
 import com.ripple.BE.post.domain.Post;
 import com.ripple.BE.post.domain.PostLike;
 import com.ripple.BE.post.domain.PostScrap;
@@ -116,6 +117,9 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "commenter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>(); // 작성한 댓글 목록
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CommentLike> commentLikeList = new ArrayList<>(); // 좋아요한 댓글 목록
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<NewsScrap> newsScrapList = new ArrayList<>(); // 스크랩한 뉴스 목록

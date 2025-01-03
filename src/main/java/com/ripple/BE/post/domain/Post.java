@@ -55,6 +55,9 @@ public class Post extends BaseEntity {
     @Column(name = "comment_count")
     private long commentCount = 0L; // 댓글 수
 
+    @Column(name = "scrap_count")
+    private long scrapCount = 0L; // 스크랩 수
+
     @Column(name = "post_type", nullable = false)
     private PostType type; // 게시글 타입
 
@@ -66,4 +69,20 @@ public class Post extends BaseEntity {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> imageList = new ArrayList<>();
+
+    public void increaseCommentCount() {
+        this.commentCount++;
+    }
+
+    public void decreaseCommentCount() {
+        this.commentCount--;
+    }
+
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        this.likeCount--;
+    }
 }

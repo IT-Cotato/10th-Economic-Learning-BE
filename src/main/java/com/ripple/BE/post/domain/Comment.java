@@ -2,7 +2,6 @@ package com.ripple.BE.post.domain;
 
 import com.ripple.BE.global.entity.BaseEntity;
 import com.ripple.BE.user.domain.User;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Table(name = "comments")
 @Getter
@@ -35,6 +35,7 @@ public class Comment extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Setter
     @Size(min = 1, max = 255)
     @Column(name = "content", nullable = false)
     private String content;
@@ -54,6 +55,37 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "parent_id")
     private Comment parent; // 상위 댓글
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false; // 삭제 여부
+
+    @OneToMany(mappedBy = "parent")
     private List<Comment> children = new ArrayList<>(); // 하위 댓글
+
+    public static Comment toCommentEntity(final String content) {
+        return Comment.builder().content(content).build();
+    }
+
+    public void setUser(User user) {
+        this.commenter = user;
+        user.getCommentList().add(this);
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
+        post.getCommentList().add(this);
+    }
+
+    public void setParent(Comment parent) {
+        this.parent = parent;
+        parent.getChildren().add(this);
+    }
+
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        this.likeCount--;
+    }
 }
