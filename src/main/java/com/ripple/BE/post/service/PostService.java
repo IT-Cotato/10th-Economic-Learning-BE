@@ -6,19 +6,28 @@ import com.ripple.BE.post.domain.Comment;
 import com.ripple.BE.post.domain.CommentLike;
 import com.ripple.BE.post.domain.Post;
 import com.ripple.BE.post.domain.PostLike;
+import com.ripple.BE.post.domain.PostScrap;
+import com.ripple.BE.post.domain.type.PostSort;
+import com.ripple.BE.post.domain.type.PostType;
 import com.ripple.BE.post.dto.CommentListDTO;
 import com.ripple.BE.post.dto.PostDTO;
+import com.ripple.BE.post.dto.PostListDTO;
 import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.repository.CommentLikeRepository;
 import com.ripple.BE.post.repository.CommentRepository;
 import com.ripple.BE.post.repository.PostLikeRepository;
 import com.ripple.BE.post.repository.PostRepository;
+import com.ripple.BE.post.repository.PostScrapRepository;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.service.UserService;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,9 +39,33 @@ public class PostService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final PostLikeRepository postLikeRepository;
+    private final PostScrapRepository postScrapRepository;
     private final CommentLikeRepository commentLikeRepository;
 
     private final UserService userService;
+
+    private static final int PAGE_SIZE = 10;
+    private static final String LIKE_COUNT = "likeCount";
+    private static final String CREATED_DATE = "createdDate";
+
+    @Transactional(readOnly = true)
+    public PostListDTO getPosts(final int page, final PostSort sort, final PostType type) {
+
+        Sort sortOption =
+                sort == PostSort.POPULAR
+                        ? Sort.by(Sort.Direction.DESC, LIKE_COUNT, CREATED_DATE) // 인기순: 좋아요 수 내림차순, 생성일 내림차순
+                        : Sort.by(Sort.Direction.DESC, CREATED_DATE); // 최신순: 생성일 내림차순
+
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE, sortOption);
+
+        // 게시글 조회 (타입에 따른 필터링)
+        Page<Post> postPage =
+                type == null
+                        ? postRepository.findAll(pageable) // 타입 없으면 전체 조회
+                        : postRepository.findByType(type, pageable); // 타입에 따른 조회
+
+        return PostListDTO.toPostListDTO(postPage);
+    }
 
     @Transactional(readOnly = true)
     public PostDTO getPost(final long id) {
@@ -190,6 +223,43 @@ public class PostService {
                         .orElseThrow(() -> new PostException(COMMENT_NOT_FOUND));
 
         comment.setContent(content);
+    }
+
+    @Transactional
+    public void addScrapToPost(final long postId, final long userId) {
+        Post post =
+                postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_FOUND));
+        User user = userService.findUserById(userId);
+        log.info("addScrapToPost: post = {}, user = {}", post, user);
+
+        if (postScrapRepository.existsByPostIdAndUserId(postId, userId)) {
+            throw new PostException(SCRAP_ALREADY_EXISTS);
+        }
+
+        PostScrap postScrap = PostScrap.toPostScrapEntity();
+        postScrap.setUser(user);
+        postScrap.setPost(post);
+
+        post.increaseScrapCount();
+    }
+
+    @Transactional
+    public void removeScrapFromPost(final long postId, final long userId) {
+        Post post = findPostById(postId);
+
+        PostScrap postScrap =
+                postScrapRepository
+                        .findByPostIdAndUserId(postId, userId)
+                        .orElseThrow(() -> new PostException(SCRAP_NOT_FOUND));
+
+        postScrapRepository.delete(postScrap);
+
+        post.decreaseScrapCount();
+    }
+
+    @Transactional
+    public Post findPostById(final long id) {
+        return postRepository.findById(id).orElseThrow(() -> new PostException(POST_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)
