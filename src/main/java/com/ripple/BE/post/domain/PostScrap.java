@@ -16,7 +16,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Table(name = "post_scraps")
 @Getter
@@ -35,7 +34,6 @@ public class PostScrap extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
@@ -47,5 +45,10 @@ public class PostScrap extends BaseEntity {
     public void setUser(User user) {
         this.user = user;
         user.getPostScrapList().add(this);
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
+        post.getPostScrapList().add(this);
     }
 }

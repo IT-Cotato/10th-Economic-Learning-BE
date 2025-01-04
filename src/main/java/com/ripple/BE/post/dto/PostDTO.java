@@ -3,6 +3,7 @@ package com.ripple.BE.post.dto;
 import com.ripple.BE.image.dto.ImageListDTO;
 import com.ripple.BE.post.domain.Post;
 import com.ripple.BE.post.domain.type.PostType;
+import com.ripple.BE.post.dto.request.PostRequest;
 import com.ripple.BE.user.dto.CommunityUserDTO;
 import java.time.LocalDateTime;
 
@@ -12,9 +13,9 @@ public record PostDTO(
         CommunityUserDTO author,
         String content,
         PostType type,
-        long likeCount,
-        long commentCount,
-        long scrapCount,
+        Long likeCount,
+        Long commentCount,
+        Long scrapCount,
         ImageListDTO imageList,
         LocalDateTime createdDate,
         LocalDateTime modifiedDate,
@@ -50,5 +51,21 @@ public record PostDTO(
                 post.getCreatedDate(),
                 post.getModifiedDate(),
                 commentListDTO);
+    }
+
+    public static PostDTO toPostDTO(final PostRequest postRequest) {
+        return new PostDTO(
+                null,
+                postRequest.title(),
+                null,
+                postRequest.content(),
+                postRequest.type(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
     }
 }
