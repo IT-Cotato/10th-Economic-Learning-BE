@@ -12,9 +12,12 @@ public enum PostErrorCode implements ErrorCode {
     TOKTOK_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "Toktok post not found"),
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "Like not found"),
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "Comment not found"),
+    SCRAP_NOT_FOUND(HttpStatus.NOT_FOUND, "Scrap not found"),
     TODAY_TOKTOK_NOT_FOUND(HttpStatus.NOT_FOUND, "TodayToktok not found"),
 
-    LIKE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Like already exists");
+    LIKE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Like already exists"),
+    SCRAP_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Scrap already exists"),
+    ;
 
     private final HttpStatus httpStatus;
     private final String message;
