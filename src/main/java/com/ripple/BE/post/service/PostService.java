@@ -30,6 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -47,6 +48,29 @@ public class PostService {
     private static final int PAGE_SIZE = 10;
     private static final String LIKE_COUNT = "likeCount";
     private static final String CREATED_DATE = "createdDate";
+
+    @Transactional
+    public void createPost(
+            final long userId, final PostDTO postDTO, final List<MultipartFile> imageList) {
+        User user = userService.findUserById(userId);
+
+        Post post = Post.toPostEntity(postDTO);
+        post.setAuthor(user);
+
+        /** 이미지 S3 업로드 로직 추후 추가 */
+        postRepository.save(post);
+    }
+
+    @Transactional
+    public void deletePost(final long postId, final long userId) {
+        Post post = findPostByIdForUpdate(postId);
+
+        if (post.getAuthor().getId() != userId) {
+            throw new PostException(POST_NOT_AUTHORIZED);
+        }
+
+        postRepository.delete(post);
+    }
 
     @Transactional(readOnly = true)
     public PostListDTO getPosts(final int page, final PostSort sort, final PostType type) {

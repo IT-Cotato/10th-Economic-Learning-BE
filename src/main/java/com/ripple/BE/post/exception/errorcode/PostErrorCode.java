@@ -17,6 +17,8 @@ public enum PostErrorCode implements ErrorCode {
 
     LIKE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Like already exists"),
     SCRAP_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Scrap already exists"),
+
+    POST_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "Post not authorized"),
     ;
 
     private final HttpStatus httpStatus;
