@@ -14,7 +14,9 @@ public record PostDTO(
         PostType type,
         long likeCount,
         long commentCount,
+        long scrapCount,
         ImageListDTO imageList,
+        LocalDateTime createdDate,
         LocalDateTime modifiedDate,
         CommentListDTO commentListDTO) {
 
@@ -27,7 +29,9 @@ public record PostDTO(
                 post.getType(),
                 post.getLikeCount(),
                 post.getCommentCount(),
+                post.getScrapCount(),
                 ImageListDTO.toImageListDTO(post.getImageList()),
+                post.getCreatedDate(),
                 post.getModifiedDate(),
                 CommentListDTO.toCommentListDTO(post.getCommentList()));
     }
@@ -41,7 +45,9 @@ public record PostDTO(
                 post.getType(),
                 post.getLikeCount(),
                 post.getCommentCount(),
+                post.getScrapCount(),
                 ImageListDTO.toImageListDTO(post.getImageList()),
+                post.getCreatedDate(),
                 post.getModifiedDate(),
                 commentListDTO);
     }

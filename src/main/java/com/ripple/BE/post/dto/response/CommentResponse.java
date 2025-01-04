@@ -12,7 +12,7 @@ public record CommentResponse(
         String commenterName,
         String commenterProfileImageUrl,
         boolean isDeleted,
-        String modifiedDate,
+        String createdDate,
         List<CommentResponse> children) {
 
     private static final DateTimeFormatter FORMATTER =
@@ -27,7 +27,7 @@ public record CommentResponse(
                 commentDTO.commenter().nickname(),
                 commentDTO.commenter().profileImage().url(),
                 commentDTO.isDeleted(),
-                commentDTO.modifiedDate().format(FORMATTER),
+                commentDTO.createdDate().format(FORMATTER),
                 commentDTO.children().stream().map(CommentResponse::toCommentResponse).toList());
     }
 }

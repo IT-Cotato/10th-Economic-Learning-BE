@@ -12,6 +12,7 @@ public record CommentDTO(
         CommunityUserDTO commenter,
         boolean isDeleted,
         List<CommentDTO> children,
+        LocalDateTime createdDate,
         LocalDateTime modifiedDate) {
 
     public static CommentDTO toCommentDTO(Comment comment) {
@@ -22,6 +23,7 @@ public record CommentDTO(
                 CommunityUserDTO.toCommunityUserDTO(comment.getCommenter()),
                 comment.isDeleted(),
                 comment.getChildren().stream().map(CommentDTO::toCommentDTO).toList(),
+                comment.getCreatedDate(),
                 comment.getModifiedDate());
     }
 }
