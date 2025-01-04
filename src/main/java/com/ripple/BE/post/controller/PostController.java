@@ -6,6 +6,7 @@ import com.ripple.BE.post.domain.type.PostType;
 import com.ripple.BE.post.dto.PostDTO;
 import com.ripple.BE.post.dto.PostListDTO;
 import com.ripple.BE.post.dto.request.CommentRequest;
+import com.ripple.BE.post.dto.request.PostRequest;
 import com.ripple.BE.post.dto.response.PostListResponse;
 import com.ripple.BE.post.dto.response.PostResponse;
 import com.ripple.BE.post.service.PostService;
@@ -14,8 +15,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.PositiveOrZero;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,7 +29,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
@@ -35,6 +40,30 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostController {
 
     private final PostService postService;
+
+    @Operation(summary = "게시물 작성", description = "게시물을 작성합니다.")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Object>> createPost(
+            final @AuthenticationPrincipal CustomUserDetails currentUser,
+            final @RequestPart(value = "post") @Valid PostRequest post,
+            final @RequestPart(value = "imageList", required = false) List<MultipartFile> imageList) {
+
+        postService.createPost(currentUser.getId(), PostDTO.toPostDTO(post), imageList);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
+    }
+
+    @Operation(summary = "게시물 삭제", description = "게시물을 삭제합니다.")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Object>> deletePost(
+            final @AuthenticationPrincipal CustomUserDetails currentUser,
+            final @PathVariable("id") long id) {
+
+        postService.deletePost(id, currentUser.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
+    }
 
     @Operation(summary = "게시글 목록 조회", description = "게시글 목록을 조회합니다.")
     @GetMapping
@@ -65,6 +94,7 @@ public class PostController {
             final @PathVariable("id") long id) {
 
         postService.addLikeToPost(id, currentUser.getId());
+        ;
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
@@ -88,6 +118,7 @@ public class PostController {
             final @PathVariable("commentId") long commentId) {
 
         postService.addLikeToComment(commentId, currentUser.getId());
+        ;
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
@@ -100,6 +131,7 @@ public class PostController {
             final @PathVariable("commentId") long commentId) {
 
         postService.removeLikeFromComment(commentId, currentUser.getId());
+        ;
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
@@ -111,7 +143,7 @@ public class PostController {
             final @PathVariable("id") long id,
             final @Valid @RequestBody CommentRequest request) {
 
-        postService.addCommentToPost(id, currentUser.getId(), request.content());
+        postService.addCommentToPost(currentUser.getId(), id, request.content());
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
@@ -124,6 +156,7 @@ public class PostController {
             final @PathVariable("commentId") long commentId) {
 
         postService.removeCommentFromPost(currentUser.getId(), id, commentId);
+        ;
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
 
@@ -136,6 +169,7 @@ public class PostController {
             final @Valid @RequestBody CommentRequest request) {
 
         postService.addReplyToComment(currentUser.getId(), id, commentId, request.content());
+        ;
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
@@ -149,6 +183,7 @@ public class PostController {
             final @Valid @RequestBody CommentRequest request) {
 
         postService.updateComment(currentUser.getId(), commentId, request.content());
+        ;
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
@@ -160,6 +195,7 @@ public class PostController {
             final @PathVariable("id") long id) {
 
         postService.addScrapToPost(id, currentUser.getId());
+        ;
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
