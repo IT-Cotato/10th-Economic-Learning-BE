@@ -15,8 +15,9 @@ public record PostResponse(
         PostType type,
         long likeCount,
         long commentCount,
+        long scrapCount,
         List<String> imageList,
-        String modifiedDate,
+        String createdDate,
         CommentListResponse commentListResponse) {
 
     private static final DateTimeFormatter FORMATTER =
@@ -32,8 +33,9 @@ public record PostResponse(
                 postDTO.type(),
                 postDTO.likeCount(),
                 postDTO.commentCount(),
+                postDTO.scrapCount(),
                 postDTO.imageList().imageDTOList().stream().map(ImageDTO::url).toList(),
-                postDTO.modifiedDate().format(FORMATTER),
+                postDTO.createdDate().format(FORMATTER),
                 CommentListResponse.toCommentListResponse(postDTO.commentListDTO()));
     }
 }
