@@ -1,7 +1,7 @@
 package com.ripple.BE.post.dto.response;
 
+import com.ripple.BE.global.utils.RelativeTimeFormatter;
 import com.ripple.BE.post.dto.CommentDTO;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public record CommentResponse(
@@ -12,11 +12,9 @@ public record CommentResponse(
         String commenterName,
         String commenterProfileImageUrl,
         boolean isDeleted,
+        long replyCount,
         String createdDate,
         List<CommentResponse> children) {
-
-    private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); // 년-월-일 시:분
 
     public static CommentResponse toCommentResponse(CommentDTO commentDTO) {
         return new CommentResponse(
@@ -27,7 +25,8 @@ public record CommentResponse(
                 commentDTO.commenter().nickname(),
                 commentDTO.commenter().profileImage().url(),
                 commentDTO.isDeleted(),
-                commentDTO.createdDate().format(FORMATTER),
+                commentDTO.replyCount(),
+                RelativeTimeFormatter.formatRelativeTime(commentDTO.createdDate()),
                 commentDTO.children().stream().map(CommentResponse::toCommentResponse).toList());
     }
 }

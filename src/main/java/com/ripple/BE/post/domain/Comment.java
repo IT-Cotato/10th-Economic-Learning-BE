@@ -59,6 +59,8 @@ public class Comment extends BaseEntity {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false; // 삭제 여부
 
+    private long replyCount = 0L; // 답글 수
+
     @OneToMany(mappedBy = "parent")
     private List<Comment> children = new ArrayList<>(); // 하위 댓글
 
@@ -87,5 +89,13 @@ public class Comment extends BaseEntity {
 
     public void decreaseLikeCount() {
         this.likeCount--;
+    }
+
+    public void increaseReplyCount() {
+        this.replyCount++;
+    }
+
+    public void decreaseReplyCount() {
+        this.replyCount--;
     }
 }

@@ -11,6 +11,7 @@ public record CommentDTO(
         long likeCount,
         CommunityUserDTO commenter,
         boolean isDeleted,
+        long replyCount,
         List<CommentDTO> children,
         LocalDateTime createdDate,
         LocalDateTime modifiedDate) {
@@ -22,6 +23,7 @@ public record CommentDTO(
                 comment.getLikeCount(),
                 CommunityUserDTO.toCommunityUserDTO(comment.getCommenter()),
                 comment.isDeleted(),
+                comment.getReplyCount(),
                 comment.getChildren().stream().map(CommentDTO::toCommentDTO).toList(),
                 comment.getCreatedDate(),
                 comment.getModifiedDate());
