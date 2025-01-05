@@ -211,6 +211,8 @@ public class PostService {
             }
         } else { // 자식 댓글인 경우
             commentRepository.delete(comment);
+            parent.decreaseReplyCount();
+
             if (parent.getChildren().size() == 1 && parent.isDeleted()) { // 부모 댓글이 삭제 처리된 경우
                 commentRepository.delete(parent);
             }
@@ -237,6 +239,7 @@ public class PostService {
         comment.setParent(parent);
 
         post.increaseCommentCount();
+        parent.increaseReplyCount();
     }
 
     @Transactional
