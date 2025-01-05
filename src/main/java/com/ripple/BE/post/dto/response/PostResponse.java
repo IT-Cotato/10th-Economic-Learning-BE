@@ -1,9 +1,9 @@
 package com.ripple.BE.post.dto.response;
 
+import com.ripple.BE.global.utils.RelativeTimeFormatter;
 import com.ripple.BE.image.dto.ImageDTO;
 import com.ripple.BE.post.domain.type.PostType;
 import com.ripple.BE.post.dto.PostDTO;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public record PostResponse(
@@ -20,9 +20,6 @@ public record PostResponse(
         String createdDate,
         CommentListResponse commentListResponse) {
 
-    private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); // 년-월-일 시:분
-
     public static PostResponse toPostResponse(PostDTO postDTO) {
         return new PostResponse(
                 postDTO.id(),
@@ -35,7 +32,7 @@ public record PostResponse(
                 postDTO.commentCount(),
                 postDTO.scrapCount(),
                 postDTO.imageList().imageDTOList().stream().map(ImageDTO::url).toList(),
-                postDTO.createdDate().format(FORMATTER),
+                RelativeTimeFormatter.formatRelativeTime(postDTO.createdDate()),
                 CommentListResponse.toCommentListResponse(postDTO.commentListDTO()));
     }
 }
