@@ -4,6 +4,7 @@ import com.ripple.BE.global.entity.BaseEntity;
 import com.ripple.BE.learning.domain.type.Purpose;
 import com.ripple.BE.learning.domain.type.Type;
 import com.ripple.BE.learning.dto.QuizDTO;
+import com.ripple.BE.user.domain.type.Level;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -36,6 +37,10 @@ public class Quiz extends BaseEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "level")
+    private Level level;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "purpose")
     private Purpose purpose; // 용도 - 레벨테스트, 퀴즈
 
@@ -65,6 +70,7 @@ public class Quiz extends BaseEntity {
 
     public static Quiz toQuiz(final QuizDTO quizDTO) {
         return Quiz.builder()
+                .level(quizDTO.level())
                 .purpose(quizDTO.purpose())
                 .type(quizDTO.type())
                 .question(quizDTO.question())

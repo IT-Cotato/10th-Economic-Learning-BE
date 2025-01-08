@@ -3,7 +3,7 @@ package com.ripple.BE.learning.validation;
 import com.ripple.BE.learning.domain.Quiz;
 import com.ripple.BE.learning.domain.type.Type;
 import com.ripple.BE.learning.dto.request.SubmitAnswerRequest;
-import com.ripple.BE.learning.service.QuizService;
+import com.ripple.BE.learning.service.quiz.QuizService;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
