@@ -12,4 +12,5 @@ public record QuizListDTO(List<QuizDTO> quizList) {
     public static QuizListDTO fromQuidDTOList(final List<QuizDTO> quizList) {
         return new QuizListDTO(quizList);
     }
+  
 }
