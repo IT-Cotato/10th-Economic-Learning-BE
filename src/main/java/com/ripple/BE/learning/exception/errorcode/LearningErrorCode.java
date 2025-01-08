@@ -12,6 +12,7 @@ public enum LearningErrorCode implements ErrorCode {
     SAVE_LEARNING_SET_EXCEL_FILE_FAILED(
             HttpStatus.INTERNAL_SERVER_ERROR, "Failed to save learning set excel file"),
 
+    CONCEPT_NOT_FOUND(HttpStatus.NOT_FOUND, "Concept not found"),
     QUIZ_PROGRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "Quiz progress not found"),
     QUIZ_NOT_FOUND(HttpStatus.NOT_FOUND, "Quiz not found");
 
