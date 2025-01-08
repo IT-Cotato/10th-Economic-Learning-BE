@@ -3,9 +3,9 @@ package com.ripple.BE.learning.dto;
 import com.ripple.BE.learning.domain.Quiz;
 import com.ripple.BE.learning.domain.type.Purpose;
 import com.ripple.BE.learning.domain.type.Type;
+import com.ripple.BE.learning.dto.request.AddLevelTestQuizRequest;
 import com.ripple.BE.user.domain.type.Level;
 import java.util.List;
-import com.ripple.BE.learning.dto.request.AddLevelTestQuizRequest;
 import java.util.Map;
 
 public record QuizDTO(
@@ -76,11 +76,12 @@ public record QuizDTO(
                 null,
                 Purpose.LEVEL_TEST,
                 request.type(),
+                null,
                 request.question(),
                 request.answer(),
                 request.wrongAnswer(),
+                null,
                 request.explanation(),
                 null);
     }
-
 }

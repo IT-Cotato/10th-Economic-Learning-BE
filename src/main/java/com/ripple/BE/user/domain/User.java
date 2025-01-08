@@ -190,7 +190,6 @@ public class User extends BaseEntity {
         this.isProfileCompleted = true;
     }
 
-
     public void increaseQuizCount(int count) {
         this.quizCount += count;
     }
@@ -213,9 +212,9 @@ public class User extends BaseEntity {
             case INTERMEDIATE -> intermediateCompletedCount++;
             case ADVANCED -> advancedCompletedCount++;
         }
+    }
 
     public void updateLevel(Level level) {
         this.currentLevel = level;
-
     }
 }
