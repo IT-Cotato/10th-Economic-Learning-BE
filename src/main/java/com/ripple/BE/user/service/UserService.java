@@ -4,11 +4,14 @@ import static com.ripple.BE.user.domain.User.*;
 import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
 import com.ripple.BE.auth.dto.kakao.KakaoUserInfoResponse;
+import com.ripple.BE.learning.domain.FailQuiz;
 import com.ripple.BE.user.domain.User;
+import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.domain.type.LoginType;
 import com.ripple.BE.user.dto.UpdateUserProfileRequest;
 import com.ripple.BE.user.exception.UserException;
 import com.ripple.BE.user.repository.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -48,12 +51,6 @@ public class UserService {
         user.updateProfile(request);
     }
 
-    @Transactional
-    public void updateQuizAndCorrectCount(User user, int quizCount, int correctCount) {
-        user.increaseQuizCount(quizCount);
-        user.increaseCorrectCount(correctCount);
-    }
-
     @Transactional(readOnly = true)
     public User findUser(String accountEmail) {
         return userRepository
@@ -81,5 +78,26 @@ public class UserService {
                         .accountEmail(accountEmail)
                         .password(passwordEncoder.encode(password))
                         .buildBasicUser());
+    }
+
+    @Transactional
+    public void updateUserStatsAfterQuiz(
+            User user, Level level, List<FailQuiz> failList, int quizCount, int correctCount) {
+        // 완료된 학습 레벨 카운트 증가
+        updateCompletedCountByLevel(user, level);
+
+        // 실패한 퀴즈 목록 추가
+        user.getFailQuizList().addAll(failList);
+
+        // 퀴즈 수와 정답 수 업데이트
+        user.increaseQuizCount(quizCount);
+        user.increaseCorrectCount(correctCount);
+    }
+
+    @Transactional
+    public void updateCompletedCountByLevel(User user, Level level) {
+        user.increaseCompletedCountByLevel(level);
+
+        /** TODO: 레벨 업 조건 확인 후 레벨 업 처리 만약 상위 조건의 학습 세트를 완료한 경우 하위 레벨의 학습 세트가 완료되어야지 레벨 업이 가능하다. */
     }
 }
