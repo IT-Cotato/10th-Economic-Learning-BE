@@ -12,4 +12,8 @@ public record PostListDTO(List<PostDTO> postDTOList, int totalPage, int currentP
                 postPage.getTotalPages(),
                 postPage.getNumber());
     }
+
+    public static PostListDTO toPostListDTO(List<Post> posts) {
+        return new PostListDTO(posts.stream().map(PostDTO::toPostDTO).toList(), 1, 0);
+    }
 }

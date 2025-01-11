@@ -195,7 +195,6 @@ public class PostController {
             final @PathVariable("id") long id) {
 
         postService.addScrapToPost(id, currentUser.getId());
-        ;
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }

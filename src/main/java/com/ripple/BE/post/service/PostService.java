@@ -13,21 +13,19 @@ import com.ripple.BE.post.dto.CommentListDTO;
 import com.ripple.BE.post.dto.PostDTO;
 import com.ripple.BE.post.dto.PostListDTO;
 import com.ripple.BE.post.exception.PostException;
-import com.ripple.BE.post.repository.CommentLikeRepository;
-import com.ripple.BE.post.repository.CommentRepository;
-import com.ripple.BE.post.repository.PostLikeRepository;
-import com.ripple.BE.post.repository.PostRepository;
-import com.ripple.BE.post.repository.PostScrapRepository;
+import com.ripple.BE.post.repository.comment.CommentRepository;
+import com.ripple.BE.post.repository.commentlike.CommentLikeRepository;
+import com.ripple.BE.post.repository.post.PostRepository;
+import com.ripple.BE.post.repository.postlike.PostLikeRepository;
+import com.ripple.BE.post.repository.postscrap.PostScrapRepository;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.service.UserService;
-import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,8 +44,6 @@ public class PostService {
     private final UserService userService;
 
     private static final int PAGE_SIZE = 10;
-    private static final String LIKE_COUNT = "likeCount";
-    private static final String CREATED_DATE = "createdDate";
 
     @Transactional
     public void createPost(
@@ -75,18 +71,13 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostListDTO getPosts(final int page, final PostSort sort, final PostType type) {
 
-        Sort sortOption =
-                sort == PostSort.POPULAR
-                        ? Sort.by(Sort.Direction.DESC, LIKE_COUNT, CREATED_DATE) // 인기순: 좋아요 수 내림차순, 생성일 내림차순
-                        : Sort.by(Sort.Direction.DESC, CREATED_DATE); // 최신순: 생성일 내림차순
-
-        Pageable pageable = PageRequest.of(page, PAGE_SIZE, sortOption);
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
         // 게시글 조회 (타입에 따른 필터링)
         Page<Post> postPage =
                 type == null
-                        ? postRepository.findAll(pageable) // 타입 없으면 전체 조회
-                        : postRepository.findByType(type, pageable); // 타입에 따른 조회
+                        ? postRepository.findNormalPosts(pageable, sort) // 일반 게시글 조회
+                        : postRepository.findByType(type, sort, pageable); // 특정 타입 게시글 조회
 
         return PostListDTO.toPostListDTO(postPage);
     }
@@ -103,11 +94,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public CommentListDTO getCommentList(final Post post) {
 
-        List<Comment> commentList =
-                post.getCommentList().stream()
-                        .filter(comment -> comment.getParent() == null) // 대댓글이 아닌 경우 필터링
-                        .sorted(Comparator.comparing(Comment::getCreatedDate)) // 시간순 내림차순 정렬
-                        .toList();
+        List<Comment> commentList = commentRepository.findRootCommentsByPost(post);
 
         return CommentListDTO.toCommentListDTO(commentList);
     }
@@ -254,10 +241,10 @@ public class PostService {
 
     @Transactional
     public void addScrapToPost(final long postId, final long userId) {
+
         Post post =
                 postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_FOUND));
         User user = userService.findUserById(userId);
-        log.info("addScrapToPost: post = {}, user = {}", post, user);
 
         if (postScrapRepository.existsByPostIdAndUserId(postId, userId)) {
             throw new PostException(SCRAP_ALREADY_EXISTS);
