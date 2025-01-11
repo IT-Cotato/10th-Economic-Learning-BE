@@ -2,8 +2,8 @@ package com.ripple.BE.user.domain;
 
 import com.ripple.BE.chatbot.domain.ChatSession;
 import com.ripple.BE.global.entity.BaseEntity;
-import com.ripple.BE.learning.domain.FailQuiz;
-import com.ripple.BE.learning.domain.UserLearningSet;
+import com.ripple.BE.learning.domain.learningset.UserLearningSet;
+import com.ripple.BE.learning.domain.quiz.FailQuiz;
 import com.ripple.BE.news.domain.NewsScrap;
 import com.ripple.BE.post.domain.Comment;
 import com.ripple.BE.post.domain.Post;

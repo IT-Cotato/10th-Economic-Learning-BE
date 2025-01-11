@@ -4,7 +4,7 @@ import static com.ripple.BE.user.domain.User.*;
 import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
 import com.ripple.BE.auth.dto.kakao.KakaoUserInfoResponse;
-import com.ripple.BE.learning.domain.FailQuiz;
+import com.ripple.BE.learning.domain.quiz.FailQuiz;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.domain.type.LoginType;

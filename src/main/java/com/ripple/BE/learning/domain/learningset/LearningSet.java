@@ -1,6 +1,8 @@
-package com.ripple.BE.learning.domain;
+package com.ripple.BE.learning.domain.learningset;
 
 import com.ripple.BE.global.entity.BaseEntity;
+import com.ripple.BE.learning.domain.concept.Concept;
+import com.ripple.BE.learning.domain.quiz.Quiz;
 import com.ripple.BE.learning.dto.LearningSetDTO;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

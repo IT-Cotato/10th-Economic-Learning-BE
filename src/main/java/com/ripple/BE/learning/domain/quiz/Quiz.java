@@ -1,6 +1,7 @@
-package com.ripple.BE.learning.domain;
+package com.ripple.BE.learning.domain.quiz;
 
 import com.ripple.BE.global.entity.BaseEntity;
+import com.ripple.BE.learning.domain.learningset.LearningSet;
 import com.ripple.BE.learning.domain.type.Purpose;
 import com.ripple.BE.learning.domain.type.Type;
 import com.ripple.BE.learning.dto.QuizDTO;

@@ -1,9 +1,9 @@
 package com.ripple.BE.learning.service.learningset;
 
 import com.ripple.BE.global.excel.ExcelUtils;
-import com.ripple.BE.learning.domain.Concept;
-import com.ripple.BE.learning.domain.LearningSet;
-import com.ripple.BE.learning.domain.Quiz;
+import com.ripple.BE.learning.domain.concept.Concept;
+import com.ripple.BE.learning.domain.learningset.LearningSet;
+import com.ripple.BE.learning.domain.quiz.Quiz;
 import com.ripple.BE.learning.dto.ConceptDTO;
 import com.ripple.BE.learning.dto.LearningSetDTO;
 import com.ripple.BE.learning.dto.QuizDTO;

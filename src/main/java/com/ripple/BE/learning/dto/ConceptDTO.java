@@ -1,8 +1,6 @@
 package com.ripple.BE.learning.dto;
 
-import static com.ripple.BE.learning.dto.LearningSetDTO.*;
-
-import com.ripple.BE.learning.domain.Concept;
+import com.ripple.BE.learning.domain.concept.Concept;
 import com.ripple.BE.user.domain.type.Level;
 import java.util.Map;
 

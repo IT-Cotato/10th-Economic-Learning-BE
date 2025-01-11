@@ -1,6 +1,6 @@
 package com.ripple.BE.learning.dto;
 
-import com.ripple.BE.learning.domain.UserLearningSet;
+import com.ripple.BE.learning.domain.learningset.UserLearningSet;
 import java.util.List;
 
 public record UserLearningSetListDTO(

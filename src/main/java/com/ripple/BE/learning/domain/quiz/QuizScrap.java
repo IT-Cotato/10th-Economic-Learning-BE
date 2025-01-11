@@ -1,4 +1,4 @@
-package com.ripple.BE.learning.domain;
+package com.ripple.BE.learning.domain.quiz;
 
 import com.ripple.BE.user.domain.User;
 import jakarta.persistence.Column;
@@ -11,19 +11,22 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "fail_quizzes")
+@Table(name = "quiz_scraps")
 @Getter
+@Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FailQuiz {
+@AllArgsConstructor
+public class QuizScrap {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "fail_quiz_id")
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,16 +34,6 @@ public class FailQuiz {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "quiz_id", nullable = false)
+    @JoinColumn(name = "quiz_id")
     private Quiz quiz;
-
-    @Builder
-    public FailQuiz(User user, Quiz quiz) {
-        this.user = user;
-        this.quiz = quiz;
-    }
-
-    public static FailQuiz toFailQuiz(User user, Quiz quiz) {
-        return FailQuiz.builder().user(user).quiz(quiz).build();
-    }
 }

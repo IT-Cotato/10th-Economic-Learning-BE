@@ -1,6 +1,6 @@
 package com.ripple.BE.learning.repository;
 
-import com.ripple.BE.learning.domain.UserLearningSet;
+import com.ripple.BE.learning.domain.learningset.UserLearningSet;
 import com.ripple.BE.user.domain.type.Level;
 import io.lettuce.core.dynamic.annotation.Param;
 import java.util.List;

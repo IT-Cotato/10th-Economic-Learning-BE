@@ -2,10 +2,10 @@ package com.ripple.BE.learning.service.quiz;
 
 import static com.ripple.BE.learning.exception.errorcode.LearningErrorCode.*;
 
-import com.ripple.BE.learning.domain.FailQuiz;
-import com.ripple.BE.learning.domain.LearningSet;
-import com.ripple.BE.learning.domain.Quiz;
-import com.ripple.BE.learning.domain.UserLearningSet;
+import com.ripple.BE.learning.domain.learningset.LearningSet;
+import com.ripple.BE.learning.domain.learningset.UserLearningSet;
+import com.ripple.BE.learning.domain.quiz.FailQuiz;
+import com.ripple.BE.learning.domain.quiz.Quiz;
 import com.ripple.BE.learning.domain.type.Type;
 import com.ripple.BE.learning.dto.QuizDTO;
 import com.ripple.BE.learning.dto.QuizListDTO;

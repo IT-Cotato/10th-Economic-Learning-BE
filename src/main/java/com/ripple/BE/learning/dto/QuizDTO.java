@@ -1,6 +1,6 @@
 package com.ripple.BE.learning.dto;
 
-import com.ripple.BE.learning.domain.Quiz;
+import com.ripple.BE.learning.domain.quiz.Quiz;
 import com.ripple.BE.learning.domain.type.Purpose;
 import com.ripple.BE.learning.domain.type.Type;
 import com.ripple.BE.learning.dto.request.AddLevelTestQuizRequest;

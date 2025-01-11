@@ -1,4 +1,4 @@
-package com.ripple.BE.learning.domain;
+package com.ripple.BE.learning.domain.learningset;
 
 import com.ripple.BE.global.entity.BaseEntity;
 import com.ripple.BE.user.domain.User;

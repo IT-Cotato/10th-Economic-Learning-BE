@@ -1,6 +1,6 @@
 package com.ripple.BE.learning.dto;
 
-import com.ripple.BE.learning.domain.LearningSet;
+import com.ripple.BE.learning.domain.learningset.LearningSet;
 import java.util.List;
 import java.util.Map;
 

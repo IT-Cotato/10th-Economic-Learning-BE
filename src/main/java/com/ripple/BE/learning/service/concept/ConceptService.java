@@ -1,8 +1,8 @@
 package com.ripple.BE.learning.service.concept;
 
-import com.ripple.BE.learning.domain.Concept;
-import com.ripple.BE.learning.domain.LearningSet;
-import com.ripple.BE.learning.domain.UserLearningSet;
+import com.ripple.BE.learning.domain.concept.Concept;
+import com.ripple.BE.learning.domain.learningset.LearningSet;
+import com.ripple.BE.learning.domain.learningset.UserLearningSet;
 import com.ripple.BE.learning.dto.ConceptListDTO;
 import com.ripple.BE.learning.exception.LearningException;
 import com.ripple.BE.learning.exception.errorcode.LearningErrorCode;

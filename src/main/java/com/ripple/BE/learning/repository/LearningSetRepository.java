@@ -1,6 +1,6 @@
 package com.ripple.BE.learning.repository;
 
-import com.ripple.BE.learning.domain.LearningSet;
+import com.ripple.BE.learning.domain.learningset.LearningSet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
