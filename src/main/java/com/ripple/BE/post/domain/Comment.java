@@ -2,6 +2,7 @@ package com.ripple.BE.post.domain;
 
 import com.ripple.BE.global.entity.BaseEntity;
 import com.ripple.BE.user.domain.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -61,7 +62,10 @@ public class Comment extends BaseEntity {
 
     private long replyCount = 0L; // 답글 수
 
-    @OneToMany(mappedBy = "parent")
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CommentLike> commentLikeList = new ArrayList<>(); // 댓글 좋아요 목록
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> children = new ArrayList<>(); // 하위 댓글
 
     public static Comment toCommentEntity(final String content) {
