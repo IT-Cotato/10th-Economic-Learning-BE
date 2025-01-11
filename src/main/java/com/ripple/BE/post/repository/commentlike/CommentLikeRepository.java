@@ -1,4 +1,4 @@
-package com.ripple.BE.post.repository;
+package com.ripple.BE.post.repository.commentlike;
 
 import com.ripple.BE.post.domain.CommentLike;
 import java.util.Optional;
