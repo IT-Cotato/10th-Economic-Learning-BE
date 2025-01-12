@@ -8,8 +8,4 @@ public record QuizListDTO(List<QuizDTO> quizList) {
     public static QuizListDTO toQuizListDTO(final List<Quiz> quizList) {
         return new QuizListDTO(quizList.stream().map(QuizDTO::toQuizDTO).toList());
     }
-
-    public static QuizListDTO fromQuidDTOList(final List<QuizDTO> quizList) {
-        return new QuizListDTO(quizList);
-    }
 }

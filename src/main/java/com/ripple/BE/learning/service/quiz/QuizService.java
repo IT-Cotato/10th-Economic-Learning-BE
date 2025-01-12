@@ -20,9 +20,6 @@ import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.service.UserService;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,11 +37,9 @@ public class QuizService {
     private final LearningSetService learningSetService;
     private final UserService userService;
 
-    private static final int QUIZ_COUNT = 3; // 퀴즈 개수
-    private static final int OTHER_OPTIONS_COUNT = 2; // 다른 퀴즈 보기 선지 개수
-
     private static final String QUESTION_TYPE = "questions";
     private static final String WRONG_ANSWER_TYPE = "wrongAnswer";
+    private static final String QUIZ_COUNT = "quizCount";
 
     /**
      * 퀴즈 시작
@@ -60,10 +55,17 @@ public class QuizService {
         LearningSet learningSet = learningSetService.findLearningSetById(learningSetId);
         List<Quiz> quizList = quizRepository.findAllByLearningSetAndLevel(learningSet, level);
 
-        List<QuizDTO> quizDTOList = createQuizList(quizList); // 퀴즈 목록 생성
-        QuizListDTO quizListDTO = QuizListDTO.fromQuidDTOList(quizDTOList);
+        quizList.forEach(
+                quiz -> {
+                    if (quiz.getType() != Type.OX) {
+                        Collections.shuffle(quiz.getChoices());
+                    }
+                });
+
+        QuizListDTO quizListDTO = QuizListDTO.toQuizListDTO(quizList);
 
         quizRedisService.saveToRedis(userId, QUESTION_TYPE, quizListDTO);
+        quizRedisService.saveToRedis(userId, QUIZ_COUNT, quizList.size());
 
         return quizListDTO;
     }
@@ -87,7 +89,11 @@ public class QuizService {
 
         QuizDTO quizDTO = getQuizDTO(quizListDTO, quizId); // 퀴즈 정보 가져오기
 
-        boolean isCorrect = quizDTO.answer().equals(quizDTO.options().get(answerIndex)); // 정답 여부 판별
+        boolean isCorrect =
+                quizDTO
+                        .answer()
+                        .trim()
+                        .equals(quizDTO.choiceList().choices().get(answerIndex).content().trim());
 
         if (!isCorrect) {
             quizRedisService.saveToRedisList(userId, WRONG_ANSWER_TYPE, quizId); // 오답 리스트에 추가
@@ -116,12 +122,13 @@ public class QuizService {
                         .orElseThrow(() -> new LearningException(LearningErrorCode.LEARNING_SET_NOT_FOUND));
         List<FailQuiz> failQuizList =
                 failList.stream().map(quizId -> FailQuiz.toFailQuiz(user, getQuizById(quizId))).toList();
+        int quizCount = quizRedisService.fetchFromRedis(userId, QUIZ_COUNT, Integer.class);
 
         if (!userLearningSet.isQuizCompleted()) {
-            int correctCount = QUIZ_COUNT - failList.size(); // 정답 개수 계산
+            int correctCount = quizCount - failList.size(); // 정답 개수 계산
             userLearningSet.setQuizCompleted(); // 퀴즈 완료 처리
             userService.updateUserStatsAfterQuiz(
-                    user, level, failQuizList, QUIZ_COUNT, correctCount); // 사용자 통계 업데이트
+                    user, level, failQuizList, quizCount, correctCount); // 사용자 통계 업데이트
         }
 
         quizRedisService.clearRedisKeys(userId); // 퀴즈 진행 관련 데이터 삭제
@@ -132,48 +139,6 @@ public class QuizService {
         return quizRepository
                 .findById(quizId)
                 .orElseThrow(() -> new LearningException(LearningErrorCode.QUIZ_NOT_FOUND));
-    }
-
-    // 퀴즈 목록 생성
-    private List<QuizDTO> createQuizList(final List<Quiz> quizList) {
-
-        Collections.shuffle(quizList);
-
-        // 퀴즈 목록에서 QUIZ_COUNT만큼 랜덤으로 퀴즈를 가져와서 무작위 보기 생성
-        return quizList.stream()
-                .limit(QUIZ_COUNT)
-                .map(quiz -> createRandomOptions(quiz, quizList))
-                .toList();
-    }
-
-    private QuizDTO createRandomOptions(final Quiz quiz, final List<Quiz> quizList) {
-        List<String> options;
-
-        if (quiz.getType() == Type.OX) {
-            options = List.of("O", "X"); // OX 퀴즈는 보기가 고정
-        } else {
-            options = generateOptions(quiz, quizList);
-            options =
-                    Stream.concat(options.stream(), Stream.of(quiz.getAnswer(), quiz.getWrongAnswer()))
-                            .filter(Objects::nonNull)
-                            .distinct()
-                            .collect(Collectors.toList());
-            Collections.shuffle(options); // 보기 섞기
-        }
-
-        return QuizDTO.toQuizDTO(quiz, options);
-    }
-
-    // 다른 퀴즈 보기 선지 생성
-    private List<String> generateOptions(final Quiz quiz, final List<Quiz> quizList) {
-        return quizList.stream()
-                .filter(q -> !q.getId().equals(quiz.getId()))
-                .filter(q -> q.getType() == quiz.getType())
-                .flatMap(q -> Stream.of(q.getAnswer(), q.getWrongAnswer()))
-                .filter(Objects::nonNull)
-                .distinct()
-                .limit(OTHER_OPTIONS_COUNT)
-                .collect(Collectors.toList());
     }
 
     // 퀴즈 정보 가져오기
