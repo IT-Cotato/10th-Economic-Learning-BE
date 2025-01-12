@@ -18,7 +18,8 @@ public class QuizRedisService {
 
     private static final String QUIZ_KEY_TEMPLATE = "quiz:%d:%s"; // Redis 키 템플릿, quiz:{userId}:{type}
     private static final String QUESTION_TYPE = "questions";
-    private static final String STATE_TYPE = "state";
+    private static final String QUIZ_COUNT = "quizCount";
+    private static final String WRONG_ANSWER_TYPE = "wrongAnswer";
     private static final int QUIZ_TIME = 30; // 퀴즈 진행 시간
 
     // Redis에 데이터 저장
@@ -52,7 +53,8 @@ public class QuizRedisService {
     // Redis에 저장된 퀴즈 진행 관련 데이터 삭제
     protected void clearRedisKeys(final long userId) {
         redisTemplate.delete(getRedisKey(userId, QUESTION_TYPE));
-        redisTemplate.delete(getRedisKey(userId, STATE_TYPE));
+        redisTemplate.delete(getRedisKey(userId, QUIZ_COUNT));
+        redisTemplate.delete(getRedisKey(userId, WRONG_ANSWER_TYPE));
     }
 
     // Redis 키 생성
