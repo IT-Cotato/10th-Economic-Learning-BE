@@ -1,6 +1,6 @@
 package com.ripple.BE.learning.dto;
 
-import com.ripple.BE.learning.domain.Quiz;
+import com.ripple.BE.learning.domain.quiz.Quiz;
 
 public record AnswerDTO(Long quizId, String question, String answer, String explanation) {
 

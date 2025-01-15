@@ -1,6 +1,6 @@
 package com.ripple.BE.learning.dto.response;
 
-import com.ripple.BE.learning.dto.LearningSetCompleteListDTO;
+import com.ripple.BE.learning.dto.UserLearningSetListDTO;
 import java.util.List;
 
 public record LearningSetPreviewListResponse(
@@ -8,10 +8,10 @@ public record LearningSetPreviewListResponse(
         ) {
 
     public static LearningSetPreviewListResponse toLearningSetPreviewListResponse(
-            final LearningSetCompleteListDTO learningSetCompleteListDTO) {
+            final UserLearningSetListDTO userLearningSetListDTO) {
 
         return new LearningSetPreviewListResponse(
-                learningSetCompleteListDTO.learningSetCompleteList().stream()
+                userLearningSetListDTO.learningSetCompleteList().stream()
                         .map(LearningSetPreviewResponse::toLearningSetPreviewResponse)
                         .toList());
     }

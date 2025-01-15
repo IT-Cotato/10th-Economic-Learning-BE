@@ -1,4 +1,4 @@
-package com.ripple.BE.learning.dto;
+package com.ripple.BE.user.dto;
 
 import com.ripple.BE.user.domain.type.Level;
 import java.util.Map;

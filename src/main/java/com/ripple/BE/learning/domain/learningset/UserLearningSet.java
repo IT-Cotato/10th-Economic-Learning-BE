@@ -1,7 +1,8 @@
-package com.ripple.BE.learning.domain;
+package com.ripple.BE.learning.domain.learningset;
 
 import com.ripple.BE.global.entity.BaseEntity;
 import com.ripple.BE.user.domain.User;
+import com.ripple.BE.user.domain.type.Level;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,13 +18,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "learing_set_complete")
+@Table(name = "user_learning_sets")
 @Getter
 @Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class LearningSetComplete extends BaseEntity { // 학습 세트 완료 여부
+public class UserLearningSet extends BaseEntity { // 학습 세트 완료 여부
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,32 +39,34 @@ public class LearningSetComplete extends BaseEntity { // 학습 세트 완료 �
     @JoinColumn(name = "learning_set_id", nullable = false)
     private LearningSet learningSet;
 
+    private Level level;
+
     @Column(name = "is_learning_set_completed")
-    private boolean isLearningSetCompleted = false; // 학습 세트 완료 여부
+    private boolean isLearningSetCompleted = false;
 
     @Column(name = "is_concept_completed")
-    private boolean isConceptCompleted = false; // 개념 학습 완료 여부
+    private boolean isConceptCompleted = false;
 
     @Column(name = "is_quiz_completed")
-    private boolean isQuizCompleted = false; // 퀴즈 완료 여부
+    private boolean isQuizCompleted = false;
 
-    // 개념 학습 완료 여부 설정
-    public void setConceptCompleted(boolean isConceptCompleted) {
-        this.isConceptCompleted = isConceptCompleted;
-        if (isConceptCompleted && isQuizCompleted) {
-            isLearningSetCompleted = true;
+    public void setConceptCompleted() {
+        this.isConceptCompleted = true;
+
+        if (this.isQuizCompleted) {
+            this.isLearningSetCompleted = true;
         }
     }
 
-    // 퀴즈 완료 여부 설정
-    public void setQuizCompleted(boolean isQuizCompleted) {
-        this.isQuizCompleted = isQuizCompleted;
-        if (isConceptCompleted && isQuizCompleted) {
-            isLearningSetCompleted = true;
+    public void setQuizCompleted() {
+        this.isQuizCompleted = true;
+
+        if (this.isConceptCompleted) {
+            this.isLearningSetCompleted = true;
         }
     }
 
-    public static LearningSetComplete toLearningSetComplete(User user, LearningSet learningSet) {
-        return LearningSetComplete.builder().user(user).learningSet(learningSet).build();
+    public static UserLearningSet toUserLearningSet(User user, LearningSet learningSet, Level level) {
+        return UserLearningSet.builder().user(user).learningSet(learningSet).level(level).build();
     }
 }

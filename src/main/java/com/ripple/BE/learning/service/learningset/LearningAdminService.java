@@ -1,16 +1,17 @@
-package com.ripple.BE.learning.service;
+package com.ripple.BE.learning.service.learningset;
 
 import com.ripple.BE.global.excel.ExcelUtils;
-import com.ripple.BE.learning.domain.Concept;
-import com.ripple.BE.learning.domain.LearningSet;
-import com.ripple.BE.learning.domain.Quiz;
+import com.ripple.BE.learning.domain.concept.Concept;
+import com.ripple.BE.learning.domain.learningset.LearningSet;
+import com.ripple.BE.learning.domain.quiz.Choice;
+import com.ripple.BE.learning.domain.quiz.Quiz;
 import com.ripple.BE.learning.dto.ConceptDTO;
 import com.ripple.BE.learning.dto.LearningSetDTO;
 import com.ripple.BE.learning.dto.QuizDTO;
-import com.ripple.BE.learning.event.LearningSetCompleteEventListener;
 import com.ripple.BE.learning.exception.LearningException;
 import com.ripple.BE.learning.exception.errorcode.LearningErrorCode;
 import com.ripple.BE.learning.repository.LearningSetRepository;
+import com.ripple.BE.learning.repository.QuizRepository;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ public class LearningAdminService {
     private static final int QUIZ_SHEET_INDEX = 2;
 
     private final LearningSetRepository learningSetRepository;
-    private final LearningSetCompleteEventListener learningSetCompleteEventListener;
+    private final QuizRepository quizRepository;
 
     /** 엑셀 파일로부터 학습 세트를 생성 */
     @Transactional
@@ -38,26 +39,31 @@ public class LearningAdminService {
         try {
 
             List<LearningSet> learningSetList = parseLearningSetsFromExcel();
+            List<LearningSet> existingLearningSets = learningSetRepository.findAll();
+
             Map<String, LearningSet> learningSetMap =
                     learningSetList.stream()
-                            .collect(
-                                    Collectors.toMap(LearningSet::getLearningSetNum, learningSet -> learningSet));
+                            .collect(Collectors.toMap(LearningSet::getName, learningSet -> learningSet));
 
-            // 기존에 존재하는 LearningSetNum 조회
-            List<String> existingLearningSetNums = learningSetRepository.findAllLearningSetNums();
+            Map<String, LearningSet> existingLearningSetMap =
+                    existingLearningSets.stream()
+                            .collect(Collectors.toMap(LearningSet::getName, learningSet -> learningSet));
 
             // 새로운 학습 세트만 필터링
+            Map<String, LearningSet> newLearningSetMap =
+                    learningSetMap.entrySet().stream()
+                            .filter(entry -> !existingLearningSetMap.containsKey(entry.getKey()))
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
             List<LearningSet> newLearningSets =
                     learningSetList.stream()
-                            .filter(
-                                    learningSet -> !existingLearningSetNums.contains(learningSet.getLearningSetNum()))
+                            .filter(learningSet -> !existingLearningSets.contains(learningSet))
                             .collect(Collectors.toList());
 
-            addConceptsToLearningSets(learningSetMap);
-            addQuizzesToLearningSets(learningSetMap);
+            addConceptsToLearningSets(newLearningSetMap);
+            addQuizzesToLearningSets(newLearningSetMap);
 
             learningSetRepository.saveAll(newLearningSets);
-            learningSetCompleteEventListener.handleLearningSetCompleteEvent(newLearningSets);
 
         } catch (Exception e) {
             log.error("Failed to save learning set by excel", e);
@@ -78,14 +84,27 @@ public class LearningAdminService {
                 .forEach(
                         conceptDTO ->
                                 Concept.toConcept(conceptDTO)
-                                        .setLearningSet(learningSetMap.get(conceptDTO.learningSetNum())));
+                                        .setLearningSet(learningSetMap.get(conceptDTO.learningSetName())));
     }
 
     private void addQuizzesToLearningSets(Map<String, LearningSet> learningSetMap) throws Exception {
         ExcelUtils.parseExcelFile(FILE_PATH, QUIZ_SHEET_INDEX).stream()
                 .map(QuizDTO::toQuizDTO)
                 .forEach(
-                        quizDTO ->
-                                Quiz.toQuiz(quizDTO).setLearningSet(learningSetMap.get(quizDTO.learningSetNum())));
+                        quizDTO -> {
+                            Quiz quiz = Quiz.toQuiz(quizDTO);
+                            quiz.setLearningSet(learningSetMap.get(quizDTO.learningSetName()));
+
+                            quizRepository.save(quiz);
+
+                            quizDTO
+                                    .choiceList()
+                                    .choices()
+                                    .forEach(
+                                            choiceDTO -> {
+                                                Choice choice = Choice.toChoice(choiceDTO);
+                                                choice.setQuiz(quiz);
+                                            });
+                        });
     }
 }

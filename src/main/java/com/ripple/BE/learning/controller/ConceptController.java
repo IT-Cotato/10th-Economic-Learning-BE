@@ -3,8 +3,9 @@ package com.ripple.BE.learning.controller;
 import com.ripple.BE.global.dto.response.ApiResponse;
 import com.ripple.BE.learning.dto.ConceptListDTO;
 import com.ripple.BE.learning.dto.response.ConceptListResponse;
-import com.ripple.BE.learning.service.ConceptService;
+import com.ripple.BE.learning.service.concept.ConceptService;
 import com.ripple.BE.user.domain.CustomUserDetails;
+import com.ripple.BE.user.domain.type.Level;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -28,9 +30,10 @@ public class ConceptController {
     @Operation(summary = "개념 학습 세트 조회", description = "개념 학습 세트를 조회합니다.")
     @GetMapping("/{learningSetId}/concepts")
     public ResponseEntity<ApiResponse<Object>> getConcepts(
-            final @PathVariable("learningSetId") long learningSetId) {
+            final @PathVariable("learningSetId") long learningSetId,
+            final @RequestParam(defaultValue = "BEGINNER") Level level) {
 
-        ConceptListDTO conceptListDTO = conceptService.getConcepts(learningSetId);
+        ConceptListDTO conceptListDTO = conceptService.getConcepts(learningSetId, level);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(ConceptListResponse.toConceptListResponse(conceptListDTO)));
@@ -40,9 +43,10 @@ public class ConceptController {
     @PostMapping("/{learningSetId}/concepts/complete")
     public ResponseEntity<ApiResponse<?>> completeConcept(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
-            final @PathVariable("learningSetId") long learningSetId) {
+            final @PathVariable("learningSetId") long learningSetId,
+            final @RequestParam(defaultValue = "BEGINNER") Level level) {
 
-        conceptService.completeConceptLearning(currentUser.getId(), learningSetId);
+        conceptService.completeConceptLearning(currentUser.getId(), learningSetId, level);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
     }
 }

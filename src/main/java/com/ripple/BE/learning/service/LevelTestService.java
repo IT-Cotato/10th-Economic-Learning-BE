@@ -3,7 +3,7 @@ package com.ripple.BE.learning.service;
 import static com.ripple.BE.learning.exception.errorcode.QuizErrorCode.*;
 import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
-import com.ripple.BE.learning.domain.Quiz;
+import com.ripple.BE.learning.domain.quiz.Quiz;
 import com.ripple.BE.learning.domain.type.Purpose;
 import com.ripple.BE.learning.domain.type.Type;
 import com.ripple.BE.learning.dto.AnswerDTO;
