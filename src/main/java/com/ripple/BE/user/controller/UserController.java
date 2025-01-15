@@ -44,7 +44,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
     }
 
-
     @Operation(summary = "내가 쓴 게시물 조회", description = "로그인한 유저가 작성한 게시물을 조회합니다.")
     @GetMapping("/posts")
     public ResponseEntity<ApiResponse<Object>> getMyPosts(
@@ -88,7 +87,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(PostListResponse.toPostListResponse(postListDTO)));
     }
-  
+
     @Operation(
             summary = "레벨별 학습 진도율 조회",
             description = "레베벨 진도율을 조회합니다. 100퍼센트 중 몇 퍼센트를 완료했는지 반환합니다.")
