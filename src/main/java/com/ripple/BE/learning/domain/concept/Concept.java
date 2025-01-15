@@ -1,9 +1,13 @@
-package com.ripple.BE.learning.domain;
+package com.ripple.BE.learning.domain.concept;
 
 import com.ripple.BE.global.entity.BaseEntity;
+import com.ripple.BE.learning.domain.learningset.LearningSet;
 import com.ripple.BE.learning.dto.ConceptDTO;
+import com.ripple.BE.user.domain.type.Level;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,16 +32,18 @@ public class Concept extends BaseEntity {
     @Column(name = "concept_id")
     private Long conceptId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "level")
+    private Level level;
+
     @Size(max = 255)
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Size(max = 255)
-    @Column(name = "explanation", nullable = false)
+    @Column(name = "explanation", nullable = false, columnDefinition = "TEXT")
     private String explanation;
 
-    @Size(max = 255)
-    @Column(name = "example")
+    @Column(name = "example", columnDefinition = "TEXT")
     private String example;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -45,7 +51,8 @@ public class Concept extends BaseEntity {
     private LearningSet learningSet;
 
     @Builder
-    public Concept(String name, String explanation, String example) {
+    public Concept(Level level, String name, String explanation, String example) {
+        this.level = level;
         this.name = name;
         this.explanation = explanation;
         this.example = example;
@@ -54,9 +61,9 @@ public class Concept extends BaseEntity {
     public static Concept toConcept(final ConceptDTO conceptDTO) {
 
         return Concept.builder()
+                .level(conceptDTO.level())
                 .name(conceptDTO.name())
                 .explanation(conceptDTO.explanation())
-                .example(conceptDTO.example())
                 .build();
     }
 

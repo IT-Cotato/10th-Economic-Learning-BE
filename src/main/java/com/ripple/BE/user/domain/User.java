@@ -2,7 +2,8 @@ package com.ripple.BE.user.domain;
 
 import com.ripple.BE.chatbot.domain.ChatSession;
 import com.ripple.BE.global.entity.BaseEntity;
-import com.ripple.BE.learning.domain.LearningSetComplete;
+import com.ripple.BE.learning.domain.learningset.UserLearningSet;
+import com.ripple.BE.learning.domain.quiz.FailQuiz;
 import com.ripple.BE.news.domain.NewsScrap;
 import com.ripple.BE.post.domain.Comment;
 import com.ripple.BE.post.domain.CommentLike;
@@ -131,13 +132,34 @@ public class User extends BaseEntity {
     private List<ChatSession> chatSessionList = new ArrayList<>(); // 채팅 세션 목록
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LearningSetComplete> learningSetCompleteList = new ArrayList<>(); // 학습 완료 목록
+    private List<UserLearningSet> userLearningSetList = new ArrayList<>(); // 학습 완료 목록
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FailQuiz> failQuizList = new ArrayList<>(); // 틀린 퀴즈 목록
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Attendance attendance; // 출석 정보
 
     @Column(length = 100, unique = true, nullable = true)
     private String keyCode; // 카카오 로그인 시 발급되는 고유 코드
+
+    @Column(name = "quiz_count", nullable = false, columnDefinition = "INT DEFAULT 0")
+    private int quizCount;
+
+    @Column(name = "correct_count", nullable = false, columnDefinition = "INT DEFAULT 0")
+    private int correctCount;
+
+    @Column(name = "beginner_completed_count", nullable = false, columnDefinition = "INT DEFAULT 0")
+    private int beginnerCompletedCount;
+
+    @Column(
+            name = "intermediate_completed_count",
+            nullable = false,
+            columnDefinition = "INT DEFAULT 0")
+    private int intermediateCompletedCount;
+
+    @Column(name = "advanced_completed_count", nullable = false, columnDefinition = "INT DEFAULT 0")
+    private int advancedCompletedCount;
 
     // 카카오 로그인 시 사용
     @Builder(builderMethodName = "kakaoBuilder", buildMethodName = "buildKakaoUser")
@@ -147,6 +169,7 @@ public class User extends BaseEntity {
         this.profileImageUrl = profileImageUrl;
         this.loginType = loginType;
         this.role = Role.USER;
+        this.currentLevel = Level.BEGINNER;
     }
 
     // 기본 로그인 시 사용
@@ -156,6 +179,7 @@ public class User extends BaseEntity {
         this.password = password;
         this.loginType = LoginType.BASIC;
         this.role = Role.ADMIN;
+        this.currentLevel = Level.BEGINNER;
     }
 
     public void updateProfile(UpdateUserProfileRequest request) {
@@ -168,6 +192,30 @@ public class User extends BaseEntity {
         this.isLearningAlarmAllowed = request.isLearningAlarmAllowed();
         this.isCoummunityAlarmAllowed = request.isCommunityAlarmAllowed();
         this.isProfileCompleted = true;
+    }
+
+    public void increaseQuizCount(int count) {
+        this.quizCount += count;
+    }
+
+    public void increaseCorrectCount(int count) {
+        this.correctCount += count;
+    }
+
+    public long getCompletedCountByLevel(Level level) {
+        return switch (level) {
+            case BEGINNER -> beginnerCompletedCount;
+            case INTERMEDIATE -> intermediateCompletedCount;
+            case ADVANCED -> advancedCompletedCount;
+        };
+    }
+
+    public void increaseCompletedCountByLevel(Level level) {
+        switch (level) {
+            case BEGINNER -> beginnerCompletedCount++;
+            case INTERMEDIATE -> intermediateCompletedCount++;
+            case ADVANCED -> advancedCompletedCount++;
+        }
     }
 
     public void updateLevel(Level level) {
