@@ -67,7 +67,10 @@ public class WebSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
                 Arrays.asList(
-                        "http://localhost:3000", "http://localhost:8080", "http://api.cotato-ripple.kro.kr"));
+                        "http://localhost:3000",
+                        "http://localhost:8080",
+                        "http://api.cotato-ripple.kro.kr",
+                        "https://api.cotato-ripple.kro.kr"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(
                 Arrays.asList("X-Requested-With", "Content-Type", "Authorization", "X-XSRF-token"));
