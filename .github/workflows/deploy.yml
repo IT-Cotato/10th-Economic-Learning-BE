@@ -43,13 +43,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # 환경변수 .env 파일 생성 및 write
-      - name: Set .env file with all environment variables
-        run: |
-          touch ./.env.prod
-          echo "${{ secrets.ALL_ENV_VARS }}" > ./.env.prod
-        shell: bash
-
       - name: gradle build를 위한 권한을 부여합니다.
         run: chmod +x gradlew
 
@@ -72,6 +65,15 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           envs: GITHUB_SHA, DOCKER_USERNAME
           script: |
+            
+            cd /home/ubuntu/
+            
+            sudo touch .env.prod
+            echo "${{ secrets.ALL_ENV_VARS }}" | sudo tee .env.prod > /dev/null
+            
+            sudo touch docker-compose.yml
+            echo "${{ vars.DOCKER_COMPOSE }}" | sudo tee docker-compose.yml > /dev/null
+            
             export DOCKER_USERNAME=${DOCKER_USERNAME}
             sudo docker pull $DOCKER_USERNAME/ripple
             if [ "$(sudo docker ps -qa)" ]; then
@@ -79,5 +81,13 @@ jobs:
             else
                 echo "No containers to remove"
             fi
-            docker compose -f ~/ubuntu/docker-compose.yml --env-file ./.env.prod up -d
+            docker-compose -f docker-compose.yml --env-file ./.env.prod up -d
             docker image prune -f
+
+
+      # 환경변수 .env 파일 생성 및 write
+      - name: Set .env file with all environment variables
+        run: |
+          touch ./.env.prod
+          echo "${{ secrets.ALL_ENV_VARS }}" > ./.env.prod
+        shell: bash
