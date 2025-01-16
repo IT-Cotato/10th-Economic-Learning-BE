@@ -1,6 +1,5 @@
 package com.ripple.BE.post.domain;
 
-import com.ripple.BE.global.entity.BaseEntity;
 import com.ripple.BE.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,14 +15,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Table(name = "post_likes")
+@Table(name = "comment_likes")
 @Getter
 @Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class PostLike extends BaseEntity {
+public class CommentLike {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,21 +34,17 @@ public class PostLike extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @JoinColumn(name = "comment_id")
+    private Comment comment;
 
-    public static PostLike toPostLikeEntity() {
-        return PostLike.builder().build();
+    public static CommentLike toCommentLikeEntity() {
+        return CommentLike.builder().build();
     }
 
     public void setUser(User user) {
         this.user = user;
-        user.getPostLikeList().add(this);
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
-        post.getPostLikeList().add(this);
+        user.getCommentLikeList().add(this);
     }
 }

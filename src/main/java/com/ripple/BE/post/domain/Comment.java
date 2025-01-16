@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Table(name = "comments")
 @Getter
@@ -35,6 +36,7 @@ public class Comment extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Setter
     @Size(min = 1, max = 255)
     @Column(name = "content", nullable = false)
     private String content;
@@ -54,6 +56,50 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "parent_id")
     private Comment parent; // 상위 댓글
 
+    @Setter
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false; // 삭제 여부
+
+    private long replyCount = 0L; // 답글 수
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CommentLike> commentLikeList = new ArrayList<>(); // 댓글 좋아요 목록
+
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> children = new ArrayList<>(); // 하위 댓글
+
+    public static Comment toCommentEntity(final String content) {
+        return Comment.builder().content(content).build();
+    }
+
+    public void setUser(User user) {
+        this.commenter = user;
+        user.getCommentList().add(this);
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
+        post.getCommentList().add(this);
+    }
+
+    public void setParent(Comment parent) {
+        this.parent = parent;
+        parent.getChildren().add(this);
+    }
+
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        this.likeCount--;
+    }
+
+    public void increaseReplyCount() {
+        this.replyCount++;
+    }
+
+    public void decreaseReplyCount() {
+        this.replyCount--;
+    }
 }

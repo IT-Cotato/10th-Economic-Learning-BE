@@ -37,4 +37,18 @@ public class PostScrap extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    public static PostScrap toPostScrapEntity() {
+        return PostScrap.builder().build();
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+        user.getPostScrapList().add(this);
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
+        post.getPostScrapList().add(this);
+    }
 }
