@@ -10,11 +10,12 @@ name: ripple CI/CD with Gradle
 #  workflow_dispatch: # (2).수동 실행도 가능하도록
 
 on:
+  push:
+    branches:
+      - "*"  # 모든 브랜치에서 푸시할 때 실행되도록 설정
   pull_request:
     branches:
-      - develop
-    types:
-      - opened  # PR이 생성될 때 실행되도록 설정
+      - "*"  # 모든 브랜치에서 PR이 생성될 때 실행되도록 설정
   workflow_dispatch: # 수동 실행도 가능하도록
 
 jobs:
