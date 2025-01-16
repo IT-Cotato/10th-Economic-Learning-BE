@@ -81,5 +81,5 @@ jobs:
             else
                 echo "No containers to remove"
             fi
-            docker compose -f docker-compose.yml --env-file ./.env.prod up -d
+            docker compose --env-file ./.env.prod -f docker-compose.yml up -d
             docker image prune -f
