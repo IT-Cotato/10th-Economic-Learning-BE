@@ -83,11 +83,3 @@ jobs:
             fi
             docker compose -f docker-compose.yml --env-file ./.env.prod up -d
             docker image prune -f
-
-
-      # 환경변수 .env 파일 생성 및 write
-      - name: Set .env file with all environment variables
-        run: |
-          touch ./.env.prod
-          echo "${{ secrets.ALL_ENV_VARS }}" > ./.env.prod
-        shell: bash
