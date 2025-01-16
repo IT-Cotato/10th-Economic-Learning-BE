@@ -13,7 +13,10 @@ public class WebConfig implements WebMvcConfigurer {
                 .addMapping("/**")
                 .allowedHeaders("*")
                 .allowedOrigins(
-                        "http://localhost:3000", "http://localhost:8080", "http://api.cotato-ripple.kro.kr/")
+                        "http://localhost:3000",
+                        "http://localhost:8080",
+                        "http://api.cotato-ripple.kro.kr/",
+                        "https://api.cotato-ripple.kro.kr/")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
     }
 }
