@@ -1,9 +1,12 @@
 package com.ripple.BE.user.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
+import com.ripple.BE.learning.dto.FailQuizListDTO;
+import com.ripple.BE.learning.dto.response.FailQuizListResponse;
 import com.ripple.BE.post.dto.PostListDTO;
 import com.ripple.BE.post.dto.response.PostListResponse;
 import com.ripple.BE.user.domain.CustomUserDetails;
+import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.dto.ProgressDTO;
 import com.ripple.BE.user.dto.ProgressResponse;
 import com.ripple.BE.user.dto.UpdateUserProfileRequest;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -99,5 +103,18 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(ProgressResponse.toProgressResponse(progressDTO)));
+    }
+
+    @Operation(summary = "틀린 문제 조회", description = "틀렸던 문제를 조회합니다.")
+    @GetMapping("/wrong-quizzes")
+    public ResponseEntity<ApiResponse<Object>> getWrongQuizzes(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            final @RequestParam(defaultValue = "BEGINNER") Level level) {
+
+        FailQuizListDTO failQuizListDTO =
+                myPageService.getMyFailQuizzes(customUserDetails.getId(), level);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(FailQuizListResponse.toFailQuizListResponse(failQuizListDTO)));
     }
 }

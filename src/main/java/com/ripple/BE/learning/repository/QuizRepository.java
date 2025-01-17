@@ -21,4 +21,11 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
             @Param("learningSet") LearningSet learningSet, @Param("level") Level level);
 
     List<Quiz> findAllByPurpose(Purpose purpose);
+
+    @Query(
+            "SELECT q FROM Quiz q "
+                    + "JOIN FailQuiz fq ON q.id = fq.quiz.id "
+                    + "WHERE fq.user.id = :userId AND q.level = :level")
+    List<Quiz> findFailedQuizzesByUserAndLevel(
+            @Param("userId") long userId, @Param("level") Level level);
 }
