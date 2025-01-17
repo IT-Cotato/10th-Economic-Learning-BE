@@ -5,7 +5,7 @@ import com.ripple.BE.learning.dto.FailQuizListDTO;
 import com.ripple.BE.learning.repository.QuizRepository;
 import com.ripple.BE.post.domain.Comment;
 import com.ripple.BE.post.domain.Post;
-import com.ripple.BE.post.dto.CommentListDTO;
+import com.ripple.BE.post.dto.LikeCommentListDTO;
 import com.ripple.BE.post.dto.PostListDTO;
 import com.ripple.BE.post.repository.comment.CommentRepository;
 import com.ripple.BE.post.repository.commentlike.CommentLikeRepository;
@@ -74,10 +74,10 @@ public class MyPageService {
     }
 
     @Transactional(readOnly = true)
-    public CommentListDTO getMyLikeComments(final long userId) {
+    public LikeCommentListDTO getMyLikeComments(final long userId) {
 
         List<Comment> commentsLikedByUser = commentLikeRepository.findCommentsLikedByUser(userId);
 
-        return CommentListDTO.toCommentListDTO(commentsLikedByUser);
+        return LikeCommentListDTO.toLikeCommentListDTO(commentsLikedByUser);
     }
 }
