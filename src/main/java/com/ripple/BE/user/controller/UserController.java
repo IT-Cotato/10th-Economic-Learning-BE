@@ -105,7 +105,7 @@ public class UserController {
                 .body(ApiResponse.from(ProgressResponse.toProgressResponse(progressDTO)));
     }
 
-    @Operation(summary = "틀린 문제 조회", description = "틀렸던 문제를 조회합니다.")
+    @Operation(summary = "틀린 문제 조회", description = "로그인 한 유저가 틀렸던 문제를 조회합니다.")
     @GetMapping("/wrong-quizzes")
     public ResponseEntity<ApiResponse<Object>> getWrongQuizzes(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
