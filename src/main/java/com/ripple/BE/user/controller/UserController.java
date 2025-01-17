@@ -3,7 +3,9 @@ package com.ripple.BE.user.controller;
 import com.ripple.BE.global.dto.response.ApiResponse;
 import com.ripple.BE.learning.dto.FailQuizListDTO;
 import com.ripple.BE.learning.dto.response.FailQuizListResponse;
+import com.ripple.BE.post.dto.CommentListDTO;
 import com.ripple.BE.post.dto.PostListDTO;
+import com.ripple.BE.post.dto.response.CommentListResponse;
 import com.ripple.BE.post.dto.response.PostListResponse;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import com.ripple.BE.user.domain.type.Level;
@@ -116,5 +118,16 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(FailQuizListResponse.toFailQuizListResponse(failQuizListDTO)));
+    }
+
+    @Operation(summary = "좋아요한 댓글 조회", description = "로그인한 유저가 좋아요한 댓글을 조회합니다.")
+    @GetMapping("/like-comments")
+    public ResponseEntity<ApiResponse<Object>> getMyLikeComments(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        CommentListDTO myLikeComments = myPageService.getMyLikeComments(customUserDetails.getId());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(CommentListResponse.toCommentListResponse(myLikeComments)));
     }
 }
