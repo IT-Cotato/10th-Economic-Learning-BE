@@ -111,7 +111,7 @@ public class PostService {
         }
 
         for (Image image : post.getImageList()) {
-            imageService.deleteImageFromPost(image.getId());
+            imageService.deleteImage(image.getId());
         }
 
         postRepository.delete(post);

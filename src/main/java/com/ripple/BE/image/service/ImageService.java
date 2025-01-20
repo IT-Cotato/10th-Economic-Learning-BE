@@ -33,7 +33,7 @@ public class ImageService {
     }
 
     @Transactional
-    public void deleteImageFromPost(long imageId) {
+    public void deleteImage(long imageId) {
         Image image =
                 imageRepository.findById(imageId).orElseThrow(() -> new ImageException(IMAGE_NOT_FOUND));
         s3Uploader.deleteFile(image.getS3Info());

@@ -39,7 +39,7 @@ public class ImageController {
     public ResponseEntity<ApiResponse<Object>> deleteImage(
             final @PathVariable("imageId") long imageId) {
 
-        imageService.deleteImageFromPost(imageId);
+        imageService.deleteImage(imageId);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
 }
