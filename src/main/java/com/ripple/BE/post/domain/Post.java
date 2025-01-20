@@ -63,6 +63,7 @@ public class Post extends BaseEntity {
     @Column(name = "scrap_count")
     private long scrapCount = 0L; // 스크랩 수
 
+    @Setter
     @Column(name = "post_type", nullable = false)
     private PostType type; // 게시글 타입
 
@@ -114,11 +115,23 @@ public class Post extends BaseEntity {
                 .title(postDTO.title())
                 .content(postDTO.content())
                 .type(postDTO.type())
+                .imageList(new ArrayList<>())
                 .build();
+    }
+
+    public void update(PostDTO postDTO) {
+        this.title = postDTO.title();
+        this.content = postDTO.content();
+        this.type = postDTO.type();
     }
 
     public void setAuthor(User author) {
         this.author = author;
         author.getPostList().add(this);
+    }
+
+    public void addImage(Image image) {
+        this.imageList.add(image);
+        image.setPost(this);
     }
 }

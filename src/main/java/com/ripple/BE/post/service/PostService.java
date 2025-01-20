@@ -1,7 +1,12 @@
 package com.ripple.BE.post.service;
 
+import static com.ripple.BE.image.exception.errorcode.ImageErrorCode.*;
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 
+import com.ripple.BE.image.domain.Image;
+import com.ripple.BE.image.exception.ImageException;
+import com.ripple.BE.image.repository.ImageRepository;
+import com.ripple.BE.image.service.ImageService;
 import com.ripple.BE.post.domain.Comment;
 import com.ripple.BE.post.domain.CommentLike;
 import com.ripple.BE.post.domain.Post;
@@ -28,7 +33,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -40,21 +44,62 @@ public class PostService {
     private final PostLikeRepository postLikeRepository;
     private final PostScrapRepository postScrapRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final ImageRepository imageRepository;
 
     private final UserService userService;
+    private final ImageService imageService;
 
     private static final int PAGE_SIZE = 10;
 
     @Transactional
     public void createPost(
-            final long userId, final PostDTO postDTO, final List<MultipartFile> imageList) {
+            final long userId,
+            final PostDTO postDTO,
+            final PostType postType,
+            final List<Long> imageIdList) {
         User user = userService.findUserById(userId);
 
         Post post = Post.toPostEntity(postDTO);
         post.setAuthor(user);
+        post.setType(postType);
 
-        /** 이미지 S3 업로드 로직 추후 추가 */
+        if (imageIdList != null && !imageIdList.isEmpty()) {
+            for (long imageId : imageIdList) {
+                Image image =
+                        imageRepository
+                                .findById(imageId)
+                                .orElseThrow(() -> new ImageException(IMAGE_NOT_FOUND));
+                post.addImage(image);
+            }
+        }
+
         postRepository.save(post);
+    }
+
+    @Transactional
+    public void updatePost(
+            final long postId,
+            final long userId,
+            final PostDTO postDTO,
+            final List<Long> newImageIdList) {
+
+        Post post = findPostById(postId);
+
+        if (post.getAuthor().getId() != userId) {
+            throw new PostException(POST_NOT_AUTHORIZED);
+        }
+
+        post.update(postDTO);
+
+        if (newImageIdList != null && !newImageIdList.isEmpty()) {
+            for (long imageId : newImageIdList) {
+                Image image =
+                        imageRepository
+                                .findById(imageId)
+                                .orElseThrow(() -> new ImageException(IMAGE_NOT_FOUND));
+                post.addImage(image);
+            }
+        }
     }
 
     @Transactional
@@ -63,6 +108,10 @@ public class PostService {
 
         if (post.getAuthor().getId() != userId) {
             throw new PostException(POST_NOT_AUTHORIZED);
+        }
+
+        for (Image image : post.getImageList()) {
+            imageService.deleteImageFromPost(image.getId());
         }
 
         postRepository.delete(post);

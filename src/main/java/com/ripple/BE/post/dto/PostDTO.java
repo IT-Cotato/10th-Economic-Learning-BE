@@ -4,6 +4,7 @@ import com.ripple.BE.image.dto.ImageListDTO;
 import com.ripple.BE.post.domain.Post;
 import com.ripple.BE.post.domain.type.PostType;
 import com.ripple.BE.post.dto.request.PostRequest;
+import com.ripple.BE.post.dto.request.PostUpdateRequest;
 import com.ripple.BE.user.dto.CommunityUserDTO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -64,6 +65,23 @@ public record PostDTO(
                 null,
                 postRequest.content(),
                 postRequest.type(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+    }
+
+    public static PostDTO toPostDTO(final PostUpdateRequest request) {
+        return new PostDTO(
+                null,
+                request.title(),
+                null,
+                request.content(),
+                request.type(),
                 null,
                 null,
                 null,
