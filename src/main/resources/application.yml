@@ -1,11 +1,10 @@
-# ?? ??
 spring:
   config:
     import: optional:file:.env[.properties]  # .env import
   application:
     name: Ripple
   profiles:
-    active: local
+    active: ${SPRING_PROFILES_ACTIVE:local}  # 기본 프로파일을 'local'로 설정
 
   #JWT
   jwt:
