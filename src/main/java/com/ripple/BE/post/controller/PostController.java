@@ -7,6 +7,7 @@ import com.ripple.BE.post.dto.PostDTO;
 import com.ripple.BE.post.dto.PostListDTO;
 import com.ripple.BE.post.dto.request.CommentRequest;
 import com.ripple.BE.post.dto.request.PostRequest;
+import com.ripple.BE.post.dto.request.PostUpdateRequest;
 import com.ripple.BE.post.dto.response.PostListResponse;
 import com.ripple.BE.post.dto.response.PostResponse;
 import com.ripple.BE.post.service.PostService;
@@ -15,7 +16,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.PositiveOrZero;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
@@ -41,17 +40,33 @@ public class PostController {
 
     private final PostService postService;
 
-    @Operation(summary = "게시물 작성", description = "게시물을 작성합니다.")
+    @Operation(summary = "게시물 작성", description = "게시물을 작성합니다. 게시물을 등록하기 전 이미지 등록을 완료해주세요")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<Object>> createPost(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
-            final @RequestPart(value = "post") @Valid PostRequest post,
-            final @RequestPart(value = "imageList", required = false) List<MultipartFile> imageList) {
+            final @RequestPart(value = "post") @Valid PostRequest request) {
 
-        postService.createPost(currentUser.getId(), PostDTO.toPostDTO(post), imageList);
+        postService.createPost(
+                currentUser.getId(), PostDTO.toPostDTO(request), request.type(), request.imageIds());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
+    }
+
+    @Operation(
+            summary = "게시물 수정",
+            description =
+                    "게시물을 수정합니다. 게시물을 수정하기 전 이미지 수정을 완료해주세요. 삭제한 이미지는 입력하지 말고, 새로 추가된 이미지의 ID만 입력해주세요.")
+    @PatchMapping("/{id}")
+    public ResponseEntity<ApiResponse<Object>> updatePost(
+            final @AuthenticationPrincipal CustomUserDetails currentUser,
+            final @PathVariable("id") long id,
+            final @Valid @RequestBody PostUpdateRequest request) {
+
+        postService.updatePost(
+                id, currentUser.getId(), PostDTO.toPostDTO(request), request.newImageIds());
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
 
     @Operation(summary = "게시물 삭제", description = "게시물을 삭제합니다.")
