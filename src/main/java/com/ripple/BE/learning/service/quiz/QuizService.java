@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 @Slf4j
+@Transactional(readOnly = true)
 public class QuizService {
 
     private final UserLearningSetRepository userLearningSetRepository;
@@ -167,5 +168,16 @@ public class QuizService {
                 quizRepository.findById(quizId).orElseThrow(() -> new QuizException(QUIZ_NOT_FOUND));
 
         quizScrapRepository.save(QuizScrap.builder().user(user).quiz(quiz).build());
+    }
+
+    /**
+     * 개별 퀴즈 조회
+     *
+     * @param quizId
+     * @return 퀴즈 목록 반환
+     */
+    public QuizDTO getSingleQuiz(final long quizId) {
+        Quiz quiz = getQuizById(quizId);
+        return QuizDTO.toQuizDTO(quiz);
     }
 }
