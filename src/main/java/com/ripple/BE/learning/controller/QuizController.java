@@ -51,7 +51,6 @@ public class QuizController {
     @PostMapping("/{learningSetId}/quizzes/{quizId}")
     public ResponseEntity<ApiResponse<Object>> submitAnswer(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
-            final @PathVariable("learningSetId") long learningSetId,
             final @PathVariable("quizId") long quizId,
             final @RequestBody @Valid SubmitAnswerRequest request) {
 
