@@ -6,13 +6,16 @@ import com.ripple.BE.learning.domain.learningset.LearningSet;
 import com.ripple.BE.learning.domain.learningset.UserLearningSet;
 import com.ripple.BE.learning.domain.quiz.FailQuiz;
 import com.ripple.BE.learning.domain.quiz.Quiz;
+import com.ripple.BE.learning.domain.quiz.QuizScrap;
 import com.ripple.BE.learning.domain.type.Type;
 import com.ripple.BE.learning.dto.QuizDTO;
 import com.ripple.BE.learning.dto.QuizListDTO;
 import com.ripple.BE.learning.dto.QuizResultDTO;
 import com.ripple.BE.learning.exception.LearningException;
+import com.ripple.BE.learning.exception.QuizException;
 import com.ripple.BE.learning.exception.errorcode.LearningErrorCode;
 import com.ripple.BE.learning.repository.QuizRepository;
+import com.ripple.BE.learning.repository.QuizScrapRepository;
 import com.ripple.BE.learning.repository.UserLearningSetRepository;
 import com.ripple.BE.learning.service.learningset.LearningSetService;
 import com.ripple.BE.user.domain.User;
@@ -32,6 +35,7 @@ public class QuizService {
 
     private final UserLearningSetRepository userLearningSetRepository;
     private final QuizRepository quizRepository;
+    private final QuizScrapRepository quizScrapRepository;
 
     private final QuizRedisService quizRedisService;
     private final LearningSetService learningSetService;
@@ -147,5 +151,21 @@ public class QuizService {
                 .filter(q -> q.id().equals(quizId))
                 .findFirst()
                 .orElseThrow(() -> new LearningException(QUIZ_PROGRESS_NOT_FOUND));
+    }
+
+    /**
+     * 퀴즈 스크랩
+     *
+     * @param userId
+     * @param quizId
+     */
+    @Transactional
+    public void scrapQuiz(final long userId, final long quizId) {
+
+        User user = userService.findUserById(userId);
+        Quiz quiz =
+                quizRepository.findById(quizId).orElseThrow(() -> new QuizException(QUIZ_NOT_FOUND));
+
+        quizScrapRepository.save(QuizScrap.builder().user(user).quiz(quiz).build());
     }
 }

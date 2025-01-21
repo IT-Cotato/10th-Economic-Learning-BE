@@ -70,4 +70,14 @@ public class QuizController {
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
+
+    @Operation(summary = "퀴즈 저장", description = "퀴즈를 저장합니다.")
+    @PostMapping("/learning/quiz/{quizId}/scrap")
+    public ResponseEntity<ApiResponse<?>> scrapQuiz(
+            final @AuthenticationPrincipal CustomUserDetails currentUser,
+            final @PathVariable("quizId") long conceptId) {
+
+        quizService.scrapQuiz(currentUser.getId(), conceptId);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
+    }
 }
