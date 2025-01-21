@@ -1,12 +1,14 @@
 package com.ripple.BE.learning.service.concept;
 
 import com.ripple.BE.learning.domain.concept.Concept;
+import com.ripple.BE.learning.domain.concept.ConceptScrap;
 import com.ripple.BE.learning.domain.learningset.LearningSet;
 import com.ripple.BE.learning.domain.learningset.UserLearningSet;
 import com.ripple.BE.learning.dto.ConceptListDTO;
 import com.ripple.BE.learning.exception.LearningException;
 import com.ripple.BE.learning.exception.errorcode.LearningErrorCode;
 import com.ripple.BE.learning.repository.ConceptRepository;
+import com.ripple.BE.learning.repository.ConceptScrapRepository;
 import com.ripple.BE.learning.repository.UserLearningSetRepository;
 import com.ripple.BE.learning.service.learningset.LearningSetService;
 import com.ripple.BE.user.domain.User;
@@ -28,6 +30,7 @@ public class ConceptService {
 
     private final UserLearningSetRepository userLearningSetRepository;
     private final ConceptRepository conceptRepository;
+    private final ConceptScrapRepository conceptScrapRepository;
 
     /**
      * 학습 세트의 개념 목록을 조회
@@ -65,5 +68,22 @@ public class ConceptService {
             userLearningSet.setConceptCompleted();
             userService.updateCompletedCountByLevel(user, level);
         }
+    }
+
+    /**
+     * 개념 스크랩
+     *
+     * @param userId
+     * @param conceptId
+     */
+    @Transactional
+    public void scrapConcept(final long userId, final long conceptId) {
+        User user = userService.findUserById(userId);
+        Concept concept =
+                conceptRepository
+                        .findById(conceptId)
+                        .orElseThrow(() -> new LearningException(LearningErrorCode.CONCEPT_NOT_FOUND));
+
+        conceptScrapRepository.save(ConceptScrap.builder().user(user).concept(concept).build());
     }
 }

@@ -49,4 +49,14 @@ public class ConceptController {
         conceptService.completeConceptLearning(currentUser.getId(), learningSetId, level);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
     }
+
+    @Operation(summary = "개념 학습 저장", description = "개념 학습을 저장합니다.")
+    @PostMapping("/learning/{conceptId}/scrap")
+    public ResponseEntity<ApiResponse<?>> scrapConcept(
+            final @AuthenticationPrincipal CustomUserDetails currentUser,
+            final @PathVariable("conceptId") long conceptId) {
+
+        conceptService.scrapConcept(currentUser.getId(), conceptId);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
+    }
 }
