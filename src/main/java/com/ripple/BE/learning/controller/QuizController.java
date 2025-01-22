@@ -78,9 +78,9 @@ public class QuizController {
     @PostMapping("/learning/quiz/{quizId}/scrap")
     public ResponseEntity<ApiResponse<?>> scrapQuiz(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
-            final @PathVariable("quizId") long conceptId) {
+            final @PathVariable("quizId") long quizId) {
 
-        quizService.scrapQuiz(currentUser.getId(), conceptId);
+        quizService.scrapQuiz(currentUser.getId(), quizId);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
     }
 
