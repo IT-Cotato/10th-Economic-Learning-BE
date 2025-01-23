@@ -136,9 +136,10 @@ public class UserController {
     @Operation(summary = "내가 스크랩한 퀴즈 조회", description = "로그인한 유저가 스크랩한 퀴즈를 조회합니다.")
     @GetMapping("/scrap-quizzes")
     public ResponseEntity<ApiResponse<Object>> getMyScrapQuizzes(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam(defaultValue = "BEGINNER") Level level) {
 
-        QuizListDTO myScrapQuizzes = myPageService.getMyScrapQuizzes(customUserDetails.getId());
+        QuizListDTO myScrapQuizzes = myPageService.getMyScrapQuizzes(customUserDetails.getId(), level);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(ScrapQuizListResponse.toScrapQuizListResponse(myScrapQuizzes)));

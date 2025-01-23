@@ -84,9 +84,9 @@ public class MyPageService {
         return LikeCommentListDTO.toLikeCommentListDTO(commentsLikedByUser);
     }
 
-    public QuizListDTO getMyScrapQuizzes(final long userId) {
+    public QuizListDTO getMyScrapQuizzes(final long userId, final Level level) {
 
-        List<Quiz> quizzes = quizScrapRepository.findQuizScrappedByUser(userId);
+        List<Quiz> quizzes = quizScrapRepository.findQuizScrappedByUserAndLevel(userId, level);
 
         return QuizListDTO.toQuizScrapListDTO(quizzes);
     }
