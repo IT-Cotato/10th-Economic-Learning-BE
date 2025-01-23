@@ -1,6 +1,6 @@
 package com.ripple.BE.learning.exception;
 
-import com.ripple.BE.global.exception.errorcode.ErrorCode;
+import com.ripple.BE.learning.exception.errorcode.QuizErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -8,5 +8,5 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class QuizException extends RuntimeException {
 
-    private final ErrorCode errorCode;
+    private final QuizErrorCode errorCode;
 }

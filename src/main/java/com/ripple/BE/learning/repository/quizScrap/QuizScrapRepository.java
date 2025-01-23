@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface QuizScrapRepository
-        extends JpaRepository<QuizScrap, Long>, QuizScrapRepositoryCustom {}
+        extends JpaRepository<QuizScrap, Long>, QuizScrapRepositoryCustom {
+    Boolean existsByQuizIdAndUserId(Long quizId, Long userId);
+}
