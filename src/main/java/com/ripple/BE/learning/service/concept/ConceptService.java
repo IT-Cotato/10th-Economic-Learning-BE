@@ -4,6 +4,7 @@ import com.ripple.BE.learning.domain.concept.Concept;
 import com.ripple.BE.learning.domain.concept.ConceptScrap;
 import com.ripple.BE.learning.domain.learningset.LearningSet;
 import com.ripple.BE.learning.domain.learningset.UserLearningSet;
+import com.ripple.BE.learning.dto.ConceptDTO;
 import com.ripple.BE.learning.dto.ConceptListDTO;
 import com.ripple.BE.learning.exception.LearningException;
 import com.ripple.BE.learning.exception.errorcode.LearningErrorCode;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 @Slf4j
+@Transactional(readOnly = true)
 public class ConceptService {
 
     private final LearningSetService learningSetService;
@@ -90,5 +92,20 @@ public class ConceptService {
                         .orElseThrow(() -> new LearningException(LearningErrorCode.CONCEPT_NOT_FOUND));
 
         conceptScrapRepository.save(ConceptScrap.builder().user(user).concept(concept).build());
+    }
+
+    /**
+     * 개별 개념 조회
+     *
+     * @param conceptId
+     * @return 개념 반환
+     */
+    public ConceptDTO getConcept(final long conceptId) {
+        Concept concept =
+                conceptRepository
+                        .findById(conceptId)
+                        .orElseThrow(() -> new LearningException(LearningErrorCode.CONCEPT_NOT_FOUND));
+
+        return ConceptDTO.toScrapConceptDTO(concept);
     }
 }
