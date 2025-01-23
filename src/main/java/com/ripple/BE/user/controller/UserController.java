@@ -4,8 +4,8 @@ import com.ripple.BE.global.dto.response.ApiResponse;
 import com.ripple.BE.learning.dto.ConceptListDTO;
 import com.ripple.BE.learning.dto.FailQuizListDTO;
 import com.ripple.BE.learning.dto.QuizListDTO;
-import com.ripple.BE.learning.dto.response.ConceptListResponse;
 import com.ripple.BE.learning.dto.response.FailQuizListResponse;
+import com.ripple.BE.learning.dto.response.ScrapConceptListResponse;
 import com.ripple.BE.learning.dto.response.ScrapQuizListResponse;
 import com.ripple.BE.post.dto.LikeCommentListDTO;
 import com.ripple.BE.post.dto.PostListDTO;
@@ -156,6 +156,7 @@ public class UserController {
         ConceptListDTO conceptListDTO = myPageService.getMyConcepts(customUserDetails.getId(), level);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(ConceptListResponse.toConceptListResponse(conceptListDTO)));
+                .body(
+                        ApiResponse.from(ScrapConceptListResponse.toScrapConceptListResponse(conceptListDTO)));
     }
 }
