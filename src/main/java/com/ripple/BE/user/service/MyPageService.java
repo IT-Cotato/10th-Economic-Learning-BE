@@ -2,7 +2,9 @@ package com.ripple.BE.user.service;
 
 import com.ripple.BE.learning.domain.quiz.Quiz;
 import com.ripple.BE.learning.dto.FailQuizListDTO;
+import com.ripple.BE.learning.dto.QuizListDTO;
 import com.ripple.BE.learning.repository.quiz.QuizRepository;
+import com.ripple.BE.learning.repository.quizScrap.QuizScrapRepository;
 import com.ripple.BE.post.domain.Comment;
 import com.ripple.BE.post.domain.Post;
 import com.ripple.BE.post.dto.LikeCommentListDTO;
@@ -31,6 +33,7 @@ public class MyPageService {
     private final CommentRepository commentRepository;
     private final PostScrapRepository postScrapRepository;
     private final QuizRepository quizRepository;
+    private final QuizScrapRepository quizScrapRepository;
 
     @Transactional(readOnly = true)
     public PostListDTO getMyPosts(final long userId) {
@@ -79,5 +82,12 @@ public class MyPageService {
         List<Comment> commentsLikedByUser = commentLikeRepository.findCommentsLikedByUser(userId);
 
         return LikeCommentListDTO.toLikeCommentListDTO(commentsLikedByUser);
+    }
+
+    public QuizListDTO getMyScrapQuizzes(final long userId) {
+
+        List<Quiz> quizzes = quizScrapRepository.findQuizScrappedByUser(userId);
+
+        return QuizListDTO.toQuizScrapListDTO(quizzes);
     }
 }

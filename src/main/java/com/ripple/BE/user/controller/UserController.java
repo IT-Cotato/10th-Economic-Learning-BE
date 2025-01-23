@@ -2,7 +2,9 @@ package com.ripple.BE.user.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
 import com.ripple.BE.learning.dto.FailQuizListDTO;
+import com.ripple.BE.learning.dto.QuizListDTO;
 import com.ripple.BE.learning.dto.response.FailQuizListResponse;
+import com.ripple.BE.learning.dto.response.ScrapQuizListResponse;
 import com.ripple.BE.post.dto.LikeCommentListDTO;
 import com.ripple.BE.post.dto.PostListDTO;
 import com.ripple.BE.post.dto.response.LikeCommentListResponse;
@@ -136,6 +138,9 @@ public class UserController {
     public ResponseEntity<ApiResponse<Object>> getMyScrapQuizzes(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
+        QuizListDTO myScrapQuizzes = myPageService.getMyScrapQuizzes(customUserDetails.getId());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(ScrapQuizListResponse.toScrapQuizListResponse(myScrapQuizzes)));
     }
 }
