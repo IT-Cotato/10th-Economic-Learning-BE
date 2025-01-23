@@ -130,4 +130,12 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(LikeCommentListResponse.toLikeCommentListResponse(myLikeComments)));
     }
+
+    @Operation(summary = "내가 스크랩한 퀴즈 조회", description = "로그인한 유저가 스크랩한 퀴즈를 조회합니다.")
+    @GetMapping("/scrap-quizzes")
+    public ResponseEntity<ApiResponse<Object>> getMyScrapQuizzes(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
+    }
 }
