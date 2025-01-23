@@ -1,4 +1,4 @@
-package com.ripple.BE.learning.repository;
+package com.ripple.BE.learning.repository.conceptScrap;
 
 import com.ripple.BE.learning.domain.concept.ConceptScrap;
 import org.springframework.data.jpa.repository.JpaRepository;

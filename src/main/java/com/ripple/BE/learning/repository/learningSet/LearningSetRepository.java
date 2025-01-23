@@ -1,4 +1,4 @@
-package com.ripple.BE.learning.repository;
+package com.ripple.BE.learning.repository.learningSet;
 
 import com.ripple.BE.learning.domain.learningset.LearningSet;
 import org.springframework.data.jpa.repository.JpaRepository;

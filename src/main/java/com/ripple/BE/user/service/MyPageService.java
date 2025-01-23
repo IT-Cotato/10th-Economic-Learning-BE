@@ -2,7 +2,7 @@ package com.ripple.BE.user.service;
 
 import com.ripple.BE.learning.domain.quiz.Quiz;
 import com.ripple.BE.learning.dto.FailQuizListDTO;
-import com.ripple.BE.learning.repository.QuizRepository;
+import com.ripple.BE.learning.repository.quiz.QuizRepository;
 import com.ripple.BE.post.domain.Comment;
 import com.ripple.BE.post.domain.Post;
 import com.ripple.BE.post.dto.LikeCommentListDTO;

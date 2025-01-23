@@ -1,4 +1,4 @@
-package com.ripple.BE.learning.repository;
+package com.ripple.BE.learning.repository.quizScrap;
 
 import com.ripple.BE.learning.domain.quiz.QuizScrap;
 import org.springframework.data.jpa.repository.JpaRepository;
