@@ -29,4 +29,13 @@ public record ConceptDTO(
                 Level.valueOf(excelData.get(LEVEL)),
                 excelData.get(LEARNING_SET_NAME));
     }
+
+    public static ConceptDTO toScrapConceptDTO(final Concept concept) {
+        return new ConceptDTO(
+                concept.getConceptId(),
+                concept.getName(),
+                concept.getExplanation(),
+                concept.getLevel(),
+                concept.getLearningSet().getName());
+    }
 }

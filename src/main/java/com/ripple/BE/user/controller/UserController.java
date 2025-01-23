@@ -1,8 +1,10 @@
 package com.ripple.BE.user.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
+import com.ripple.BE.learning.dto.ConceptListDTO;
 import com.ripple.BE.learning.dto.FailQuizListDTO;
 import com.ripple.BE.learning.dto.QuizListDTO;
+import com.ripple.BE.learning.dto.response.ConceptListResponse;
 import com.ripple.BE.learning.dto.response.FailQuizListResponse;
 import com.ripple.BE.learning.dto.response.ScrapQuizListResponse;
 import com.ripple.BE.post.dto.LikeCommentListDTO;
@@ -143,5 +145,17 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(ScrapQuizListResponse.toScrapQuizListResponse(myScrapQuizzes)));
+    }
+
+    @Operation(summary = "내가 스크랩한 개념 학습 조회", description = "로그인한 유저가 스크랩한 학습을 조회합니다.")
+    @GetMapping("/scrap-concepts")
+    public ResponseEntity<ApiResponse<Object>> getMyScrapConcepts(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam(defaultValue = "BEGINNER") Level level) {
+
+        ConceptListDTO conceptListDTO = myPageService.getMyConcepts(customUserDetails.getId(), level);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(ConceptListResponse.toConceptListResponse(conceptListDTO)));
     }
 }

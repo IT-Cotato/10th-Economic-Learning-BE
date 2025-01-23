@@ -1,8 +1,11 @@
 package com.ripple.BE.user.service;
 
+import com.ripple.BE.learning.domain.concept.Concept;
 import com.ripple.BE.learning.domain.quiz.Quiz;
+import com.ripple.BE.learning.dto.ConceptListDTO;
 import com.ripple.BE.learning.dto.FailQuizListDTO;
 import com.ripple.BE.learning.dto.QuizListDTO;
+import com.ripple.BE.learning.repository.conceptScrap.ConceptScrapRepository;
 import com.ripple.BE.learning.repository.quiz.QuizRepository;
 import com.ripple.BE.learning.repository.quizScrap.QuizScrapRepository;
 import com.ripple.BE.post.domain.Comment;
@@ -34,6 +37,7 @@ public class MyPageService {
     private final PostScrapRepository postScrapRepository;
     private final QuizRepository quizRepository;
     private final QuizScrapRepository quizScrapRepository;
+    private final ConceptScrapRepository conceptScrapRepository;
 
     @Transactional(readOnly = true)
     public PostListDTO getMyPosts(final long userId) {
@@ -89,5 +93,13 @@ public class MyPageService {
         List<Quiz> quizzes = quizScrapRepository.findQuizScrappedByUserAndLevel(userId, level);
 
         return QuizListDTO.toQuizScrapListDTO(quizzes);
+    }
+
+    public ConceptListDTO getMyConcepts(final long userId, final Level level) {
+
+        List<Concept> concepts =
+                conceptScrapRepository.findConceptsScrappedByUserAndLevel(userId, level);
+
+        return ConceptListDTO.toScrapConceptListDTO(concepts);
     }
 }
