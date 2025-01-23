@@ -78,6 +78,11 @@ public class ConceptService {
      */
     @Transactional
     public void scrapConcept(final long userId, final long conceptId) {
+        // 이미 스크랩한 개념인지 확인
+        if (conceptScrapRepository.existsByConceptIdAndUserId(conceptId, userId)) {
+            throw new LearningException(LearningErrorCode.CONCEPT_ALREADY_SCRAP);
+        }
+
         User user = userService.findUserById(userId);
         Concept concept =
                 conceptRepository
