@@ -98,7 +98,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleNewsException(final NewsException e) {
         return handleExceptionInternal(e.getErrorCode());
     }
-  
+
     @ExceptionHandler(ImageException.class)
     public ResponseEntity<Object> handleImageException(final ImageException e) {
         return handleExceptionInternal(e.getErrorCode());

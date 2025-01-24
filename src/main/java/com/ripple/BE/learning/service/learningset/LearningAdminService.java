@@ -12,13 +12,11 @@ import com.ripple.BE.learning.exception.LearningException;
 import com.ripple.BE.learning.exception.errorcode.LearningErrorCode;
 import com.ripple.BE.learning.repository.LearningSetRepository;
 import com.ripple.BE.learning.repository.QuizRepository;
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,9 +37,8 @@ public class LearningAdminService {
     @Transactional
     public void createLearningSetByExcel() {
         try {
-            File file = new ClassPathResource(FILE_PATH).getFile();
 
-            List<LearningSet> learningSetList = parseLearningSetsFromExcel(file.getPath());
+            List<LearningSet> learningSetList = parseLearningSetsFromExcel();
             List<LearningSet> existingLearningSets = learningSetRepository.findAll();
 
             Map<String, LearningSet> learningSetMap =
@@ -67,8 +64,8 @@ public class LearningAdminService {
                                                             existingSet -> existingSet.getName().equals(learningSet.getName())))
                             .collect(Collectors.toList());
 
-            addConceptsToLearningSets(file.getPath(), newLearningSetMap);
-            addQuizzesToLearningSets(file.getPath(), newLearningSetMap);
+            addConceptsToLearningSets(FILE_PATH, newLearningSetMap);
+            addQuizzesToLearningSets(FILE_PATH, newLearningSetMap);
 
             learningSetRepository.saveAll(newLearningSets);
 
@@ -78,8 +75,9 @@ public class LearningAdminService {
         }
     }
 
-    private List<LearningSet> parseLearningSetsFromExcel(String filePath) throws Exception {
-        return ExcelUtils.parseExcelFile(filePath, LEARNING_SET_SHEET_INDEX).stream()
+    private List<LearningSet> parseLearningSetsFromExcel() throws Exception {
+        return ExcelUtils.parseExcelFile(LearningAdminService.FILE_PATH, LEARNING_SET_SHEET_INDEX)
+                .stream()
                 .map(LearningSetDTO::toLearningSetDTO)
                 .map(LearningSet::toLearningSet)
                 .collect(Collectors.toList());

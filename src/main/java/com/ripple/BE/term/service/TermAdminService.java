@@ -8,13 +8,11 @@ import com.ripple.BE.term.dto.TermDTO;
 import com.ripple.BE.term.exception.TermException;
 import com.ripple.BE.term.repository.TermJdbcRepository;
 import com.ripple.BE.term.repository.TermRepository;
-import java.io.File;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,10 +37,7 @@ public class TermAdminService {
     @Transactional
     public void createTermByExcel() {
         try {
-
-            File file = new ClassPathResource(FILE_PATH).getFile();
-
-            List<Term> termList = parseTermFromExcel(file.getPath());
+            List<Term> termList = parseTermFromExcel();
             Set<String> existingTitles =
                     termRepository.findAll().stream().map(Term::getTitle).collect(Collectors.toSet());
 
@@ -65,8 +60,8 @@ public class TermAdminService {
         }
     }
 
-    private List<Term> parseTermFromExcel(String filePath) throws Exception {
-        return ExcelUtils.parseExcelFile(filePath, TERM_SHEET_INDEX).stream()
+    private List<Term> parseTermFromExcel() throws Exception {
+        return ExcelUtils.parseExcelFile(TermAdminService.FILE_PATH, TERM_SHEET_INDEX).stream()
                 .map(TermDTO::toTermDTO)
                 .map(Term::toTermEntity)
                 .collect(Collectors.toList());
