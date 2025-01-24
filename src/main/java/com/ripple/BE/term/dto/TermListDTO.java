@@ -2,11 +2,15 @@ package com.ripple.BE.term.dto;
 
 import com.ripple.BE.term.domain.Term;
 import java.util.List;
+import org.springframework.data.domain.Page;
 
-public record TermListDTO(List<TermDTO> termList // 용어 리스트
+public record TermListDTO(List<TermDTO> termList, int totalPage, int currentPage // 용어 리스트
         ) {
 
-    public static TermListDTO toTermListDTO(final List<Term> termList) {
-        return new TermListDTO(termList.stream().map(TermDTO::toTermDTO).toList());
+    public static TermListDTO toTermListDTO(Page<Term> termPage) {
+        return new TermListDTO(
+                termPage.getContent().stream().map(TermDTO::toTermDTO).toList(),
+                termPage.getTotalPages(),
+                termPage.getNumber());
     }
 }

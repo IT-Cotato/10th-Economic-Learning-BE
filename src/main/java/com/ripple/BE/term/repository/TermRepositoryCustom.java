@@ -1,11 +1,12 @@
 package com.ripple.BE.term.repository;
 
 import com.ripple.BE.term.domain.Term;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface TermRepositoryCustom {
 
-    List<Term> findByInitial(String initial);
+    Page<Term> findByInitial(String initial, Pageable pageable);
 
-    List<Term> findByKeyword(String keyword);
+    Page<Term> findByKeyword(String keyword, Pageable pageable);
 }
