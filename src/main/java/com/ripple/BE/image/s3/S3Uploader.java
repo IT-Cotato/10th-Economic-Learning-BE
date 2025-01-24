@@ -38,7 +38,6 @@ public class S3Uploader {
         String fileName = buildFileName(folderName, file.getName());
         String uploadUrl = uploadToS3(file, fileName);
 
-        System.out.println("uploadUrl: " + uploadUrl);
         file.delete();
 
         return buildS3Info(folderName, file, uploadUrl);
@@ -66,9 +65,6 @@ public class S3Uploader {
         String fileExtension = getFileExtension(file);
         File convertedFile =
                 new File(System.getProperty("user.dir") + "/" + UUID.randomUUID() + "." + fileExtension);
-
-        System.out.println("convertedFile: " + convertedFile.getName());
-        System.out.println("convertedFile: " + convertedFile.getAbsolutePath());
 
         try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
             fos.write(file.getBytes());
