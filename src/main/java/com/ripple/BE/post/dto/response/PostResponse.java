@@ -1,7 +1,7 @@
 package com.ripple.BE.post.dto.response;
 
 import com.ripple.BE.global.utils.RelativeTimeFormatter;
-import com.ripple.BE.image.dto.ImageDTO;
+import com.ripple.BE.image.dto.response.ImageResponse;
 import com.ripple.BE.post.domain.type.PostType;
 import com.ripple.BE.post.dto.PostDTO;
 import java.util.List;
@@ -16,7 +16,7 @@ public record PostResponse(
         long likeCount,
         long commentCount,
         long scrapCount,
-        List<String> imageList,
+        List<ImageResponse> imageList,
         String createdDate,
         CommentListResponse commentListResponse) {
 
@@ -31,7 +31,7 @@ public record PostResponse(
                 postDTO.likeCount(),
                 postDTO.commentCount(),
                 postDTO.scrapCount(),
-                postDTO.imageList().imageDTOList().stream().map(ImageDTO::url).toList(),
+                postDTO.imageList().imageDTOList().stream().map(ImageResponse::toImageResponse).toList(),
                 RelativeTimeFormatter.formatRelativeTime(postDTO.createdDate()),
                 CommentListResponse.toCommentListResponse(postDTO.commentListDTO()));
     }

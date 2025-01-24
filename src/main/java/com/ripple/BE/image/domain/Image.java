@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Table(name = "images")
 @Getter
@@ -31,8 +32,10 @@ public class Image extends BaseEntity {
     @Column(name = "id")
     private Long id;
 
-    private String imageUrl;
+    @Column(name = "s3_info")
+    private S3Info s3Info;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
@@ -40,4 +43,8 @@ public class Image extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "news_id")
     private News news;
+
+    public static Image toImageEntity(final S3Info s3Info) {
+        return Image.builder().s3Info(s3Info).build();
+    }
 }
