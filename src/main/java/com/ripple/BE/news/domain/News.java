@@ -2,15 +2,18 @@ package com.ripple.BE.news.domain;
 
 import com.ripple.BE.global.entity.BaseEntity;
 import com.ripple.BE.image.domain.Image;
+import com.ripple.BE.news.domain.type.NewsCategory;
+import com.ripple.BE.news.dto.NewsDTO;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -32,7 +35,6 @@ public class News extends BaseEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Size(min = 2, max = 50)
     @Column(name = "title", nullable = false)
     private String title;
 
@@ -40,14 +42,33 @@ public class News extends BaseEntity {
     private String content;
 
     @Column(name = "publisher")
-    private String publisher; // 출판사
+    private String publisher;
 
-    @OneToMany(mappedBy = "news", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<NewsTerm> newsTermList = new ArrayList<>();
+    @Column(name = "views")
+    private long views = 0L;
 
-    @OneToMany(mappedBy = "news", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<NewsCategory> newsCategoryList = new ArrayList<>();
+    @Column(name = "url")
+    private String url;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category", nullable = false)
+    private NewsCategory category;
 
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> imageList = new ArrayList<>();
+
+    public static News toNewsEntity(NewsDTO newsDTO) {
+        return News.builder()
+                .title(newsDTO.title())
+                .content(newsDTO.content())
+                .publisher(newsDTO.publisher())
+                .views(0L)
+                .url(newsDTO.url())
+                .category(newsDTO.category())
+                .build();
+    }
+
+    public void increaseViews() {
+        this.views++;
+    }
 }

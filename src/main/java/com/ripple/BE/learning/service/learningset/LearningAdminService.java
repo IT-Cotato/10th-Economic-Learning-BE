@@ -12,11 +12,13 @@ import com.ripple.BE.learning.exception.LearningException;
 import com.ripple.BE.learning.exception.errorcode.LearningErrorCode;
 import com.ripple.BE.learning.repository.LearningSetRepository;
 import com.ripple.BE.learning.repository.QuizRepository;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LearningAdminService {
 
-    private static final String FILE_PATH = "src/main/resources/static/excel/example.xlsx";
+    private static final String FILE_PATH = "static/excel/example.xlsx";
     private static final int LEARNING_SET_SHEET_INDEX = 0;
     private static final int CONCEPT_SHEET_INDEX = 1;
     private static final int QUIZ_SHEET_INDEX = 2;
@@ -37,8 +39,9 @@ public class LearningAdminService {
     @Transactional
     public void createLearningSetByExcel() {
         try {
+            File file = new ClassPathResource(FILE_PATH).getFile();
 
-            List<LearningSet> learningSetList = parseLearningSetsFromExcel();
+            List<LearningSet> learningSetList = parseLearningSetsFromExcel(file.getPath());
             List<LearningSet> existingLearningSets = learningSetRepository.findAll();
 
             Map<String, LearningSet> learningSetMap =
@@ -57,11 +60,15 @@ public class LearningAdminService {
 
             List<LearningSet> newLearningSets =
                     learningSetList.stream()
-                            .filter(learningSet -> !existingLearningSets.contains(learningSet))
+                            .filter(
+                                    learningSet ->
+                                            existingLearningSets.stream()
+                                                    .noneMatch(
+                                                            existingSet -> existingSet.getName().equals(learningSet.getName())))
                             .collect(Collectors.toList());
 
-            addConceptsToLearningSets(newLearningSetMap);
-            addQuizzesToLearningSets(newLearningSetMap);
+            addConceptsToLearningSets(file.getPath(), newLearningSetMap);
+            addQuizzesToLearningSets(file.getPath(), newLearningSetMap);
 
             learningSetRepository.saveAll(newLearningSets);
 
@@ -71,29 +78,44 @@ public class LearningAdminService {
         }
     }
 
-    private List<LearningSet> parseLearningSetsFromExcel() throws Exception {
-        return ExcelUtils.parseExcelFile(FILE_PATH, LEARNING_SET_SHEET_INDEX).stream()
+    private List<LearningSet> parseLearningSetsFromExcel(String filePath) throws Exception {
+        return ExcelUtils.parseExcelFile(filePath, LEARNING_SET_SHEET_INDEX).stream()
                 .map(LearningSetDTO::toLearningSetDTO)
                 .map(LearningSet::toLearningSet)
                 .collect(Collectors.toList());
     }
 
-    private void addConceptsToLearningSets(Map<String, LearningSet> learningSetMap) throws Exception {
-        ExcelUtils.parseExcelFile(FILE_PATH, CONCEPT_SHEET_INDEX).stream()
+    private void addConceptsToLearningSets(String filePath, Map<String, LearningSet> learningSetMap)
+            throws Exception {
+        ExcelUtils.parseExcelFile(filePath, CONCEPT_SHEET_INDEX).stream()
                 .map(ConceptDTO::toConceptDTO)
                 .forEach(
-                        conceptDTO ->
-                                Concept.toConcept(conceptDTO)
-                                        .setLearningSet(learningSetMap.get(conceptDTO.learningSetName())));
+                        conceptDTO -> {
+                            LearningSet learningSet = learningSetMap.get(conceptDTO.learningSetName());
+
+                            if (learningSet == null) {
+                                return;
+                            }
+
+                            Concept concept = Concept.toConcept(conceptDTO);
+                            concept.setLearningSet(learningSet);
+                        });
     }
 
-    private void addQuizzesToLearningSets(Map<String, LearningSet> learningSetMap) throws Exception {
-        ExcelUtils.parseExcelFile(FILE_PATH, QUIZ_SHEET_INDEX).stream()
+    private void addQuizzesToLearningSets(String filePath, Map<String, LearningSet> learningSetMap)
+            throws Exception {
+        ExcelUtils.parseExcelFile(filePath, QUIZ_SHEET_INDEX).stream()
                 .map(QuizDTO::toQuizDTO)
                 .forEach(
                         quizDTO -> {
+                            LearningSet learningSet = learningSetMap.get(quizDTO.learningSetName());
+
+                            if (learningSet == null) {
+                                return; // 해당 quizDTO를 건너뜀
+                            }
+
                             Quiz quiz = Quiz.toQuiz(quizDTO);
-                            quiz.setLearningSet(learningSetMap.get(quizDTO.learningSetName()));
+                            quiz.setLearningSet(learningSet);
 
                             quizRepository.save(quiz);
 
