@@ -10,6 +10,7 @@ import com.ripple.BE.news.dto.response.NewsResponse;
 import com.ripple.BE.news.service.NewsService;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/news")
 @RequiredArgsConstructor
+@Tag(name = "News", description = "뉴스 API")
 public class NewsController {
 
     private final NewsService newsService;
