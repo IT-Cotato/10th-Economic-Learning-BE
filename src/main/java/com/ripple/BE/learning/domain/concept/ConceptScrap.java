@@ -1,8 +1,6 @@
-package com.ripple.BE.image.domain;
+package com.ripple.BE.learning.domain.concept;
 
-import com.ripple.BE.global.entity.BaseEntity;
-import com.ripple.BE.news.domain.News;
-import com.ripple.BE.post.domain.Post;
+import com.ripple.BE.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,34 +15,25 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Table(name = "images")
+@Table(name = "concept_scraps")
 @Getter
 @Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Image extends BaseEntity {
+public class ConceptScrap {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "s3_info")
-    private S3Info s3Info;
-
-    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "news_id")
-    private News news;
-
-    public static Image toImageEntity(final S3Info s3Info) {
-        return Image.builder().s3Info(s3Info).build();
-    }
+    @JoinColumn(name = "concept_id")
+    private Concept concept;
 }

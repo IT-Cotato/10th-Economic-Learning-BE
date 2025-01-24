@@ -5,6 +5,7 @@ import com.ripple.BE.global.exception.errorcode.GlobalErrorCode;
 import com.ripple.BE.global.exception.response.ErrorResponse;
 import com.ripple.BE.global.exception.response.ErrorResponse.ValidationError;
 import com.ripple.BE.global.exception.response.ErrorResponse.ValidationErrors;
+import com.ripple.BE.image.exception.ImageException;
 import com.ripple.BE.learning.exception.LearningException;
 import com.ripple.BE.learning.exception.QuizException;
 import com.ripple.BE.news.exception.NewsException;
@@ -89,6 +90,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(NewsException.class)
     public ResponseEntity<Object> handleNewsException(final NewsException e) {
+        return handleExceptionInternal(e.getErrorCode());
+    }
+  
+    @ExceptionHandler(ImageException.class)
+    public ResponseEntity<Object> handleImageException(final ImageException e) {
         return handleExceptionInternal(e.getErrorCode());
     }
 

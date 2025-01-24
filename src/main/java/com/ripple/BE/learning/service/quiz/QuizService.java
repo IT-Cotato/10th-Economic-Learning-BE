@@ -6,13 +6,16 @@ import com.ripple.BE.learning.domain.learningset.LearningSet;
 import com.ripple.BE.learning.domain.learningset.UserLearningSet;
 import com.ripple.BE.learning.domain.quiz.FailQuiz;
 import com.ripple.BE.learning.domain.quiz.Quiz;
+import com.ripple.BE.learning.domain.quiz.QuizScrap;
 import com.ripple.BE.learning.domain.type.Type;
 import com.ripple.BE.learning.dto.QuizDTO;
 import com.ripple.BE.learning.dto.QuizListDTO;
 import com.ripple.BE.learning.dto.QuizResultDTO;
 import com.ripple.BE.learning.exception.LearningException;
+import com.ripple.BE.learning.exception.QuizException;
 import com.ripple.BE.learning.exception.errorcode.LearningErrorCode;
 import com.ripple.BE.learning.repository.QuizRepository;
+import com.ripple.BE.learning.repository.QuizScrapRepository;
 import com.ripple.BE.learning.repository.UserLearningSetRepository;
 import com.ripple.BE.learning.service.learningset.LearningSetService;
 import com.ripple.BE.user.domain.User;
@@ -28,10 +31,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 @Slf4j
+@Transactional(readOnly = true)
 public class QuizService {
 
     private final UserLearningSetRepository userLearningSetRepository;
     private final QuizRepository quizRepository;
+    private final QuizScrapRepository quizScrapRepository;
 
     private final QuizRedisService quizRedisService;
     private final LearningSetService learningSetService;
@@ -83,17 +88,17 @@ public class QuizService {
 
         QuizListDTO quizListDTO =
                 quizRedisService.fetchFromRedis(userId, QUESTION_TYPE, QuizListDTO.class);
+
+        // 마이페이지의 저장한 퀴즈에서 다시풀기 진행 시 (퀴즈 진행 redis 데이터가 없을 경우)
         if (quizListDTO == null) {
-            throw new LearningException(QUIZ_PROGRESS_NOT_FOUND);
+            Quiz quiz = getQuizById(quizId);
+            boolean isCorrect = isCorrectAnswer(QuizDTO.toQuizDTO(quiz), answerIndex);
+
+            return QuizResultDTO.toQuizResultDTO(isCorrect, quiz.getExplanation());
         }
 
         QuizDTO quizDTO = getQuizDTO(quizListDTO, quizId); // 퀴즈 정보 가져오기
-
-        boolean isCorrect =
-                quizDTO
-                        .answer()
-                        .trim()
-                        .equals(quizDTO.choiceList().choices().get(answerIndex).content().trim());
+        boolean isCorrect = isCorrectAnswer(quizDTO, answerIndex);
 
         if (!isCorrect) {
             quizRedisService.saveToRedisList(userId, WRONG_ANSWER_TYPE, quizId); // 오답 리스트에 추가
@@ -147,5 +152,40 @@ public class QuizService {
                 .filter(q -> q.id().equals(quizId))
                 .findFirst()
                 .orElseThrow(() -> new LearningException(QUIZ_PROGRESS_NOT_FOUND));
+    }
+
+    /**
+     * 퀴즈 스크랩
+     *
+     * @param userId
+     * @param quizId
+     */
+    @Transactional
+    public void scrapQuiz(final long userId, final long quizId) {
+
+        User user = userService.findUserById(userId);
+        Quiz quiz =
+                quizRepository.findById(quizId).orElseThrow(() -> new QuizException(QUIZ_NOT_FOUND));
+
+        quizScrapRepository.save(QuizScrap.builder().user(user).quiz(quiz).build());
+    }
+
+    /**
+     * 개별 퀴즈 조회
+     *
+     * @param quizId
+     * @return 퀴즈 목록 반환
+     */
+    public QuizDTO getSingleQuiz(final long quizId) {
+        Quiz quiz = getQuizById(quizId);
+        return QuizDTO.toQuizDTO(quiz);
+    }
+
+    // 정답 여부 확인
+    private boolean isCorrectAnswer(final QuizDTO quizDTO, final int answerIndex) {
+        return quizDTO
+                .answer()
+                .trim()
+                .equals(quizDTO.choiceList().choices().get(answerIndex).content().trim());
     }
 }

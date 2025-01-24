@@ -1,10 +1,12 @@
 package com.ripple.BE.learning.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
+import com.ripple.BE.learning.dto.QuizDTO;
 import com.ripple.BE.learning.dto.QuizListDTO;
 import com.ripple.BE.learning.dto.QuizResultDTO;
 import com.ripple.BE.learning.dto.request.SubmitAnswerRequest;
 import com.ripple.BE.learning.dto.response.QuizListResponse;
+import com.ripple.BE.learning.dto.response.QuizResponse;
 import com.ripple.BE.learning.dto.response.QuizResultResponse;
 import com.ripple.BE.learning.service.quiz.QuizService;
 import com.ripple.BE.user.domain.CustomUserDetails;
@@ -16,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -69,5 +72,26 @@ public class QuizController {
         quizService.finishQuiz(currentUser.getId(), learningSetId, level);
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
+    }
+
+    @Operation(summary = "퀴즈 저장", description = "퀴즈를 저장합니다.")
+    @PostMapping("/learning/quiz/{quizId}/scrap")
+    public ResponseEntity<ApiResponse<?>> scrapQuiz(
+            final @AuthenticationPrincipal CustomUserDetails currentUser,
+            final @PathVariable("quizId") long quizId) {
+
+        quizService.scrapQuiz(currentUser.getId(), quizId);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
+    }
+
+    @Operation(summary = "개별 퀴즈 조회", description = "개별 퀴즈를 조회합니다.")
+    @GetMapping("/learning/quiz/{quizId}")
+    public ResponseEntity<ApiResponse<Object>> getSingleQuiz(
+            final @PathVariable("quizId") long quizId) {
+
+        QuizDTO quizDTO = quizService.getSingleQuiz(quizId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(QuizResponse.toQuizResponse(quizDTO)));
     }
 }
