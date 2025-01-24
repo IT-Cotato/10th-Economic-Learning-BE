@@ -9,6 +9,7 @@ import com.ripple.BE.image.exception.ImageException;
 import com.ripple.BE.learning.exception.LearningException;
 import com.ripple.BE.learning.exception.QuizException;
 import com.ripple.BE.post.exception.PostException;
+import com.ripple.BE.term.exception.TermException;
 import com.ripple.BE.user.exception.UserException;
 import io.micrometer.common.lang.NonNull;
 import java.util.List;
@@ -65,6 +66,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         e.printStackTrace(); // 터미널에 에러 메시지 출력
         logger.error("Exception occurred:" + e.getMessage() + e); // 로그에 에러 메시지 출력
         return handleExceptionInternal(GlobalErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(TermException.class)
+    public ResponseEntity<Object> handleTermException(final TermException e) {
+        return handleExceptionInternal(e.getErrorCode());
     }
 
     @ExceptionHandler(UserException.class)
