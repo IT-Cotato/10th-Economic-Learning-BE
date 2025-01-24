@@ -1,7 +1,6 @@
 package com.ripple.BE.news.service;
 
 import static com.ripple.BE.news.exception.errorcode.NewsErrorCode.*;
-import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 
 import com.ripple.BE.news.crawler.NewsCrawler;
 import com.ripple.BE.news.domain.News;
@@ -59,7 +58,7 @@ public class NewsService {
         News news =
                 newsRepository.findByIdForUpdate(id).orElseThrow(() -> new NewsException(NEWS_NOT_FOUND));
 
-        news.increaseViews();
+        news.increaseViews(); // 조회수 증가
 
         return NewsDTO.toNewsDTO(news);
     }
@@ -72,7 +71,7 @@ public class NewsService {
         User user = userService.findUserById(userId);
 
         if (newsScrapRepository.existsByNewsIdAndUserId(newsId, userId)) {
-            throw new NewsException(SCRAP_ALREADY_EXISTS);
+            throw new NewsException(NEWS_SCRAP_ALREADY_EXIST);
         }
 
         NewsScrap newsScrap = NewsScrap.toNewsScrapEntity();
