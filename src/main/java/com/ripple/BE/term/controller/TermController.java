@@ -10,11 +10,15 @@ import com.ripple.BE.term.dto.response.TermResponse;
 import com.ripple.BE.term.exception.TermException;
 import com.ripple.BE.term.service.TermAdminService;
 import com.ripple.BE.term.service.TermService;
+import com.ripple.BE.user.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,13 +38,15 @@ public class TermController {
     @Operation(summary = "자음 별 용어 조회", description = "자음 별 용어를 조회합니다.")
     @GetMapping("/search/consonant")
     public ResponseEntity<ApiResponse<Object>> getTermsByInitial(
-            @RequestParam(value = "consonant") final String consonant) {
+            final @RequestParam(required = false, defaultValue = "0") @PositiveOrZero int page,
+            @RequestParam(value = "consonant", required = false, defaultValue = "ㄱ")
+                    final String consonant) {
 
         if (consonant.length() != 1) {
             throw new TermException(INVALID_PARAMETER);
         }
 
-        TermListDTO termListDTO = termService.getTermsByInitial(consonant);
+        TermListDTO termListDTO = termService.getTermsByInitial(page, consonant);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(TermListResponse.toTermListResponse(termListDTO)));
@@ -49,9 +55,10 @@ public class TermController {
     @Operation(summary = "키워드 별 용어 조회", description = "키워드 별 용어를 조회합니다.")
     @GetMapping("/search/keyword")
     public ResponseEntity<ApiResponse<Object>> getTermsByKeyword(
-            @RequestParam(value = "keyword") final String keyword) {
+            final @RequestParam(required = false, defaultValue = "0") @PositiveOrZero int page,
+            @RequestParam(value = "keyword", required = false) final String keyword) {
 
-        TermListDTO termListDTO = termService.getTermsByKeyword(keyword);
+        TermListDTO termListDTO = termService.getTermsByKeyword(page, keyword);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(TermListResponse.toTermListResponse(termListDTO)));
@@ -65,6 +72,26 @@ public class TermController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(TermResponse.toTermResponse(termDTO)));
+    }
+
+    @Operation(summary = "용어 스크랩", description = "용어를 스크랩합니다.")
+    @PostMapping("/{id}/scrap")
+    public ResponseEntity<ApiResponse<Object>> scrapTerm(
+            final @AuthenticationPrincipal CustomUserDetails currentUser,
+            final @PathVariable("id") long id) {
+
+        termService.addScrapToTerm(id, currentUser.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
+    }
+
+    @Operation(summary = "용어 스크랩 취소", description = "용어 스크랩을 취소합니다.")
+    @DeleteMapping("/{id}/scrap")
+    public ResponseEntity<ApiResponse<Object>> unscrapTerm(
+            final @AuthenticationPrincipal CustomUserDetails currentUser,
+            final @PathVariable("id") long id) {
+
+        termService.removeScrapFromTerm(id, currentUser.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
 
     @Operation(summary = "용어 생성 (관리자)", description = "용어를 생성합니다.")
