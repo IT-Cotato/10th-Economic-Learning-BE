@@ -21,7 +21,6 @@ public abstract class NewsCrawler {
     protected static final String PUBLISH_SELECTOR = "div.sa_text_press"; // 언론사 선택자
     protected static final String CONTENT_URL_SELECTOR = "div.sa_text a"; // 본문 URL 선택자
 
-    /** 크롤링 기본 메서드 어제 날짜에 해당하는 데이터만 출력 */
     public List<NewsDTO> crawl() {
 
         log.info("Crawling started");
