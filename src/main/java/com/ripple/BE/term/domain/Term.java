@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Table(name = "terms")
+@Table(
+        name = "terms",
+        indexes = {
+            @Index(name = "idx_title", columnList = "title"), // title 컬럼에 인덱스 추가
+            @Index(name = "idx_initial", columnList = "initial") // initial 컬럼에 인덱스 추가
+        })
 @Getter
 @Builder
 @Entity
