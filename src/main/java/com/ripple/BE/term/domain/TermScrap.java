@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Table(name = "term_scraps")
 @Getter
@@ -34,7 +35,17 @@ public class TermScrap extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "term_id")
     private Term term;
+
+    public static TermScrap toTermScrapEntity() {
+        return TermScrap.builder().build();
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+        user.getTermScrapList().add(this);
+    }
 }

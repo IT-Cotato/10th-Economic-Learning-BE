@@ -10,6 +10,7 @@ import com.ripple.BE.learning.exception.LearningException;
 import com.ripple.BE.learning.exception.QuizException;
 import com.ripple.BE.news.exception.NewsException;
 import com.ripple.BE.post.exception.PostException;
+import com.ripple.BE.term.exception.TermException;
 import com.ripple.BE.user.exception.UserException;
 import io.micrometer.common.lang.NonNull;
 import java.util.List;
@@ -68,6 +69,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(GlobalErrorCode.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(TermException.class)
+    public ResponseEntity<Object> handleTermException(final TermException e) {
+        return handleExceptionInternal(e.getErrorCode());
+    }
+
     @ExceptionHandler(UserException.class)
     public ResponseEntity<Object> handleUserException(final UserException e) {
         return handleExceptionInternal(e.getErrorCode());
@@ -92,7 +98,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleNewsException(final NewsException e) {
         return handleExceptionInternal(e.getErrorCode());
     }
-  
+
     @ExceptionHandler(ImageException.class)
     public ResponseEntity<Object> handleImageException(final ImageException e) {
         return handleExceptionInternal(e.getErrorCode());
