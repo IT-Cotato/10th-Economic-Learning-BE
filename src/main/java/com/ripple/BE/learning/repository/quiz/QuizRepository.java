@@ -1,4 +1,4 @@
-package com.ripple.BE.learning.repository;
+package com.ripple.BE.learning.repository.quiz;
 
 import com.ripple.BE.learning.domain.learningset.LearningSet;
 import com.ripple.BE.learning.domain.quiz.Quiz;
@@ -9,7 +9,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface QuizRepository extends JpaRepository<Quiz, Long> {
+public interface QuizRepository extends JpaRepository<Quiz, Long>, QuizRepositoryCustom {
 
     int countByLevel(Level level);
 

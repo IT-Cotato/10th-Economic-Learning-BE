@@ -1,4 +1,4 @@
-package com.ripple.BE.learning.repository;
+package com.ripple.BE.learning.repository.learningSet;
 
 import com.ripple.BE.learning.domain.learningset.UserLearningSet;
 import com.ripple.BE.user.domain.type.Level;

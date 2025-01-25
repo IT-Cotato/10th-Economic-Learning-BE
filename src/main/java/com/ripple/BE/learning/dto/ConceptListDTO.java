@@ -9,4 +9,8 @@ public record ConceptListDTO(List<ConceptDTO> conceptList // 개념 리스트
     public static ConceptListDTO toConceptListDTO(final List<Concept> conceptList) {
         return new ConceptListDTO(conceptList.stream().map(ConceptDTO::toConceptDTO).toList());
     }
+
+    public static ConceptListDTO toScrapConceptListDTO(final List<Concept> conceptList) {
+        return new ConceptListDTO(conceptList.stream().map(ConceptDTO::toScrapConceptDTO).toList());
+    }
 }

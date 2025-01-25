@@ -1,11 +1,23 @@
 package com.ripple.BE.user.service;
 
+import com.ripple.BE.learning.domain.concept.Concept;
+import com.ripple.BE.learning.domain.quiz.Quiz;
+import com.ripple.BE.learning.dto.ConceptListDTO;
+import com.ripple.BE.learning.dto.FailQuizListDTO;
+import com.ripple.BE.learning.dto.QuizListDTO;
+import com.ripple.BE.learning.repository.conceptScrap.ConceptScrapRepository;
+import com.ripple.BE.learning.repository.quiz.QuizRepository;
+import com.ripple.BE.learning.repository.quizScrap.QuizScrapRepository;
+import com.ripple.BE.post.domain.Comment;
 import com.ripple.BE.post.domain.Post;
+import com.ripple.BE.post.dto.LikeCommentListDTO;
 import com.ripple.BE.post.dto.PostListDTO;
 import com.ripple.BE.post.repository.comment.CommentRepository;
+import com.ripple.BE.post.repository.commentlike.CommentLikeRepository;
 import com.ripple.BE.post.repository.post.PostRepository;
 import com.ripple.BE.post.repository.postlike.PostLikeRepository;
 import com.ripple.BE.post.repository.postscrap.PostScrapRepository;
+import com.ripple.BE.user.domain.type.Level;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +32,12 @@ public class MyPageService {
 
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
+    private final CommentLikeRepository commentLikeRepository;
     private final CommentRepository commentRepository;
     private final PostScrapRepository postScrapRepository;
+    private final QuizRepository quizRepository;
+    private final QuizScrapRepository quizScrapRepository;
+    private final ConceptScrapRepository conceptScrapRepository;
 
     @Transactional(readOnly = true)
     public PostListDTO getMyPosts(final long userId) {
@@ -53,5 +69,37 @@ public class MyPageService {
         List<Post> posts = postScrapRepository.findPostsScrappedByUser(userId);
 
         return PostListDTO.toPostListDTO(posts);
+    }
+
+    @Transactional(readOnly = true)
+    public FailQuizListDTO getMyFailQuizzes(final long userId, Level level) {
+
+        List<Quiz> failedQuizzesByUserAndLevel =
+                quizRepository.findFailedQuizzesByUserAndLevel(userId, level);
+
+        return FailQuizListDTO.toFailQuizListDTO(failedQuizzesByUserAndLevel);
+    }
+
+    @Transactional(readOnly = true)
+    public LikeCommentListDTO getMyLikeComments(final long userId) {
+
+        List<Comment> commentsLikedByUser = commentLikeRepository.findCommentsLikedByUser(userId);
+
+        return LikeCommentListDTO.toLikeCommentListDTO(commentsLikedByUser);
+    }
+
+    public QuizListDTO getMyScrapQuizzes(final long userId, final Level level) {
+
+        List<Quiz> quizzes = quizScrapRepository.findQuizScrappedByUserAndLevel(userId, level);
+
+        return QuizListDTO.toQuizScrapListDTO(quizzes);
+    }
+
+    public ConceptListDTO getMyConcepts(final long userId, final Level level) {
+
+        List<Concept> concepts =
+                conceptScrapRepository.findConceptsScrappedByUserAndLevel(userId, level);
+
+        return ConceptListDTO.toScrapConceptListDTO(concepts);
     }
 }

@@ -1,7 +1,9 @@
 package com.ripple.BE.learning.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
+import com.ripple.BE.learning.dto.ConceptDTO;
 import com.ripple.BE.learning.dto.ConceptListDTO;
+import com.ripple.BE.learning.dto.response.ConceptDetailResponse;
 import com.ripple.BE.learning.dto.response.ConceptListResponse;
 import com.ripple.BE.learning.service.concept.ConceptService;
 import com.ripple.BE.user.domain.CustomUserDetails;
@@ -58,5 +60,16 @@ public class ConceptController {
 
         conceptService.scrapConcept(currentUser.getId(), conceptId);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
+    }
+
+    @Operation(summary = "개별 개념 학습 조회", description = "개별 개념 학습을 조회합니다.")
+    @GetMapping("/learning/{conceptId}")
+    public ResponseEntity<ApiResponse<Object>> getConcept(
+            final @PathVariable("conceptId") long conceptId) {
+
+        ConceptDTO concept = conceptService.getConcept(conceptId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(ConceptDetailResponse.toConceptDetailResponse(concept)));
     }
 }

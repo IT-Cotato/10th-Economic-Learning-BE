@@ -1,4 +1,4 @@
-package com.ripple.BE.learning.repository;
+package com.ripple.BE.learning.repository.concept;
 
 import com.ripple.BE.learning.domain.concept.Concept;
 import com.ripple.BE.learning.domain.learningset.LearningSet;

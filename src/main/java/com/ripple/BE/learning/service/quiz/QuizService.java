@@ -14,9 +14,10 @@ import com.ripple.BE.learning.dto.QuizResultDTO;
 import com.ripple.BE.learning.exception.LearningException;
 import com.ripple.BE.learning.exception.QuizException;
 import com.ripple.BE.learning.exception.errorcode.LearningErrorCode;
-import com.ripple.BE.learning.repository.QuizRepository;
-import com.ripple.BE.learning.repository.QuizScrapRepository;
-import com.ripple.BE.learning.repository.UserLearningSetRepository;
+import com.ripple.BE.learning.exception.errorcode.QuizErrorCode;
+import com.ripple.BE.learning.repository.learningSet.UserLearningSetRepository;
+import com.ripple.BE.learning.repository.quiz.QuizRepository;
+import com.ripple.BE.learning.repository.quizScrap.QuizScrapRepository;
 import com.ripple.BE.learning.service.learningset.LearningSetService;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
@@ -162,10 +163,16 @@ public class QuizService {
      */
     @Transactional
     public void scrapQuiz(final long userId, final long quizId) {
+        // 이미 스크랩한 퀴즈인지 확인
+        if (quizScrapRepository.existsByQuizIdAndUserId(quizId, userId)) {
+            throw new QuizException(QuizErrorCode.QUIZ_ALREADY_SCRAP);
+        }
 
         User user = userService.findUserById(userId);
         Quiz quiz =
-                quizRepository.findById(quizId).orElseThrow(() -> new QuizException(QUIZ_NOT_FOUND));
+                quizRepository
+                        .findById(quizId)
+                        .orElseThrow(() -> new QuizException(QuizErrorCode.QUIZ_NOT_FOUND));
 
         quizScrapRepository.save(QuizScrap.builder().user(user).quiz(quiz).build());
     }
