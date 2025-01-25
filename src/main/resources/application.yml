@@ -5,6 +5,9 @@ spring:
     name: Ripple
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}  # 기본 프로파일을 'local'로 설정
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
 
   #JWT
   jwt:
