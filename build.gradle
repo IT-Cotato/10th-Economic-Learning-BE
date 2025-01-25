@@ -84,6 +84,9 @@ dependencies {
     // amazon s3
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
+    //spring AI
+    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter:1.0.0-SNAPSHOT'
+
 }
 
 clean {	delete file('src/main/generated')}
