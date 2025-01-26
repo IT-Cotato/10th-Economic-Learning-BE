@@ -45,6 +45,43 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
     }
 
     @Override
+    public Page<Post> searchNormalPosts(String keyword, Pageable pageable) {
+        BooleanExpression predicate = null;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            predicate =
+                    post.type
+                            .ne(PostType.ECONOMY_TALK)
+                            .and(post.title.contains(keyword).or(post.content.contains(keyword)));
+        }
+
+        List<Post> posts = getPostsByPageable(pageable, predicate, PostSort.RECENT);
+
+        JPAQuery<Long> countQuery = queryFactory.select(post.count()).from(post).where(predicate);
+
+        return PageableExecutionUtils.getPage(posts, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Page<Post> searchUsedToktokPosts(String keyword, Pageable pageable) {
+        BooleanExpression predicate = null;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            predicate =
+                    post.type
+                            .eq(PostType.ECONOMY_TALK)
+                            .and(post.usedDate.isNotNull())
+                            .and(post.title.contains(keyword).or(post.content.contains(keyword)));
+        }
+
+        List<Post> posts = getPostsByPageableWithToktok(pageable, predicate, PostSort.RECENT);
+
+        JPAQuery<Long> countQuery = queryFactory.select(post.count()).from(post).where(predicate);
+
+        return PageableExecutionUtils.getPage(posts, pageable, countQuery::fetchOne);
+    }
+
+    @Override
     public List<Post> findUserNormalPosts(Long userId) {
 
         BooleanExpression predicate =

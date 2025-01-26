@@ -22,4 +22,8 @@ public interface PostRepositoryCustom {
     Page<Post> findUsedToktokPosts(Pageable pageable, PostSort postSort);
 
     Optional<Post> findTodayToktokPost(LocalDate today);
+
+    Page<Post> searchNormalPosts(String keyword, Pageable pageable);
+
+    Page<Post> searchUsedToktokPosts(String keyword, Pageable pageable);
 }
