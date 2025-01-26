@@ -43,6 +43,22 @@ public class TermRepositoryCustomImpl implements TermRepositoryCustom {
         return PageableExecutionUtils.getPage(termList, pageable, countQuery::fetchOne);
     }
 
+    @Override
+    public Page<Term> searchTerms(String keyword, Pageable pageable) {
+        BooleanExpression predicate = null;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            predicate =
+                    term.title.containsIgnoreCase(keyword).or(term.description.containsIgnoreCase(keyword));
+        }
+
+        List<Term> termList = getTermByPageable(pageable, predicate);
+
+        JPAQuery<Long> countQuery = queryFactory.select(term.count()).from(term).where(predicate);
+
+        return PageableExecutionUtils.getPage(termList, pageable, countQuery::fetchOne);
+    }
+
     private List<Term> getTermByPageable(Pageable pageable, BooleanExpression predicate) {
         return queryFactory
                 .selectFrom(term)
