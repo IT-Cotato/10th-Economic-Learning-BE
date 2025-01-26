@@ -11,4 +11,6 @@ public interface NewsRepositoryCustom {
     Page<News> findByCategory(NewsCategory category, NewsSort newsSort, Pageable pageable);
 
     Page<News> findAll(Pageable pageable, NewsSort newsSort);
+
+    Page<News> searchNews(String keyword, Pageable pageable);
 }

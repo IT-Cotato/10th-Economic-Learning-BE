@@ -31,6 +31,21 @@ public class NewsRepositoryCustomImpl implements NewsRepositoryCustom {
     }
 
     @Override
+    public Page<News> searchNews(String keyword, Pageable pageable) {
+        BooleanExpression predicate = null;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            predicate = news.title.contains(keyword).or(news.content.contains(keyword));
+        }
+
+        List<News> newsList = getNewsByPageable(pageable, predicate, NewsSort.RECENT);
+
+        JPAQuery<Long> countQuery = queryFactory.select(news.count()).from(news).where(predicate);
+
+        return PageableExecutionUtils.getPage(newsList, pageable, countQuery::fetchOne);
+    }
+
+    @Override
     public Page<News> findAll(Pageable pageable, NewsSort newsSort) {
 
         List<News> newsList = getNewsByPageable(pageable, null, newsSort);
