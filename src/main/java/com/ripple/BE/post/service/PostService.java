@@ -28,6 +28,7 @@ import com.ripple.BE.user.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -117,6 +118,10 @@ public class PostService {
         postRepository.delete(post);
     }
 
+    @Cacheable(
+            value = "posts",
+            key =
+                    "#page + (#sort != null ? #sort.toString() : '') + (#type != null ? #type.toString() : '')")
     @Transactional(readOnly = true)
     public PostListDTO getPosts(final int page, final PostSort sort, final PostType type) {
 

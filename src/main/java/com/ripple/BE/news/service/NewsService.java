@@ -18,6 +18,7 @@ import com.ripple.BE.user.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +40,10 @@ public class NewsService {
 
     private static final int PAGE_SIZE = 10;
 
+    @Cacheable(
+            value = "newsList",
+            key =
+                    "#page + (#sort != null ? #sort.toString() : '') + (#category != null ? #category.toString() : '')")
     @Transactional(readOnly = true)
     public NewsListDTO getNewsList(final int page, final NewsSort sort, final NewsCategory category) {
 
