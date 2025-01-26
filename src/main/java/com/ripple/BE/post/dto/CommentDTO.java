@@ -1,5 +1,9 @@
 package com.ripple.BE.post.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.ripple.BE.post.domain.Comment;
 import com.ripple.BE.user.dto.CommunityUserDTO;
 import java.time.LocalDateTime;
@@ -13,8 +17,12 @@ public record CommentDTO(
         boolean isDeleted,
         long replyCount,
         List<CommentDTO> children,
-        LocalDateTime createdDate,
-        LocalDateTime modifiedDate) {
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+                @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+                LocalDateTime createdDate,
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+                @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+                LocalDateTime modifiedDate) {
 
     public static CommentDTO toCommentDTO(Comment comment) {
         return new CommentDTO(

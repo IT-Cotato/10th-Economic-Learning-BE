@@ -1,5 +1,9 @@
 package com.ripple.BE.news.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.ripple.BE.image.dto.ImageListDTO;
 import com.ripple.BE.news.domain.News;
 import com.ripple.BE.news.domain.type.NewsCategory;
@@ -13,7 +17,9 @@ public record NewsDTO(
         String url,
         Long views,
         NewsCategory category,
-        LocalDateTime createdDate,
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+                @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+                LocalDateTime createdDate,
         ImageListDTO imageList) {
 
     public static NewsDTO toNewsDTO(final News news) {

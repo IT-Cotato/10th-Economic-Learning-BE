@@ -1,5 +1,11 @@
 package com.ripple.BE.post.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.ripple.BE.image.dto.ImageListDTO;
 import com.ripple.BE.post.domain.Post;
 import com.ripple.BE.post.domain.type.PostType;
@@ -19,9 +25,15 @@ public record PostDTO(
         Long commentCount,
         Long scrapCount,
         ImageListDTO imageList,
-        LocalDateTime createdDate,
-        LocalDateTime modifiedDate,
-        LocalDate usedDate,
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+                @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+                LocalDateTime createdDate,
+        @JsonSerialize(using = LocalDateTimeSerializer.class)
+                @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+                LocalDateTime modifiedDate,
+        @JsonSerialize(using = LocalDateSerializer.class)
+                @JsonDeserialize(using = LocalDateDeserializer.class)
+                LocalDate usedDate,
         CommentListDTO commentListDTO) {
 
     public static PostDTO toPostDTO(final Post post) {
