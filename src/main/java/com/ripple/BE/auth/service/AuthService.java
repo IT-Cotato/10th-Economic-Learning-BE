@@ -35,6 +35,13 @@ public class AuthService {
     }
 
     @Transactional
+    public String kakaoLoginV2(String accessToken) {
+        Long userId = isSignedUp(accessToken); // Access Token을 이용해 사용자 정보를 가져오고 없으면 회원가입
+
+        return jwtTokenProvider.createToken(userId.toString()); // JWT 토큰 생성 및 반환
+    }
+
+    @Transactional
     public Long isSignedUp(String token) {
         KakaoUserInfoResponse userInfo = kakaoApiClient.getUserInfo(token);
         return userService.findOrCreateUser(userInfo);
