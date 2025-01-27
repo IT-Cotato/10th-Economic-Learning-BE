@@ -68,11 +68,11 @@ public class User extends BaseEntity {
     private String nickname;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "business_type")
+    @Column(name = "business_type", length = 50)
     private BusinessType businessType; // 업종
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "job")
+    @Column(name = "job", length = 50)
     private Job job; // 직무
 
     @Column(name = "birthdate")
@@ -183,8 +183,8 @@ public class User extends BaseEntity {
 
     public void updateProfile(UpdateUserProfileRequest request) {
         this.nickname = request.nickname();
-        this.businessType = BusinessType.valueOf(request.businessType());
-        this.job = Job.valueOf(request.job());
+        this.businessType = BusinessType.from(request.businessType());
+        this.job = Job.from(request.job());
         this.birthDate = request.birthDate();
         this.gender = request.gender();
         this.profileIntro = request.profileIntro();
