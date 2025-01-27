@@ -24,7 +24,8 @@ public class AuthControllerV2 {
     @GetMapping("/login/kakao")
     public ResponseEntity<ApiResponse<Object>> kakaoLogin(@RequestParam String accessToken) {
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(authService.kakaoLoginV2(accessToken)));
+        String jwtToken = authService.kakaoLoginV2(accessToken);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(jwtToken));
     }
 }
