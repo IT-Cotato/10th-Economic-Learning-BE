@@ -84,6 +84,13 @@ dependencies {
     // amazon s3
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
+    // JACKSON
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    // SSE
+    implementation 'org.springframework.boot:spring-boot-starter-web-services'
+
 }
 
 clean {	delete file('src/main/generated')}
