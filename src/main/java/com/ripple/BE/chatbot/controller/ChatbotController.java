@@ -1,9 +1,14 @@
 package com.ripple.BE.chatbot.controller;
 
+import com.ripple.BE.chatbot.dto.ChatDTO;
+import com.ripple.BE.chatbot.dto.request.ChatRequest;
+import com.ripple.BE.chatbot.dto.response.ChatResponse;
+import com.ripple.BE.chatbot.service.ChatbotService;
 import com.ripple.BE.global.dto.response.ApiResponse;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +24,18 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Chatbot", description = "챗봇 API")
 public class ChatbotController {
 
+    private final ChatbotService chatbotService;
+
     @Operation(summary = "챗봇에게 메세지 보내기", description = "챗봇에게 메세지를 보내고 응답을 받습니다. 대화 내용을 저장합니다.")
     @PostMapping
     public ResponseEntity<ApiResponse<Object>> sendMessage(
-            final @AuthenticationPrincipal CustomUserDetails currentUser) {
+            final @AuthenticationPrincipal CustomUserDetails currentUser,
+            final @Valid ChatRequest request) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
+        ChatResponse chatResponse =
+                chatbotService.sendMessage(ChatDTO.tochatDTO(request), currentUser.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(chatResponse));
     }
 
     @Operation(summary = "대화 내역 조회", description = "챗봇과의 대화 내역을 조회합니다.")
