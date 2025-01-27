@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ChatbotRepository extends JpaRepository<ChatMessage, Long> {
     Page<ChatMessage> findAllByUserIdOrderByCreatedDate(Long userId, Pageable pageable);
+
+    void deleteAllByUserId(Long userId);
 }

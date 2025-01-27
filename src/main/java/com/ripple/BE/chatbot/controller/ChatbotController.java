@@ -61,6 +61,8 @@ public class ChatbotController {
     public ResponseEntity<ApiResponse<Object>> clearMessages(
             final @AuthenticationPrincipal CustomUserDetails currentUser) {
 
+        chatbotService.clearChat(currentUser.getId());
+
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
 }

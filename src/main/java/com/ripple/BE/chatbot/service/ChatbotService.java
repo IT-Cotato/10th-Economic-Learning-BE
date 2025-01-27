@@ -82,4 +82,12 @@ public class ChatbotService {
 
 		return ChatListDTO.toChatListDTO(chatMessagePage);
 	}
+
+	@Transactional
+	public void clearChat(final Long userId) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new UserException(USER_NOT_FOUND));
+
+		chatbotRepository.deleteAllByUserId(user.getId());
+	}
 }
