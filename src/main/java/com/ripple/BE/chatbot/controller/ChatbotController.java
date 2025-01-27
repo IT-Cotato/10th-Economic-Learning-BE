@@ -1,7 +1,9 @@
 package com.ripple.BE.chatbot.controller;
 
 import com.ripple.BE.chatbot.dto.ChatDTO;
+import com.ripple.BE.chatbot.dto.ChatListDTO;
 import com.ripple.BE.chatbot.dto.request.ChatRequest;
+import com.ripple.BE.chatbot.dto.response.ChatListResponse;
 import com.ripple.BE.chatbot.dto.response.ChatResponse;
 import com.ripple.BE.chatbot.service.ChatbotService;
 import com.ripple.BE.global.dto.response.ApiResponse;
@@ -10,6 +12,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -41,9 +45,12 @@ public class ChatbotController {
     @Operation(summary = "대화 내역 조회", description = "챗봇과의 대화 내역을 조회합니다.")
     @GetMapping("/list")
     public ResponseEntity<ApiResponse<Object>> getMessages(
-            final @AuthenticationPrincipal CustomUserDetails currentUser) {
+            final @AuthenticationPrincipal CustomUserDetails currentUser,
+            final Pageable pageable) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
+        ChatListDTO chatList = chatbotService.getChatList(currentUser.getId(), pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ChatListResponse.toChatListResponse(chatList)));
     }
 
     @Operation(summary = "대화 내역 초기화", description = "챗봇과의 대화 내역을 초기화합니다.")

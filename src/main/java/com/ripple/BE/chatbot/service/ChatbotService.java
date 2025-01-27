@@ -5,6 +5,8 @@ import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 import com.ripple.BE.chatbot.domain.ChatMessage;
 import com.ripple.BE.chatbot.domain.type.Sender;
 import com.ripple.BE.chatbot.dto.ChatDTO;
+import com.ripple.BE.chatbot.dto.ChatListDTO;
+import com.ripple.BE.chatbot.dto.response.ChatListResponse;
 import com.ripple.BE.chatbot.dto.response.ChatResponse;
 import com.ripple.BE.chatbot.repository.ChatbotRepository;
 import com.ripple.BE.user.domain.User;
@@ -15,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.ai.openai.OpenAiChatClient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +49,6 @@ public class ChatbotService {
         // OpenAI API 호출
         String response = openAiChatClient.call(prompt + "\n사용자 질문: " + chatDTO.message());
 
-        // 유저
         // 유저의 메세지 저장
         chatbotRepository.save(
             ChatMessage.builder()
@@ -64,4 +67,18 @@ public class ChatbotService {
 
         return new ChatResponse(response);
     }
+
+	public ChatListDTO getChatList(final Long userId, final Pageable pageable) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new UserException(USER_NOT_FOUND));
+
+		Page<ChatMessage> page = chatbotRepository.findAllByUserIdOrderByCreatedDate(
+			user.getId(), pageable);
+
+		return ChatListDTO.builder()
+			.chatDTOList(page.getContent().stream().map(ChatDTO::toChatDTO).toList())
+			.currentPage(page.getNumber())
+			.totalPage(page.getTotalPages())
+			.build();
+	}
 }
