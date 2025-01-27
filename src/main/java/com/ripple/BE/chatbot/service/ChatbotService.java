@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.ai.openai.OpenAiChatClient;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,8 @@ public class ChatbotService {
 
     private final UserRepository userRepository;
     private final ChatbotRepository chatbotRepository;
+
+	private static final int PAGE_SIZE = 10;
 
     @Transactional
     public ChatResponse sendMessage(final ChatDTO chatDTO, final Long userId) {
@@ -58,27 +61,25 @@ public class ChatbotService {
                 .build());
 
         // 챗봇의 응답 저장
-        chatbotRepository.save(
-            ChatMessage.builder()
-                .user(user)
-                .message(response)
-                .sender(Sender.CHATBOT)
-                .build());
+		ChatMessage saved = chatbotRepository.save(
+			ChatMessage.builder()
+				.user(user)
+				.message(response)
+				.sender(Sender.CHATBOT)
+				.build());
 
-        return new ChatResponse(response);
+		return ChatResponse.toChatResponse(saved);
     }
 
-	public ChatListDTO getChatList(final Long userId, final Pageable pageable) {
+	public ChatListDTO getChatList(final Long userId, final int page) {
+		Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
-		Page<ChatMessage> page = chatbotRepository.findAllByUserIdOrderByCreatedDate(
+		Page<ChatMessage> chatMessagePage = chatbotRepository.findAllByUserIdOrderByCreatedDate(
 			user.getId(), pageable);
 
-		return ChatListDTO.builder()
-			.chatDTOList(page.getContent().stream().map(ChatDTO::toChatDTO).toList())
-			.currentPage(page.getNumber())
-			.totalPage(page.getTotalPages())
-			.build();
+		return ChatListDTO.toChatListDTO(chatMessagePage);
 	}
 }

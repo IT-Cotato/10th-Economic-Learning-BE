@@ -11,15 +11,15 @@ import com.ripple.BE.user.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -42,15 +42,18 @@ public class ChatbotController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(chatResponse));
     }
 
-    @Operation(summary = "대화 내역 조회", description = "챗봇과의 대화 내역을 조회합니다.")
+    @Operation(
+            summary = "대화 내역 조회",
+            description = "챗봇과의 대화 내역을 조회합니다. 페이지네이션을 지원합니다. 페이지당 10개의 대화 내역을 반환합니다.")
     @GetMapping("/list")
     public ResponseEntity<ApiResponse<Object>> getMessages(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
-            final Pageable pageable) {
+            final @RequestParam(defaultValue = "0") @PositiveOrZero int page) {
 
-        ChatListDTO chatList = chatbotService.getChatList(currentUser.getId(), pageable);
+        ChatListDTO chatList = chatbotService.getChatList(currentUser.getId(), page);
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ChatListResponse.toChatListResponse(chatList)));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(ChatListResponse.toChatListResponse(chatList)));
     }
 
     @Operation(summary = "대화 내역 초기화", description = "챗봇과의 대화 내역을 초기화합니다.")
