@@ -11,19 +11,19 @@ import org.springframework.data.domain.Pageable;
 
 public interface PostRepositoryCustom {
 
-    Page<Post> findByType(PostType type, PostSort postSort, Pageable pageable);
+    Page<Post> findByType(PostType type, PostSort postSort, Pageable pageable, long userId);
 
-    Page<Post> findNormalPosts(Pageable pageable, PostSort postSort);
+    Page<Post> findNormalPosts(Pageable pageable, PostSort postSort, long userId);
 
     List<Post> findUserNormalPosts(Long userId);
 
     List<Post> findNewToktokPosts();
 
-    Page<Post> findUsedToktokPosts(Pageable pageable, PostSort postSort);
+    Page<Post> findUsedToktokPosts(Pageable pageable, PostSort postSort, long userId);
 
     Optional<Post> findTodayToktokPost(LocalDate today);
 
-    Page<Post> searchNormalPosts(String keyword, Pageable pageable);
+    Page<Post> searchNormalPosts(String keyword, Pageable pageable, long userId);
 
-    Page<Post> searchUsedToktokPosts(String keyword, Pageable pageable);
+    Page<Post> searchUsedToktokPosts(String keyword, Pageable pageable, long userId);
 }

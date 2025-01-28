@@ -44,7 +44,7 @@ public class SearchService {
     public PostListDTO searchPosts(final String keyword, final int page, final long userId) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
-        Page<Post> postPage = postRepository.searchNormalPosts(keyword, pageable);
+        Page<Post> postPage = postRepository.searchNormalPosts(keyword, pageable, userId);
         addRecentSearch(userId, keyword);
 
         return PostListDTO.toPostListDTO(postPage);
@@ -55,7 +55,7 @@ public class SearchService {
     public PostListDTO searchToktoks(final String keyword, final int page, final long userId) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
-        Page<Post> postPage = postRepository.searchUsedToktokPosts(keyword, pageable);
+        Page<Post> postPage = postRepository.searchUsedToktokPosts(keyword, pageable, userId);
         addRecentSearch(userId, keyword);
 
         return PostListDTO.toPostListDTO(postPage);
@@ -66,7 +66,7 @@ public class SearchService {
     public NewsListDTO searchNews(final String keyword, final int page, final long userId) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
-        Page<News> newsPage = newsRepository.searchNews(keyword, pageable);
+        Page<News> newsPage = newsRepository.searchNews(keyword, pageable, userId);
         addRecentSearch(userId, keyword);
 
         return NewsListDTO.toNewsListDTO(newsPage);
@@ -77,7 +77,7 @@ public class SearchService {
     public TermListDTO searchTerms(final String keyword, final int page, final long userId) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
-        Page<Term> termPage = termRepository.searchTerms(keyword, pageable);
+        Page<Term> termPage = termRepository.searchTerms(keyword, pageable, userId);
         addRecentSearch(userId, keyword);
 
         return TermListDTO.toTermListDTO(termPage);

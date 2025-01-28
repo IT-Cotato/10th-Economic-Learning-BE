@@ -45,15 +45,16 @@ public class NewsService {
             key =
                     "#page + (#sort != null ? #sort.toString() : '') + (#category != null ? #category.toString() : '')")
     @Transactional(readOnly = true)
-    public NewsListDTO getNewsList(final int page, final NewsSort sort, final NewsCategory category) {
+    public NewsListDTO getNewsList(
+            final int page, final NewsSort sort, final NewsCategory category, final long userId) {
 
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
         // 게시글 조회 (타입에 따른 필터링)
         Page<News> newsPage =
                 category == null
-                        ? newsRepository.findAll(pageable, sort) // 일반 게시글 조회
-                        : newsRepository.findByCategory(category, sort, pageable); // 특정 타입 게시글 조회
+                        ? newsRepository.findAll(pageable, sort, userId) // 일반 게시글 조회
+                        : newsRepository.findByCategory(category, sort, pageable, userId); // 특정 타입 게시글 조회
 
         return NewsListDTO.toNewsListDTO(newsPage);
     }
