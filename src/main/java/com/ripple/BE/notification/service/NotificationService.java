@@ -47,17 +47,20 @@ public class NotificationService {
         User postAuthor = post.getAuthor();
         User commentAuthor = comment.getParent().getCommenter();
 
+        String content = comment.getContent();
+        String title = post.getTitle();
+
         Notification notificationForPostAuthor =
-                Notification.toNotificationEntity(
-                        postAuthor, comment.getContent(), post.getTitle(), NotificationType.REPLY, post);
+                Notification.toNotificationEntity(postAuthor, content, title, NotificationType.REPLY, post);
 
         Notification notificationForCommentAuthor =
                 Notification.toNotificationEntity(
-                        commentAuthor, comment.getContent(), post.getTitle(), NotificationType.REPLY, post);
+                        commentAuthor, content, title, NotificationType.REPLY, post);
 
         notificationRepository.save(notificationForPostAuthor);
         notificationRepository.save(notificationForCommentAuthor);
 
+        // 게시글 작성자와 댓글 작성자에게 알림 전송
         sendNotification(postAuthor, NotificationDTO.toNotificationDTO(notificationForPostAuthor));
         sendNotification(
                 commentAuthor, NotificationDTO.toNotificationDTO(notificationForCommentAuthor));
@@ -95,8 +98,6 @@ public class NotificationService {
                         .findById(notificationId)
                         .orElseThrow(() -> new NotificationException(NOTIFICATION_NOT_FOUND));
         notification.setRead(true);
-
-        notificationRepository.save(notification);
     }
 
     // 알림 삭제
@@ -108,7 +109,6 @@ public class NotificationService {
                         .orElseThrow(() -> new NotificationException(NOTIFICATION_NOT_FOUND));
 
         notificationRepository.delete(notification);
-        sseEmitterManager.deleteEmitter(notification.getReceiver().getId());
     }
 
     private void sendNotification(final User receiver, final NotificationDTO notification) {
