@@ -1,7 +1,5 @@
 package com.ripple.BE.notification.service;
 
-import static com.ripple.BE.notification.exception.errorcode.NotificationErrorCode.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ripple.BE.notification.dto.NotificationDTO;
 import com.ripple.BE.notification.repository.EmitterRepository;
@@ -98,7 +96,7 @@ public class SseEmitterManager {
 
     // 알림 삭제
     public void deleteEmitter(final long userId) {
-        emitterRepository.deleteAllEmitterById(String.valueOf(userId));
-        emitterRepository.deleteAllEventCacheById(String.valueOf(userId));
+        emitterRepository.deleteAllEmitterById(userId);
+        emitterRepository.deleteAllEventCacheById(userId);
     }
 }

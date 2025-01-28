@@ -37,15 +37,19 @@ public class EmitterRepository {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public void deleteEmitterById(String id) {
+    public void deleteEmitterById(final String id) {
         emitters.remove(id);
     }
 
-    public void deleteAllEmitterById(String id) {
-        emitters.keySet().removeIf(key -> key.startsWith(id));
+    public void deleteAllEmitterById(final long userId) {
+        String idStr = String.valueOf(userId);
+
+        emitters.keySet().removeIf(key -> key.startsWith(idStr));
     }
 
-    public void deleteAllEventCacheById(String id) {
-        eventCache.keySet().removeIf(key -> key.startsWith(id));
+    public void deleteAllEventCacheById(final long userId) {
+        String idStr = String.valueOf(userId);
+
+        eventCache.keySet().removeIf(key -> key.startsWith(idStr));
     }
 }
