@@ -9,6 +9,7 @@ public record ToktokPreviewResponse(
         long participantCount,
         long likeCount,
         String imageUrl,
+        Boolean isScraped,
         String createdDate) {
 
     public static ToktokPreviewResponse toToktokPreviewResponse(PostDTO postDTO) {
@@ -21,6 +22,7 @@ public record ToktokPreviewResponse(
                 postDTO.imageList().imageDTOList().isEmpty()
                         ? null
                         : postDTO.imageList().imageDTOList().get(0).url(),
+                postDTO.isScraped(),
                 RelativeTimeFormatter.formatRelativeTime(postDTO.usedDate().atStartOfDay()));
     }
 }

@@ -17,6 +17,7 @@ public record NewsDTO(
         String url,
         Long views,
         NewsCategory category,
+        Boolean isScraped,
         @JsonSerialize(using = LocalDateTimeSerializer.class)
                 @JsonDeserialize(using = LocalDateTimeDeserializer.class)
                 LocalDateTime createdDate,
@@ -31,6 +32,7 @@ public record NewsDTO(
                 news.getUrl(),
                 news.getViews(),
                 news.getCategory(),
+                news.getIsScrapped(),
                 news.getCreatedDate(),
                 ImageListDTO.toImageListDTO(news.getImageList()));
     }
@@ -41,6 +43,6 @@ public record NewsDTO(
             final String publisher,
             final String url,
             final NewsCategory category) {
-        return new NewsDTO(null, title, content, publisher, url, null, category, null, null);
+        return new NewsDTO(null, title, content, publisher, url, null, category, null, null, null);
     }
 }

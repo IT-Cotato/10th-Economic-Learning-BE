@@ -25,6 +25,7 @@ public record PostDTO(
         Long commentCount,
         Long scrapCount,
         ImageListDTO imageList,
+        Boolean isScraped,
         @JsonSerialize(using = LocalDateTimeSerializer.class)
                 @JsonDeserialize(using = LocalDateTimeDeserializer.class)
                 LocalDateTime createdDate,
@@ -47,10 +48,11 @@ public record PostDTO(
                 post.getCommentCount(),
                 post.getScrapCount(),
                 ImageListDTO.toImageListDTO(post.getImageList()),
+                post.getIsScrapped(),
                 post.getCreatedDate(),
                 post.getModifiedDate(),
                 post.getUsedDate(),
-                CommentListDTO.toCommentListDTO(post.getCommentList()));
+                null);
     }
 
     public static PostDTO toPostDTO(final Post post, final CommentListDTO commentListDTO) {
@@ -64,6 +66,7 @@ public record PostDTO(
                 post.getCommentCount(),
                 post.getScrapCount(),
                 ImageListDTO.toImageListDTO(post.getImageList()),
+                post.getIsScrapped(),
                 post.getCreatedDate(),
                 post.getModifiedDate(),
                 post.getUsedDate(),
@@ -84,6 +87,7 @@ public record PostDTO(
                 null,
                 null,
                 null,
+                null,
                 null);
     }
 
@@ -94,6 +98,7 @@ public record PostDTO(
                 null,
                 request.content(),
                 request.type(),
+                null,
                 null,
                 null,
                 null,
