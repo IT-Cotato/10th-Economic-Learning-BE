@@ -32,7 +32,10 @@ public class NotificationController {
     private final NotificationService notificationService;
     private final SseEmitterManager sseEmitterManager;
 
-    @Operation(summary = "알림 구독", description = "알림 구독을 위한 SseEmitter 생성")
+    @Operation(
+            summary = "알림 구독",
+            description =
+                    "알림 구독을 위한 SseEmitter 생성, 푸시 알림을 받기 전에 이 API를 호출해야 합니다. 연결 종료로 인해 푸시 알림을 받지 못한 경우, Last-Event-ID 헤더를 통해 마지막으로 수신한 이벤트 ID를 전달하여 누락된 이벤트를 재전송받을 수 있습니다.")
     @GetMapping(path = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
