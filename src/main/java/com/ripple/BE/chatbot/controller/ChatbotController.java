@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,7 +58,7 @@ public class ChatbotController {
     }
 
     @Operation(summary = "대화 내역 초기화", description = "챗봇과의 대화 내역을 초기화합니다.")
-    @PostMapping("/clear")
+    @DeleteMapping("/clear")
     public ResponseEntity<ApiResponse<Object>> clearMessages(
             final @AuthenticationPrincipal CustomUserDetails currentUser) {
 
