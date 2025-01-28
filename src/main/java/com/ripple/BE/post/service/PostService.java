@@ -28,6 +28,7 @@ import com.ripple.BE.user.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -117,16 +118,21 @@ public class PostService {
         postRepository.delete(post);
     }
 
+    @Cacheable(
+            value = "posts",
+            key =
+                    "#page + (#sort != null ? #sort.toString() : '') + (#type != null ? #type.toString() : '')")
     @Transactional(readOnly = true)
-    public PostListDTO getPosts(final int page, final PostSort sort, final PostType type) {
+    public PostListDTO getPosts(
+            final int page, final PostSort sort, final PostType type, final long userId) {
 
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
         // 게시글 조회 (타입에 따른 필터링)
         Page<Post> postPage =
                 type == null
-                        ? postRepository.findNormalPosts(pageable, sort) // 일반 게시글 조회
-                        : postRepository.findByType(type, sort, pageable); // 특정 타입 게시글 조회
+                        ? postRepository.findNormalPosts(pageable, sort, userId) // 일반 게시글 조회
+                        : postRepository.findByType(type, sort, pageable, userId); // 특정 타입 게시글 조회
 
         return PostListDTO.toPostListDTO(postPage);
     }

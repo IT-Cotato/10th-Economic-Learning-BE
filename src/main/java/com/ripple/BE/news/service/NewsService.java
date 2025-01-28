@@ -18,6 +18,7 @@ import com.ripple.BE.user.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,16 +40,21 @@ public class NewsService {
 
     private static final int PAGE_SIZE = 10;
 
+    @Cacheable(
+            value = "newsList",
+            key =
+                    "#page + (#sort != null ? #sort.toString() : '') + (#category != null ? #category.toString() : '')")
     @Transactional(readOnly = true)
-    public NewsListDTO getNewsList(final int page, final NewsSort sort, final NewsCategory category) {
+    public NewsListDTO getNewsList(
+            final int page, final NewsSort sort, final NewsCategory category, final long userId) {
 
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
         // 게시글 조회 (타입에 따른 필터링)
         Page<News> newsPage =
                 category == null
-                        ? newsRepository.findAll(pageable, sort) // 일반 게시글 조회
-                        : newsRepository.findByCategory(category, sort, pageable); // 특정 타입 게시글 조회
+                        ? newsRepository.findAll(pageable, sort, userId) // 일반 게시글 조회
+                        : newsRepository.findByCategory(category, sort, pageable, userId); // 특정 타입 게시글 조회
 
         return NewsListDTO.toNewsListDTO(newsPage);
     }

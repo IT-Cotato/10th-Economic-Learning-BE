@@ -8,7 +8,10 @@ import org.springframework.data.domain.Pageable;
 
 public interface NewsRepositoryCustom {
 
-    Page<News> findByCategory(NewsCategory category, NewsSort newsSort, Pageable pageable);
+    Page<News> findByCategory(
+            NewsCategory category, NewsSort newsSort, Pageable pageable, long userId);
 
-    Page<News> findAll(Pageable pageable, NewsSort newsSort);
+    Page<News> findAll(Pageable pageable, NewsSort newsSort, long userId);
+
+    Page<News> searchNews(String keyword, Pageable pageable, long userId);
 }

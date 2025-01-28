@@ -12,6 +12,7 @@ public record PostPreviewResponse(
         long likeCount,
         long commentCount,
         String imageUrl,
+        Boolean isScraped,
         String createdDate) {
 
     public static PostPreviewResponse toPostPreviewResponse(PostDTO postDTO) {
@@ -25,6 +26,7 @@ public record PostPreviewResponse(
                 postDTO.imageList().imageDTOList().isEmpty()
                         ? null
                         : postDTO.imageList().imageDTOList().get(0).url(),
+                postDTO.isScraped(),
                 RelativeTimeFormatter.formatRelativeTime(postDTO.createdDate()));
     }
 }

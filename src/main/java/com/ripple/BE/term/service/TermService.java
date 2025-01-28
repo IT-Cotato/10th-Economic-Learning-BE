@@ -32,19 +32,19 @@ public class TermService {
 
     private static final int PAGE_SIZE = 10;
 
-    public TermListDTO getTermsByInitial(final int page, final String consonant) {
+    public TermListDTO getTermsByInitial(final int page, final String consonant, final long userId) {
 
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
-        Page<Term> terms = termRepository.findByInitial(consonant, pageable);
+        Page<Term> terms = termRepository.findByInitial(consonant, pageable, userId);
 
         return TermListDTO.toTermListDTO(terms);
     }
 
-    public TermListDTO getTermsByKeyword(final int page, final String keyword) {
+    public TermListDTO getTermsByKeyword(final int page, final String keyword, final long userId) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
-        Page<Term> terms = termRepository.findByKeyword(keyword, pageable);
+        Page<Term> terms = termRepository.findByKeyword(keyword, pageable, userId);
 
         return TermListDTO.toTermListDTO(terms);
     }
