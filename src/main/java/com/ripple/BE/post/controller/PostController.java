@@ -83,11 +83,12 @@ public class PostController {
     @Operation(summary = "게시글 목록 조회", description = "게시글 목록을 조회합니다.")
     @GetMapping
     public ResponseEntity<ApiResponse<Object>> getPosts(
+            final @AuthenticationPrincipal CustomUserDetails currentUser,
             final @RequestParam(required = false, defaultValue = "0") @PositiveOrZero int page,
             final @RequestParam(required = false, defaultValue = "RECENT") PostSort sort,
             final @RequestParam(required = false) PostType type) {
 
-        PostListDTO postListDTO = postService.getPosts(page, sort, type);
+        PostListDTO postListDTO = postService.getPosts(page, sort, type, currentUser.getId());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(PostListResponse.toPostListResponse(postListDTO)));

@@ -38,6 +38,7 @@ public class TermController {
     @Operation(summary = "자음 별 용어 조회", description = "자음 별 용어를 조회합니다.")
     @GetMapping("/search/consonant")
     public ResponseEntity<ApiResponse<Object>> getTermsByInitial(
+            final @AuthenticationPrincipal CustomUserDetails currentUser,
             final @RequestParam(required = false, defaultValue = "0") @PositiveOrZero int page,
             @RequestParam(value = "consonant", required = false, defaultValue = "ㄱ")
                     final String consonant) {
@@ -46,7 +47,7 @@ public class TermController {
             throw new TermException(INVALID_PARAMETER);
         }
 
-        TermListDTO termListDTO = termService.getTermsByInitial(page, consonant);
+        TermListDTO termListDTO = termService.getTermsByInitial(page, consonant, currentUser.getId());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(TermListResponse.toTermListResponse(termListDTO)));
@@ -55,10 +56,11 @@ public class TermController {
     @Operation(summary = "키워드 별 용어 조회", description = "키워드 별 용어를 조회합니다.")
     @GetMapping("/search/keyword")
     public ResponseEntity<ApiResponse<Object>> getTermsByKeyword(
+            final @AuthenticationPrincipal CustomUserDetails currentUser,
             final @RequestParam(required = false, defaultValue = "0") @PositiveOrZero int page,
             @RequestParam(value = "keyword", required = false) final String keyword) {
 
-        TermListDTO termListDTO = termService.getTermsByKeyword(page, keyword);
+        TermListDTO termListDTO = termService.getTermsByKeyword(page, keyword, currentUser.getId());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(TermListResponse.toTermListResponse(termListDTO)));
