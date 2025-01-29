@@ -7,6 +7,7 @@ import com.ripple.BE.image.domain.Image;
 import com.ripple.BE.image.exception.ImageException;
 import com.ripple.BE.image.repository.ImageRepository;
 import com.ripple.BE.image.service.ImageService;
+import com.ripple.BE.notification.service.NotificationService;
 import com.ripple.BE.post.domain.Comment;
 import com.ripple.BE.post.domain.CommentLike;
 import com.ripple.BE.post.domain.Post;
@@ -49,8 +50,10 @@ public class PostService {
 
     private final UserService userService;
     private final ImageService imageService;
+    private final NotificationService notificationService;
 
     private static final int PAGE_SIZE = 10;
+    private static final int POPULAR_POST_LIKE_COUNT = 10;
 
     @Transactional
     public void createPost(
@@ -169,6 +172,10 @@ public class PostService {
         postLike.setPost(post);
 
         post.increaseLikeCount();
+
+        if (post.getLikeCount() == POPULAR_POST_LIKE_COUNT) {
+            notificationService.createPopularNotification(post);
+        }
     }
 
     @Transactional
@@ -229,6 +236,8 @@ public class PostService {
         comment.setPost(post);
 
         post.increaseCommentCount();
+
+        notificationService.createCommentNotification(post, comment);
     }
 
     @Transactional
@@ -282,6 +291,8 @@ public class PostService {
 
         post.increaseCommentCount();
         parent.increaseReplyCount();
+
+        notificationService.createReplyNotification(post, comment);
     }
 
     @Transactional

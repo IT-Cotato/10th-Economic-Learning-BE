@@ -88,6 +88,10 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
 
+
+    // SSE
+    implementation 'org.springframework.boot:spring-boot-starter-web-services'
+
 }
 
 clean {	delete file('src/main/generated')}
