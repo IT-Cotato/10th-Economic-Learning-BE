@@ -32,7 +32,7 @@ public class LevelTestController {
     private final LevelTestService levelTestService;
 
     @PostMapping
-    @Operation(summary = "레벨 테스트 퀴즈 추가", description = "레벨 테스트 더미 데이터 추가를 위한 API 입니다.")
+    @Operation(summary = "레벨 테스트 퀴즈 추가", description = "레벨 테스트 더미 데이터 추가를 위한 API 입니다. 사용 X")
     public ResponseEntity<ApiResponse<?>> addLevelTestQuiz(
             @Valid @RequestBody AddLevelTestQuizRequest request) {
 
@@ -44,18 +44,23 @@ public class LevelTestController {
     @GetMapping("/quiz")
     @Operation(
             summary = "레벨 테스트 퀴즈 목록 조회",
-            description = "레벨 테스트 퀴즈 목록 조회를 위한 API 입니다. 인증 없이 접근가능합니다.")
+            description =
+                    "레벨 테스트 퀴즈 목록 조회를 위한 API 입니다. 인증 없이 접근가능합니다. 각 레벨에서 랜덤으로 3개씩 가져옵니다. 프론트에서 문제 id와 유저 입력한 정답 캐싱이 필요합니다.")
     public ResponseEntity<ApiResponse<?>> getLevelTestQuizList() {
+
         QuizListDTO levelTestQuizList = levelTestService.getLevelTestQuizList();
 
-        LevelTestQuizListResponse levelTestQuizListResponse =
-                LevelTestQuizListResponse.toLevelTestQuizListResponse(levelTestQuizList);
-
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(levelTestQuizListResponse));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(
+                        ApiResponse.from(
+                                LevelTestQuizListResponse.toLevelTestQuizListResponse(levelTestQuizList)));
     }
 
     @PostMapping("/result")
-    @Operation(summary = "레벨 테스트 결과 제출", description = "레벨 테스트 결과 제출을 위한 API 입니다.")
+    @Operation(
+            summary = "레벨 테스트 결과 제출",
+            description =
+                    "레벨 테스트 결과 제출을 위한 API 입니다. 테스트 종료 후, 각 문제 id와 답안을 한번에 서버로 전송하면 정답률, 유저의 레벨, 틀린문제에 대한 해설을 반환합니다.")
     public ResponseEntity<ApiResponse<?>> submitLevelTestResult(
             @Valid @RequestBody SubmitLevelTestRequest request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {

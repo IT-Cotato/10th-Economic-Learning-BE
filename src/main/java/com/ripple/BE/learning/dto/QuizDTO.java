@@ -42,7 +42,7 @@ public record QuizDTO(
                 quiz.getAnswer(),
                 quiz.getChoices() == null ? null : ChoiceListDTO.toChoiceListDTO(quiz.getChoices()),
                 quiz.getExplanation(),
-                null);
+                quiz.getLearningSet().getName());
     }
 
     public static QuizDTO toQuizDTO(Map<String, String> excelData) {
