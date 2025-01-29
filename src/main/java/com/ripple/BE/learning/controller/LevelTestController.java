@@ -13,6 +13,7 @@ import com.ripple.BE.user.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,12 +47,13 @@ public class LevelTestController {
             summary = "레벨 테스트 퀴즈 목록 조회",
             description = "레벨 테스트 퀴즈 목록 조회를 위한 API 입니다. 인증 없이 접근가능합니다.")
     public ResponseEntity<ApiResponse<?>> getLevelTestQuizList() {
-        QuizListDTO levelTestQuizList = levelTestService.getLevelTestQuizList();
+        Long sessionId = (long) UUID.randomUUID().toString().hashCode(); // sessionId를 랜덤으로 생성
+        QuizListDTO levelTestQuizList = levelTestService.getLevelTestQuizList(sessionId);
 
-        LevelTestQuizListResponse levelTestQuizListResponse =
-                LevelTestQuizListResponse.toLevelTestQuizListResponse(levelTestQuizList);
-
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(levelTestQuizListResponse));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(
+                        ApiResponse.from(
+                                LevelTestQuizListResponse.toLevelTestQuizListResponse(levelTestQuizList)));
     }
 
     @PostMapping("/result")

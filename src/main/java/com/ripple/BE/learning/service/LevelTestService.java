@@ -1,6 +1,7 @@
 package com.ripple.BE.learning.service;
 
 import static com.ripple.BE.learning.exception.errorcode.QuizErrorCode.*;
+import static com.ripple.BE.learning.service.quiz.QuizRedisService.*;
 import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
 import com.ripple.BE.learning.domain.quiz.Quiz;
@@ -13,14 +14,17 @@ import com.ripple.BE.learning.dto.QuizSubmitDTO;
 import com.ripple.BE.learning.dto.response.LevelTestResultResponse;
 import com.ripple.BE.learning.exception.QuizException;
 import com.ripple.BE.learning.repository.quiz.QuizRepository;
+import com.ripple.BE.learning.service.quiz.QuizRedisService;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.exception.UserException;
 import com.ripple.BE.user.repository.UserRepository;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +39,13 @@ public class LevelTestService {
 
     private final QuizRepository quizRepository;
     private final UserRepository userRepository;
+    private final QuizRedisService quizRedisService;
 
     private static final int BEGINNER_SCORE = 6;
     private static final int INTERMEDIATE_SCORE = 12;
+
+    private static final String QUESTION_TYPE = "questions";
+    private static final String QUIZ_COUNT = "quizCount";
 
     @Transactional
     public void addLevelTestQuiz(QuizDTO quizDTO) {
@@ -45,11 +53,27 @@ public class LevelTestService {
     }
 
     /** 레벨 테스트 퀴즈 목록 조회 */
-    public QuizListDTO getLevelTestQuizList() {
-        List<Quiz> list = quizRepository.findAllByPurpose(Purpose.LEVEL_TEST);
+    public QuizListDTO getLevelTestQuizList(Long sessionId) {
+        List<Quiz> quizList = quizRepository.findAll();
 
-        return QuizListDTO.toQuizListDTO(list);
-        // 추후 학습, 용어 사전 데이터 추가 후 4지선다 답안 랜덤으로 넣는 로직 추가
+        // 레벨별 퀴즈 목록 조회
+        List<Quiz> beginnerQuizzes = getRandomQuizzes(quizList, Level.BEGINNER);
+        List<Quiz> intermediateQuizzes = getRandomQuizzes(quizList, Level.INTERMEDIATE);
+        List<Quiz> advancedQuizzes = getRandomQuizzes(quizList, Level.ADVANCED);
+
+        // 전체 레벨 테스트 퀴즈 목록 생성
+        List<Quiz> finalQuizzes =
+                Stream.concat(
+                                Stream.concat(beginnerQuizzes.stream(), intermediateQuizzes.stream()),
+                                advancedQuizzes.stream())
+                        .collect(Collectors.toList());
+
+        QuizListDTO quizListDTO = QuizListDTO.toQuizListDTO(finalQuizzes);
+
+        quizRedisService.saveToRedis(sessionId, QUESTION_TYPE, quizListDTO);
+        quizRedisService.saveToRedis(sessionId, QUIZ_COUNT, quizList.size());
+
+        return quizListDTO;
     }
 
     /**
@@ -125,5 +149,19 @@ public class LevelTestService {
         } else {
             return Level.ADVANCED;
         }
+    }
+
+    /**
+     * 레벨 테스트 퀴즈 랜덤 조회
+     *
+     * @param quizList
+     * @param level
+     * @return
+     */
+    private List<Quiz> getRandomQuizzes(List<Quiz> quizList, Level level) {
+        List<Quiz> quizzes =
+                quizList.stream().filter(quiz -> quiz.getLevel() == level).collect(Collectors.toList());
+        Collections.shuffle(quizzes);
+        return quizzes.stream().limit(3).toList();
     }
 }

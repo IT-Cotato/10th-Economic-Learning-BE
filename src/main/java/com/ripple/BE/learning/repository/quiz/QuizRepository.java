@@ -20,5 +20,7 @@ public interface QuizRepository extends JpaRepository<Quiz, Long>, QuizRepositor
     List<Quiz> findAllByLearningSetAndLevel(
             @Param("learningSet") LearningSet learningSet, @Param("level") Level level);
 
+    List<Quiz> findAllByLevel(Level level);
+
     List<Quiz> findAllByPurpose(Purpose purpose);
 }
