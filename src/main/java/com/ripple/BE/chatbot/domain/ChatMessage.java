@@ -2,6 +2,7 @@ package com.ripple.BE.chatbot.domain;
 
 import com.ripple.BE.chatbot.domain.type.Sender;
 import com.ripple.BE.global.entity.BaseEntity;
+import com.ripple.BE.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -42,6 +43,6 @@ public class ChatMessage extends BaseEntity {
     private Sender sender; // 메시지 송신자
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chat_session_id")
-    private ChatSession chatSession;
+    @JoinColumn(name = "user_id")
+    private User user; // 작성자
 }
