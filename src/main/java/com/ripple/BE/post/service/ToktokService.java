@@ -58,12 +58,12 @@ public class ToktokService {
     }
 
     @Transactional(readOnly = true)
-    public PostListDTO getToktoks(final int page, final PostSort sort) {
+    public PostListDTO getToktoks(final int page, final PostSort sort, final long userId) {
 
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
         // 게시글 조회 (타입에 따른 필터링)
-        Page<Post> postPage = postRepository.findUsedToktokPosts(pageable, sort);
+        Page<Post> postPage = postRepository.findUsedToktokPosts(pageable, sort, userId);
 
         return PostListDTO.toPostListDTO(postPage);
     }

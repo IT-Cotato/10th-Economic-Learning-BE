@@ -1,7 +1,7 @@
 package com.ripple.BE.user.service;
 
-import com.ripple.BE.learning.repository.ConceptRepository;
-import com.ripple.BE.learning.repository.QuizRepository;
+import com.ripple.BE.learning.repository.concept.ConceptRepository;
+import com.ripple.BE.learning.repository.quiz.QuizRepository;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.dto.ProgressDTO;

@@ -42,7 +42,7 @@ public class WebSecurityConfig {
                                 authorize
                                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                                         .permitAll() // Swagger 경로는 누구나 접근 가능
-                                        .requestMatchers("/api/v1/auth/**", "/api/v1/level-test/quiz")
+                                        .requestMatchers("/api/v1/auth/**", "/api/v1/level-test/quiz", "api/v2/auth/**")
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated() // 그 외의 경로는 인증된 사용자만 접근 가능

@@ -43,6 +43,7 @@ public class KakaoApiClient { // kakao API를 호출하기 위한 전용 class
                             .bodyToMono(KakaoTokenResponse.class)
                             .block();
 
+            log.info("🟢 Kakao API returned Access Token: {}", response.accessToken()); // 🔹 로그 추가
             return response.accessToken();
 
         } catch (WebClientResponseException e) {
@@ -52,11 +53,16 @@ public class KakaoApiClient { // kakao API를 호출하기 위한 전용 class
 
     // 카카오 API 호출 : Access Token -> 사용자 정보 조회
     public KakaoUserInfoResponse getUserInfo(String token) {
+        if (token == null || token.isBlank()) {
+            throw new RuntimeException("Token is null");
+        }
         try {
             return webClient
                     .get()
                     .uri(USER_INFO_URI)
-                    .header("Authorization", "Bearer " + token)
+                    .header("Authorization", "Bearer " + token.trim())
+                    .header("Content-Type", "application/json")
+                    .header("Accept", "application/json")
                     .retrieve()
                     .bodyToMono(KakaoUserInfoResponse.class)
                     .block();

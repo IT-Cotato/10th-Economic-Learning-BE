@@ -7,6 +7,7 @@ import com.ripple.BE.image.domain.Image;
 import com.ripple.BE.image.exception.ImageException;
 import com.ripple.BE.image.repository.ImageRepository;
 import com.ripple.BE.image.service.ImageService;
+import com.ripple.BE.notification.service.NotificationService;
 import com.ripple.BE.post.domain.Comment;
 import com.ripple.BE.post.domain.CommentLike;
 import com.ripple.BE.post.domain.Post;
@@ -28,6 +29,7 @@ import com.ripple.BE.user.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,8 +50,10 @@ public class PostService {
 
     private final UserService userService;
     private final ImageService imageService;
+    private final NotificationService notificationService;
 
     private static final int PAGE_SIZE = 10;
+    private static final int POPULAR_POST_LIKE_COUNT = 10;
 
     @Transactional
     public void createPost(
@@ -117,16 +121,21 @@ public class PostService {
         postRepository.delete(post);
     }
 
+    @Cacheable(
+            value = "posts",
+            key =
+                    "#page + (#sort != null ? #sort.toString() : '') + (#type != null ? #type.toString() : '')")
     @Transactional(readOnly = true)
-    public PostListDTO getPosts(final int page, final PostSort sort, final PostType type) {
+    public PostListDTO getPosts(
+            final int page, final PostSort sort, final PostType type, final long userId) {
 
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
         // 게시글 조회 (타입에 따른 필터링)
         Page<Post> postPage =
                 type == null
-                        ? postRepository.findNormalPosts(pageable, sort) // 일반 게시글 조회
-                        : postRepository.findByType(type, sort, pageable); // 특정 타입 게시글 조회
+                        ? postRepository.findNormalPosts(pageable, sort, userId) // 일반 게시글 조회
+                        : postRepository.findByType(type, sort, pageable, userId); // 특정 타입 게시글 조회
 
         return PostListDTO.toPostListDTO(postPage);
     }
@@ -163,6 +172,10 @@ public class PostService {
         postLike.setPost(post);
 
         post.increaseLikeCount();
+
+        if (post.getLikeCount() == POPULAR_POST_LIKE_COUNT) {
+            notificationService.createPopularNotification(post);
+        }
     }
 
     @Transactional
@@ -223,6 +236,8 @@ public class PostService {
         comment.setPost(post);
 
         post.increaseCommentCount();
+
+        notificationService.createCommentNotification(post, comment);
     }
 
     @Transactional
@@ -276,6 +291,8 @@ public class PostService {
 
         post.increaseCommentCount();
         parent.increaseReplyCount();
+
+        notificationService.createReplyNotification(post, comment);
     }
 
     @Transactional

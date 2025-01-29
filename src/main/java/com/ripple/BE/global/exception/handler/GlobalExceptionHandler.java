@@ -9,13 +9,16 @@ import com.ripple.BE.image.exception.ImageException;
 import com.ripple.BE.learning.exception.LearningException;
 import com.ripple.BE.learning.exception.QuizException;
 import com.ripple.BE.news.exception.NewsException;
+import com.ripple.BE.notification.exception.NotificationException;
 import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.term.exception.TermException;
 import com.ripple.BE.user.exception.UserException;
 import io.micrometer.common.lang.NonNull;
 import java.util.List;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -63,9 +66,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * @return 처리된 예외 응답
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleAllException(Exception e) {
-        e.printStackTrace(); // 터미널에 에러 메시지 출력
-        logger.error("Exception occurred:" + e.getMessage() + e); // 로그에 에러 메시지 출력
+    public ResponseEntity<Object> handleAllException(Exception e, WebRequest request) {
+        String contentType = request.getHeader("Accept");
+
+        // SSE 요청일 경우 빈 응답 또는 연결 닫기 처리
+        if (MediaType.TEXT_EVENT_STREAM_VALUE.equals(contentType)) {
+            logger.error("SSE 요청 중 예외 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
         return handleExceptionInternal(GlobalErrorCode.INTERNAL_SERVER_ERROR);
     }
 
@@ -101,6 +110,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ImageException.class)
     public ResponseEntity<Object> handleImageException(final ImageException e) {
+        return handleExceptionInternal(e.getErrorCode());
+    }
+
+    @ExceptionHandler(NotificationException.class)
+    public ResponseEntity<Object> handleNotificationException(final NotificationException e) {
         return handleExceptionInternal(e.getErrorCode());
     }
 

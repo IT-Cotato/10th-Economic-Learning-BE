@@ -1,11 +1,14 @@
 package com.ripple.BE.news.repository.news;
 
 import static com.ripple.BE.news.domain.QNews.*;
+import static com.ripple.BE.news.domain.QNewsScrap.*;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ripple.BE.news.domain.News;
+import com.ripple.BE.news.domain.QNews;
 import com.ripple.BE.news.domain.type.NewsCategory;
 import com.ripple.BE.news.domain.type.NewsSort;
 import java.util.List;
@@ -20,10 +23,11 @@ public class NewsRepositoryCustomImpl implements NewsRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<News> findByCategory(NewsCategory category, NewsSort newsSort, Pageable pageable) {
+    public Page<News> findByCategory(
+            NewsCategory category, NewsSort newsSort, Pageable pageable, long userId) {
         BooleanExpression predicate = news.category.eq(category);
 
-        List<News> newsList = getNewsByPageable(pageable, predicate, newsSort);
+        List<News> newsList = getNewsWithScrapByPageable(pageable, predicate, newsSort, userId);
 
         JPAQuery<Long> countQuery = queryFactory.select(news.count()).from(news).where(predicate);
 
@@ -31,36 +35,61 @@ public class NewsRepositoryCustomImpl implements NewsRepositoryCustom {
     }
 
     @Override
-    public Page<News> findAll(Pageable pageable, NewsSort newsSort) {
+    public Page<News> searchNews(String keyword, Pageable pageable, long userId) {
+        BooleanExpression predicate = null;
 
-        List<News> newsList = getNewsByPageable(pageable, null, newsSort);
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            predicate = news.title.contains(keyword).or(news.content.contains(keyword));
+        }
+
+        List<News> newsList = getNewsWithScrapByPageable(pageable, predicate, NewsSort.RECENT, userId);
+
+        JPAQuery<Long> countQuery = queryFactory.select(news.count()).from(news).where(predicate);
+
+        return PageableExecutionUtils.getPage(newsList, pageable, countQuery::fetchOne);
+    }
+
+    @Override
+    public Page<News> findAll(Pageable pageable, NewsSort newsSort, long userId) {
+
+        List<News> newsList = getNewsWithScrapByPageable(pageable, null, newsSort, userId);
 
         JPAQuery<Long> countQuery = queryFactory.select(news.count()).from(news);
 
         return PageableExecutionUtils.getPage(newsList, pageable, countQuery::fetchOne);
     }
 
-    private List<News> getNewsByPageable(
-            Pageable pageable, BooleanExpression predicate, NewsSort newsSort) {
-        if (newsSort == NewsSort.POPULAR) {
-            return queryFactory
-                    .selectFrom(news)
-                    .where(predicate)
-                    .orderBy(
-                            news.views.desc(), // 조회수 내림차순
-                            news.createdDate.desc() // 생성일 내림차순
-                            )
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .fetch();
-        } else {
-            return queryFactory
-                    .selectFrom(news)
-                    .where(predicate)
-                    .orderBy(news.createdDate.desc()) // 생성일 내림차순
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .fetch();
-        }
+    private List<News> getNewsWithScrapByPageable(
+            Pageable pageable, BooleanExpression predicate, NewsSort newsSort, long userId) {
+
+        // 동적으로 정렬 조건 설정
+        var orderBy =
+                (newsSort == NewsSort.POPULAR)
+                        ? new com.querydsl.core.types.OrderSpecifier[] {
+                            news.views.desc(), news.createdDate.desc()
+                        }
+                        : new com.querydsl.core.types.OrderSpecifier[] {news.createdDate.desc()};
+
+        List<Tuple> results =
+                queryFactory
+                        .select(news, newsScrap.id)
+                        .from(news)
+                        .leftJoin(newsScrap)
+                        .on(news.id.eq(newsScrap.news.id).and(newsScrap.user.id.eq(userId)))
+                        .where(predicate)
+                        .orderBy(orderBy)
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
+                        .fetch();
+
+        return results.stream()
+                .map(
+                        tuple -> {
+                            News news = tuple.get(QNews.news);
+                            Long scrapId = tuple.get(newsScrap.id);
+                            news.setIsScrapped(scrapId != null);
+                            return news;
+                        })
+                .toList();
     }
 }

@@ -78,4 +78,32 @@ public record QuizDTO(
                 request.explanation(),
                 null);
     }
+
+    public static QuizDTO toFailQuizDTO(final Quiz quiz) {
+        return new QuizDTO(
+                quiz.getId(),
+                quiz.getName(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                quiz.getLearningSet().getName());
+    }
+
+    public static QuizDTO toScrapQuizDTO(final Quiz quiz) {
+        return new QuizDTO(
+                quiz.getId(),
+                quiz.getName(),
+                null,
+                null,
+                quiz.getLevel(),
+                null,
+                null,
+                null,
+                null,
+                quiz.getLearningSet().getName());
+    }
 }

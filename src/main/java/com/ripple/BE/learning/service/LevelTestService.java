@@ -12,7 +12,7 @@ import com.ripple.BE.learning.dto.QuizListDTO;
 import com.ripple.BE.learning.dto.QuizSubmitDTO;
 import com.ripple.BE.learning.dto.response.LevelTestResultResponse;
 import com.ripple.BE.learning.exception.QuizException;
-import com.ripple.BE.learning.repository.QuizRepository;
+import com.ripple.BE.learning.repository.quiz.QuizRepository;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.exception.UserException;

@@ -17,6 +17,7 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -70,6 +71,8 @@ public class Post extends BaseEntity {
     @Setter
     @Column(name = "used_date")
     private LocalDate usedDate; // 사용 날짜
+
+    @Setter @Transient private Boolean isScrapped;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>(); // 댓글 목록

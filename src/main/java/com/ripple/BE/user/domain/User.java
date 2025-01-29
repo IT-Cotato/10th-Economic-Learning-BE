@@ -10,7 +10,6 @@ import com.ripple.BE.post.domain.Post;
 import com.ripple.BE.post.domain.PostLike;
 import com.ripple.BE.post.domain.PostScrap;
 import com.ripple.BE.term.domain.TermScrap;
-import com.ripple.BE.user.domain.type.AgeRange;
 import com.ripple.BE.user.domain.type.BusinessType;
 import com.ripple.BE.user.domain.type.Gender;
 import com.ripple.BE.user.domain.type.Job;
@@ -31,6 +30,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -67,16 +67,15 @@ public class User extends BaseEntity {
     private String nickname;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "business_type")
+    @Column(name = "business_type", length = 50)
     private BusinessType businessType; // 업종
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "job")
+    @Column(name = "job", length = 50)
     private Job job; // 직무
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "age_range")
-    private AgeRange ageRange; // 연령대
+    @Column(name = "birthdate")
+    private Date birthDate; // 연령대
 
     @Enumerated(EnumType.STRING)
     @Column(name = "gender")
@@ -180,9 +179,9 @@ public class User extends BaseEntity {
 
     public void updateProfile(UpdateUserProfileRequest request) {
         this.nickname = request.nickname();
-        this.businessType = request.businessType();
-        this.job = request.job();
-        this.ageRange = request.ageRange();
+        this.businessType = BusinessType.from(request.businessType());
+        this.job = Job.from(request.job());
+        this.birthDate = request.birthDate();
         this.gender = request.gender();
         this.profileIntro = request.profileIntro();
         this.isLearningAlarmAllowed = request.isLearningAlarmAllowed();

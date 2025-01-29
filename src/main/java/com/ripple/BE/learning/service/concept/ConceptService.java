@@ -4,12 +4,13 @@ import com.ripple.BE.learning.domain.concept.Concept;
 import com.ripple.BE.learning.domain.concept.ConceptScrap;
 import com.ripple.BE.learning.domain.learningset.LearningSet;
 import com.ripple.BE.learning.domain.learningset.UserLearningSet;
+import com.ripple.BE.learning.dto.ConceptDTO;
 import com.ripple.BE.learning.dto.ConceptListDTO;
 import com.ripple.BE.learning.exception.LearningException;
 import com.ripple.BE.learning.exception.errorcode.LearningErrorCode;
-import com.ripple.BE.learning.repository.ConceptRepository;
-import com.ripple.BE.learning.repository.ConceptScrapRepository;
-import com.ripple.BE.learning.repository.UserLearningSetRepository;
+import com.ripple.BE.learning.repository.concept.ConceptRepository;
+import com.ripple.BE.learning.repository.conceptScrap.ConceptScrapRepository;
+import com.ripple.BE.learning.repository.learningSet.UserLearningSetRepository;
 import com.ripple.BE.learning.service.learningset.LearningSetService;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 @Slf4j
+@Transactional(readOnly = true)
 public class ConceptService {
 
     private final LearningSetService learningSetService;
@@ -78,6 +80,11 @@ public class ConceptService {
      */
     @Transactional
     public void scrapConcept(final long userId, final long conceptId) {
+        // 이미 스크랩한 개념인지 확인
+        if (conceptScrapRepository.existsByConcept_ConceptIdAndUserId(conceptId, userId)) {
+            throw new LearningException(LearningErrorCode.CONCEPT_ALREADY_SCRAP);
+        }
+
         User user = userService.findUserById(userId);
         Concept concept =
                 conceptRepository
@@ -85,5 +92,20 @@ public class ConceptService {
                         .orElseThrow(() -> new LearningException(LearningErrorCode.CONCEPT_NOT_FOUND));
 
         conceptScrapRepository.save(ConceptScrap.builder().user(user).concept(concept).build());
+    }
+
+    /**
+     * 개별 개념 조회
+     *
+     * @param conceptId
+     * @return 개념 반환
+     */
+    public ConceptDTO getConcept(final long conceptId) {
+        Concept concept =
+                conceptRepository
+                        .findById(conceptId)
+                        .orElseThrow(() -> new LearningException(LearningErrorCode.CONCEPT_NOT_FOUND));
+
+        return ConceptDTO.toScrapConceptDTO(concept);
     }
 }

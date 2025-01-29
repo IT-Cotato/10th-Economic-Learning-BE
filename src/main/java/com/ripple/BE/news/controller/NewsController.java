@@ -35,11 +35,12 @@ public class NewsController {
     @Operation(summary = "뉴스 목록 조회", description = "뉴스 목록을 조회합니다.")
     @GetMapping
     public ResponseEntity<ApiResponse<Object>> getNewsList(
+            final @AuthenticationPrincipal CustomUserDetails currentUser,
             final @RequestParam(required = false, defaultValue = "0") @PositiveOrZero int page,
             final @RequestParam(required = false, defaultValue = "RECENT") NewsSort sort,
             final @RequestParam(required = false) NewsCategory category) {
 
-        NewsListDTO newsListDTO = newsService.getNewsList(page, sort, category);
+        NewsListDTO newsListDTO = newsService.getNewsList(page, sort, category, currentUser.getId());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(NewsListResponse.toNewsListResponse(newsListDTO)));

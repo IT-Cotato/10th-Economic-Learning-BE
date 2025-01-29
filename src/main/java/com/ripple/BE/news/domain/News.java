@@ -14,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -21,6 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Table(name = "news")
 @Getter
@@ -56,6 +58,8 @@ public class News extends BaseEntity {
 
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> imageList = new ArrayList<>();
+
+    @Setter @Transient private Boolean isScrapped;
 
     public static News toNewsEntity(NewsDTO newsDTO) {
         return News.builder()

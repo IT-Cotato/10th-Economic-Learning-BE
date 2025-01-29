@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,6 +44,8 @@ public class Term extends BaseEntity {
     @Setter
     @Column(name = "initial", nullable = false)
     private String initial;
+
+    @Setter @Transient private Boolean isScrapped;
 
     public static Term toTermEntity(final TermDTO termDTO) {
         return Term.builder()

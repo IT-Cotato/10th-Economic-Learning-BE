@@ -8,7 +8,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum QuizErrorCode implements ErrorCode {
-    QUIZ_NOT_FOUND(HttpStatus.NOT_FOUND, "Quiz not found");
+    QUIZ_NOT_FOUND(HttpStatus.NOT_FOUND, "Quiz not found"),
+    QUIZ_ALREADY_SCRAP(HttpStatus.BAD_REQUEST, "Quiz already scrap");
 
     private final HttpStatus httpStatus;
     private final String message;
