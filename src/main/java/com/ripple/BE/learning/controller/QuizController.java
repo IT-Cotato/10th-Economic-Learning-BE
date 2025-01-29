@@ -4,7 +4,6 @@ import com.ripple.BE.global.dto.response.ApiResponse;
 import com.ripple.BE.learning.dto.QuizDTO;
 import com.ripple.BE.learning.dto.QuizListDTO;
 import com.ripple.BE.learning.dto.QuizResultDTO;
-import com.ripple.BE.learning.dto.request.SubmitAnswerRequest;
 import com.ripple.BE.learning.dto.response.QuizListResponse;
 import com.ripple.BE.learning.dto.response.QuizResponse;
 import com.ripple.BE.learning.dto.response.QuizResultResponse;
@@ -13,15 +12,16 @@ import com.ripple.BE.user.domain.CustomUserDetails;
 import com.ripple.BE.user.domain.type.Level;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,15 +47,16 @@ public class QuizController {
                 .body(ApiResponse.from(QuizListResponse.toQuizListResponse(quizListDTO)));
     }
 
-    @Operation(summary = "퀴즈 제출", description = "퀴즈를 제출 후 정답 여부와 해설을 반환합니다.")
+    @Validated
+    @Operation(summary = "퀴즈 제출", description = "퀴즈를 제출 후 정답 여부와 해설을 반환합니다. 정답 선지 번호는 0부터 3까지입니다.")
     @PostMapping("/{learningSetId}/quizzes/{quizId}")
     public ResponseEntity<ApiResponse<Object>> submitAnswer(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
             final @PathVariable("quizId") long quizId,
-            final @RequestBody @Valid SubmitAnswerRequest request) {
+            @RequestParam @Min(0) @Max(3) Integer answerIndex) {
 
         QuizResultDTO quizResultDTO =
-                quizService.submitAnswer(currentUser.getId(), quizId, request.answerIndex());
+                quizService.submitAnswer(currentUser.getId(), quizId, answerIndex);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(QuizResultResponse.toQuizResultResponse(quizResultDTO)));
