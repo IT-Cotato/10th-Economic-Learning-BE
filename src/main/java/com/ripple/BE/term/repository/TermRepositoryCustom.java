@@ -6,7 +6,9 @@ import org.springframework.data.domain.Pageable;
 
 public interface TermRepositoryCustom {
 
-    Page<Term> findByInitial(String initial, Pageable pageable);
+    Page<Term> findByInitial(String initial, Pageable pageable, long userId);
 
-    Page<Term> findByKeyword(String keyword, Pageable pageable);
+    Page<Term> findByKeyword(String keyword, Pageable pageable, long userId);
+
+    Page<Term> searchTerms(String keyword, Pageable pageable, long userId);
 }
