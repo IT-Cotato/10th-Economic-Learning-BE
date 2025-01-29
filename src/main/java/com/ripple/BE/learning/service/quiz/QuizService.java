@@ -23,7 +23,9 @@ import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.service.UserService;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -120,18 +122,19 @@ public class QuizService {
     public void finishQuiz(final long userId, final long learningSetId, final Level level) {
 
         User user = userService.findUserById(userId);
-        List<Integer> failList =
-                quizRedisService.fetchListFromRedis(userId, WRONG_ANSWER_TYPE, Integer.class);
+        Set<Integer> failSet =
+                new HashSet<>(
+                        quizRedisService.fetchListFromRedis(userId, WRONG_ANSWER_TYPE, Integer.class));
         UserLearningSet userLearningSet =
                 userLearningSetRepository
                         .findByUserIdAndLearningSetIdAndLevel(userId, learningSetId, level)
                         .orElseThrow(() -> new LearningException(LearningErrorCode.LEARNING_SET_NOT_FOUND));
         List<FailQuiz> failQuizList =
-                failList.stream().map(quizId -> FailQuiz.toFailQuiz(user, getQuizById(quizId))).toList();
+                failSet.stream().map(quizId -> FailQuiz.toFailQuiz(user, getQuizById(quizId))).toList();
         int quizCount = quizRedisService.fetchFromRedis(userId, QUIZ_COUNT, Integer.class);
 
         if (!userLearningSet.isQuizCompleted()) {
-            int correctCount = quizCount - failList.size(); // 정답 개수 계산
+            int correctCount = quizCount - failSet.size(); // 정답 개수 계산
             userLearningSet.setQuizCompleted(); // 퀴즈 완료 처리
             userService.updateUserStatsAfterQuiz(
                     user, level, failQuizList, quizCount, correctCount); // 사용자 통계 업데이트
