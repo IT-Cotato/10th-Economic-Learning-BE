@@ -1,7 +1,5 @@
 package com.ripple.BE.learning.service;
 
-import static com.ripple.BE.learning.exception.errorcode.QuizErrorCode.*;
-import static com.ripple.BE.learning.service.quiz.QuizRedisService.*;
 import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
 import com.ripple.BE.learning.domain.quiz.Quiz;
@@ -12,7 +10,6 @@ import com.ripple.BE.learning.dto.QuizListDTO;
 import com.ripple.BE.learning.dto.QuizSubmitDTO;
 import com.ripple.BE.learning.dto.response.LevelTestResultResponse;
 import com.ripple.BE.learning.repository.quiz.QuizRepository;
-import com.ripple.BE.learning.service.quiz.QuizRedisService;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.exception.UserException;
@@ -37,13 +34,9 @@ public class LevelTestService {
 
     private final QuizRepository quizRepository;
     private final UserRepository userRepository;
-    private final QuizRedisService quizRedisService;
 
     private static final int BEGINNER_SCORE = 6;
     private static final int INTERMEDIATE_SCORE = 12;
-
-    private static final String QUESTION_TYPE = "questions";
-    private static final String QUIZ_COUNT = "quizCount";
 
     @Transactional
     public void addLevelTestQuiz(QuizDTO quizDTO) {
