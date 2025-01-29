@@ -23,7 +23,7 @@ public class QuizRedisService {
     private static final int QUIZ_TIME = 30; // 퀴즈 진행 시간
 
     // Redis에 데이터 저장
-    public <T> void saveToRedis(final long userId, final String type, final T data) {
+    protected <T> void saveToRedis(final long userId, final String type, final T data) {
         redisTemplate.opsForValue().set(getRedisKey(userId, type), data, Duration.ofMinutes(QUIZ_TIME));
     }
 

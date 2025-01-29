@@ -53,7 +53,7 @@ public class LevelTestService {
     }
 
     /** 레벨 테스트 퀴즈 목록 조회 */
-    public QuizListDTO getLevelTestQuizList(Long sessionId) {
+    public QuizListDTO getLevelTestQuizList() {
         List<Quiz> quizList = quizRepository.findAll();
 
         // 레벨별 퀴즈 목록 조회
@@ -68,12 +68,7 @@ public class LevelTestService {
                                 advancedQuizzes.stream())
                         .collect(Collectors.toList());
 
-        QuizListDTO quizListDTO = QuizListDTO.toQuizListDTO(finalQuizzes);
-
-        quizRedisService.saveToRedis(sessionId, QUESTION_TYPE, quizListDTO);
-        quizRedisService.saveToRedis(sessionId, QUIZ_COUNT, quizList.size());
-
-        return quizListDTO;
+        return QuizListDTO.toQuizListDTO(finalQuizzes);
     }
 
     /**

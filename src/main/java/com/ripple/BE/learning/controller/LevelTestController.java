@@ -47,8 +47,8 @@ public class LevelTestController {
             summary = "레벨 테스트 퀴즈 목록 조회",
             description = "레벨 테스트 퀴즈 목록 조회를 위한 API 입니다. 인증 없이 접근가능합니다.")
     public ResponseEntity<ApiResponse<?>> getLevelTestQuizList() {
-        Long sessionId = (long) UUID.randomUUID().toString().hashCode(); // sessionId를 랜덤으로 생성
-        QuizListDTO levelTestQuizList = levelTestService.getLevelTestQuizList(sessionId);
+
+        QuizListDTO levelTestQuizList = levelTestService.getLevelTestQuizList();
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(
@@ -61,6 +61,9 @@ public class LevelTestController {
     public ResponseEntity<ApiResponse<?>> submitLevelTestResult(
             @Valid @RequestBody SubmitLevelTestRequest request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        Long sessionId = (long) UUID.randomUUID().toString().hashCode(); // sessionId를 랜덤으로 생성
+        System.out.println("sessionId = " + sessionId);
 
         LevelTestResultResponse levelTestResultResponse =
                 levelTestService.submitLevelTestResult(
