@@ -5,14 +5,12 @@ import static com.ripple.BE.learning.service.quiz.QuizRedisService.*;
 import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
 import com.ripple.BE.learning.domain.quiz.Quiz;
-import com.ripple.BE.learning.domain.type.Purpose;
 import com.ripple.BE.learning.domain.type.Type;
 import com.ripple.BE.learning.dto.AnswerDTO;
 import com.ripple.BE.learning.dto.QuizDTO;
 import com.ripple.BE.learning.dto.QuizListDTO;
 import com.ripple.BE.learning.dto.QuizSubmitDTO;
 import com.ripple.BE.learning.dto.response.LevelTestResultResponse;
-import com.ripple.BE.learning.exception.QuizException;
 import com.ripple.BE.learning.repository.quiz.QuizRepository;
 import com.ripple.BE.learning.service.quiz.QuizRedisService;
 import com.ripple.BE.user.domain.User;
@@ -80,10 +78,7 @@ public class LevelTestService {
      */
     @Transactional
     public LevelTestResultResponse submitLevelTestResult(QuizSubmitDTO quizSubmitDTO, Long userId) {
-        // 레벨 테스트 퀴즈 목록 조회
-        Map<Long, Quiz> quizMap =
-                quizRepository.findAllByPurpose(Purpose.LEVEL_TEST).stream()
-                        .collect(Collectors.toMap(Quiz::getId, quiz -> quiz));
+        List<Quiz> quizList = quizRepository.findAll();
 
         Map<Type, Integer> scoreMap =
                 Map.of(
@@ -97,12 +92,10 @@ public class LevelTestService {
         List<AnswerDTO> wrongAnswers = new ArrayList<>();
 
         for (QuizSubmitDTO.Answer answer : quizSubmitDTO.answers()) {
-            Quiz quiz = quizMap.get(answer.quizId());
-            if (quiz == null) {
-                throw new QuizException(QUIZ_NOT_FOUND);
-            }
+            Quiz quiz =
+                    quizList.stream().filter(q -> q.getId().equals(answer.quizId())).findFirst().orElse(null);
 
-            if (quiz.getAnswer().equals(answer.answer())) {
+            if (quiz != null && quiz.getAnswer().equals(answer.answer())) {
                 correctCount++;
                 score += scoreMap.get(quiz.getType());
             } else {

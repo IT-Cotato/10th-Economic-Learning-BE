@@ -13,7 +13,6 @@ import com.ripple.BE.user.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +32,7 @@ public class LevelTestController {
     private final LevelTestService levelTestService;
 
     @PostMapping
-    @Operation(summary = "레벨 테스트 퀴즈 추가", description = "레벨 테스트 더미 데이터 추가를 위한 API 입니다.")
+    @Operation(summary = "레벨 테스트 퀴즈 추가", description = "레벨 테스트 더미 데이터 추가를 위한 API 입니다. 사용 X")
     public ResponseEntity<ApiResponse<?>> addLevelTestQuiz(
             @Valid @RequestBody AddLevelTestQuizRequest request) {
 
@@ -61,9 +60,6 @@ public class LevelTestController {
     public ResponseEntity<ApiResponse<?>> submitLevelTestResult(
             @Valid @RequestBody SubmitLevelTestRequest request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-
-        Long sessionId = (long) UUID.randomUUID().toString().hashCode(); // sessionId를 랜덤으로 생성
-        System.out.println("sessionId = " + sessionId);
 
         LevelTestResultResponse levelTestResultResponse =
                 levelTestService.submitLevelTestResult(
