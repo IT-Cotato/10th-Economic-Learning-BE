@@ -5,6 +5,7 @@ import com.ripple.BE.learning.dto.QuizDTO;
 
 public record RandomQuizResponse(
         Long quizId, // 퀴즈 ID
+        String learningSetName, // 학습 세트 이름
         String name, // 퀴즈 이름
         Type type, // 퀴즈 타입
         String question, // 문제
@@ -15,6 +16,7 @@ public record RandomQuizResponse(
 
         return new RandomQuizResponse(
                 quizDTO.id(),
+                quizDTO.learningSetName(),
                 quizDTO.name(),
                 quizDTO.type(),
                 quizDTO.question(),
