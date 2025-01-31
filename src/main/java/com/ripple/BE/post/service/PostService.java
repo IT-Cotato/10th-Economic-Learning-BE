@@ -140,6 +140,15 @@ public class PostService {
         return PostListDTO.toPostListDTO(postPage);
     }
 
+    @Cacheable(value = "popularPosts")
+    @Transactional(readOnly = true)
+    public PostListDTO getPopularPosts() {
+
+        List<Post> postList = postRepository.findPopularPosts();
+
+        return PostListDTO.toPostListDTO(postList);
+    }
+
     @Transactional(readOnly = true)
     public PostDTO getPost(final long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostException(POST_NOT_FOUND));

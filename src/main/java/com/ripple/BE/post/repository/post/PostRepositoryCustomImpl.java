@@ -49,6 +49,20 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
         return PageableExecutionUtils.getPage(posts, pageable, countQuery::fetchOne);
     }
 
+    // 좋아요 수가 10개 이상, 10개 이상인 게시글 중에서 최신순으로 10개 조회
+    @Override
+    public List<Post> findPopularPosts() {
+        int likeCount = 10;
+        int limit = 10;
+
+        return queryFactory
+                .selectFrom(post)
+                .where(post.likeCount.goe(likeCount))
+                .orderBy(post.createdDate.desc())
+                .limit(limit)
+                .fetch();
+    }
+
     @Override
     public Page<Post> searchNormalPosts(String keyword, Pageable pageable, long userId) {
         BooleanExpression predicate = null;
