@@ -54,6 +54,16 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
     }
 
+    @Operation(summary = "푸시 알림 설정", description = "로그인 후 유저의 푸시 알림 설정을 변경합니다.")
+    @PostMapping("/alarm")
+    public ResponseEntity<ApiResponse<?>> alarm(
+            @RequestParam boolean alarm, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        userService.updateAlarm(alarm, customUserDetails.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
+    }
+
     @Operation(summary = "내가 쓴 게시물 조회", description = "로그인한 유저가 작성한 게시물을 조회합니다.")
     @GetMapping("/posts")
     public ResponseEntity<ApiResponse<Object>> getMyPosts(
