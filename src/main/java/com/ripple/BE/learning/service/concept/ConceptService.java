@@ -94,6 +94,16 @@ public class ConceptService {
         conceptScrapRepository.save(ConceptScrap.builder().user(user).concept(concept).build());
     }
 
+    @Transactional
+    public void removeScrapFromConcept(final long conceptId, final long userId) {
+        ConceptScrap conceptScrap =
+                conceptScrapRepository
+                        .findByConcept_ConceptIdAndUserId(conceptId, userId)
+                        .orElseThrow(() -> new LearningException(LearningErrorCode.CONCEPT_SCRAP_NOT_FOUND));
+
+        conceptScrapRepository.delete(conceptScrap);
+    }
+
     /**
      * 개별 개념 조회
      *

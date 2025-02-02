@@ -1,6 +1,7 @@
 package com.ripple.BE.learning.repository.conceptScrap;
 
 import com.ripple.BE.learning.domain.concept.ConceptScrap;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface ConceptScrapRepository
         extends JpaRepository<ConceptScrap, Long>, ConceptScrapRepositoryCustom {
     Boolean existsByConcept_ConceptIdAndUserId(Long conceptId, Long userId);
+
+    Optional<ConceptScrap> findByConcept_ConceptIdAndUserId(Long conceptId, Long userId);
 }
