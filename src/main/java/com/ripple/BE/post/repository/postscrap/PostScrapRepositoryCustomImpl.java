@@ -20,6 +20,7 @@ public class PostScrapRepositoryCustomImpl implements PostScrapRepositoryCustom 
                 .from(postScrap)
                 .join(postScrap.post, post)
                 .where(postScrap.user.id.eq(userId))
+                .orderBy(postScrap.createdDate.desc())
                 .fetch();
     }
 }
