@@ -25,14 +25,16 @@ public class LearningController {
     private final LearningSetService learningSetService;
     private final LearningAdminService learningAdminService;
 
-    @Operation(summary = "학습 세트 생성", description = "엑셀 파일로부터 학습 세트를 생성합니다.")
+    @Operation(summary = "학습 세트 생성 (관리자 전용)", description = "엑셀 파일로부터 학습 세트를 생성합니다. (관리자 전용)")
     @PostMapping("/excel")
     public ResponseEntity<ApiResponse<?>> saveLearningSetsByExcel() {
         learningAdminService.createLearningSetByExcel();
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
     }
 
-    @Operation(summary = "레벨별 학습 세트 조회", description = "레벨별 전체 학습 세트를 조회합니다.")
+    @Operation(
+            summary = "레벨별 학습 세트 조회",
+            description = "레벨별 전체 학습 세트를 조회합니다. 사용자의 현재 레벨에 해당하는 학습 세트 목록을 반환합니다.")
     @PostMapping
     public ResponseEntity<ApiResponse<Object>> getLearningSets(
             final @AuthenticationPrincipal CustomUserDetails currentUser) {
