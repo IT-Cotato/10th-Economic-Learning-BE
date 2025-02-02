@@ -180,6 +180,16 @@ public class QuizService {
         quizScrapRepository.save(QuizScrap.builder().user(user).quiz(quiz).build());
     }
 
+    @Transactional
+    public void removeScrapFromQuiz(final long quizId, final long userId) {
+        QuizScrap quizScrap =
+                quizScrapRepository
+                        .findByQuizIdAndUserId(quizId, userId)
+                        .orElseThrow(() -> new QuizException(QuizErrorCode.QUIZ_SCRAP_NOT_FOUND));
+
+        quizScrapRepository.delete(quizScrap);
+    }
+
     /**
      * 개별 퀴즈 조회
      *
