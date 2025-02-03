@@ -1,5 +1,7 @@
 package com.ripple.BE.user.controller;
 
+import static com.ripple.BE.global.exception.errorcode.GlobalErrorCode.*;
+
 import com.ripple.BE.global.dto.response.ApiResponse;
 import com.ripple.BE.learning.dto.ConceptListDTO;
 import com.ripple.BE.learning.dto.FailQuizListDTO;
@@ -7,10 +9,15 @@ import com.ripple.BE.learning.dto.QuizListDTO;
 import com.ripple.BE.learning.dto.response.FailQuizListResponse;
 import com.ripple.BE.learning.dto.response.ScrapConceptListResponse;
 import com.ripple.BE.learning.dto.response.ScrapQuizListResponse;
+import com.ripple.BE.news.dto.NewsListDTO;
+import com.ripple.BE.news.dto.response.NewsListResponse;
 import com.ripple.BE.post.dto.LikeCommentListDTO;
 import com.ripple.BE.post.dto.PostListDTO;
 import com.ripple.BE.post.dto.response.LikeCommentListResponse;
 import com.ripple.BE.post.dto.response.PostListResponse;
+import com.ripple.BE.term.dto.TermListDTO;
+import com.ripple.BE.term.dto.response.TermListResponse;
+import com.ripple.BE.term.exception.TermException;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.dto.ProgressDTO;
@@ -168,5 +175,50 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(
                         ApiResponse.from(ScrapConceptListResponse.toScrapConceptListResponse(conceptListDTO)));
+    }
+
+    @Operation(summary = "내가 스크랩한 뉴스 조회", description = "로그인한 유저가 스크랩한 뉴스를 조회합니다.")
+    @GetMapping("/scrap-news")
+    public ResponseEntity<ApiResponse<Object>> getMyScrapNews(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        NewsListDTO newsListDTO = myPageService.getMyScrapNews(customUserDetails.getId());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(NewsListResponse.toNewsListResponse(newsListDTO)));
+    }
+
+    @Operation(
+            summary = "내가 스크랩한 용어 조회",
+            description = "로그인한 유저가 스크랩한 용어를 조회합니다. 자음 별로 조회할 수 있으며, 아무것도 입력하지 않으면 모든 용어를 조회합니다.")
+    @GetMapping("/scrap-terms")
+    public ResponseEntity<ApiResponse<Object>> getMyScrapTermsByInitial(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam(value = "initial", required = false) final String initial) {
+
+        if (initial != null && initial.length() != 1) {
+            throw new TermException(INVALID_PARAMETER);
+        }
+
+        TermListDTO termListDTO =
+                myPageService.getMyScrapTermsByInitial(customUserDetails.getId(), initial);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(TermListResponse.toTermListResponse(termListDTO)));
+    }
+
+    @Operation(
+            summary = "내가 스크랩한 용어 조회",
+            description = "로그인한 유저가 스크랩한 용어를 조회합니다. 키워드 별로 조회할 수 있으며, 아무것도 입력하지 않으면 모든 용어를 조회합니다.")
+    @GetMapping("/scrap-terms/search")
+    public ResponseEntity<ApiResponse<Object>> getMyScrapTermsByKeyword(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam(value = "keyword", required = false) final String keyword) {
+
+        TermListDTO termListDTO =
+                myPageService.getMyScrapTermsByKeyword(customUserDetails.getId(), keyword);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(TermListResponse.toTermListResponse(termListDTO)));
     }
 }

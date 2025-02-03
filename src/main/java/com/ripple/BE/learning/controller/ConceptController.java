@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/learning")
-@Tag(name = "Learning", description = "학습 API")
+@Tag(name = "Concept", description = "개념 학습 API")
 public class ConceptController {
 
     private final ConceptService conceptService;
@@ -52,8 +53,8 @@ public class ConceptController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
     }
 
-    @Operation(summary = "개념 학습 저장", description = "개념 학습을 저장합니다.")
-    @PostMapping("/learning/{conceptId}/scrap")
+    @Operation(summary = "개념 학습 스크랩", description = "개념 학습을 스크랩 처리합니다.")
+    @PostMapping("/concept/{conceptId}/scrap")
     public ResponseEntity<ApiResponse<?>> scrapConcept(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
             final @PathVariable("conceptId") long conceptId) {
@@ -62,8 +63,19 @@ public class ConceptController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
     }
 
+    @Operation(summary = "개념 학습 스크랩 취소", description = "개념 학습 스크랩을 취소합니다.")
+    @DeleteMapping("/concept/{conceptId}/scrap")
+    public ResponseEntity<ApiResponse<Object>> unscrapConcept(
+            final @AuthenticationPrincipal CustomUserDetails currentUser,
+            final @PathVariable("conceptId") long id) {
+
+        conceptService.removeScrapFromConcept(id, currentUser.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
+    }
+
     @Operation(summary = "개별 개념 학습 조회", description = "개별 개념 학습을 조회합니다.")
-    @GetMapping("/learning/{conceptId}")
+    @GetMapping("/concept/{conceptId}")
     public ResponseEntity<ApiResponse<Object>> getConcept(
             final @PathVariable("conceptId") long conceptId) {
 

@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/learning")
-@Tag(name = "Learning", description = "학습 API")
+@Tag(name = "Quiz", description = "퀴즈 API")
 public class QuizController {
 
     private final QuizService quizService;
@@ -74,8 +75,8 @@ public class QuizController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
 
-    @Operation(summary = "퀴즈 저장", description = "퀴즈를 저장합니다.")
-    @PostMapping("/learning/quiz/{quizId}/scrap")
+    @Operation(summary = "퀴즈 스크랩", description = "퀴즈를 스크랩 처리합니다.")
+    @PostMapping("/quiz/{quizId}/scrap")
     public ResponseEntity<ApiResponse<?>> scrapQuiz(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
             final @PathVariable("quizId") long quizId) {
@@ -84,8 +85,19 @@ public class QuizController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
     }
 
+    @Operation(summary = "퀴즈 스크랩 취소", description = "퀴즈 스크랩을 취소합니다.")
+    @DeleteMapping("/quiz/{quizId}/scrap")
+    public ResponseEntity<ApiResponse<Object>> unscrapQuiz(
+            final @AuthenticationPrincipal CustomUserDetails currentUser,
+            final @PathVariable("quizId") long id) {
+
+        quizService.removeScrapFromQuiz(id, currentUser.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
+    }
+
     @Operation(summary = "개별 퀴즈 조회", description = "개별 퀴즈를 조회합니다.")
-    @GetMapping("/learning/quiz/{quizId}")
+    @GetMapping("/quiz/{quizId}")
     public ResponseEntity<ApiResponse<Object>> getSingleQuiz(
             final @PathVariable("quizId") long quizId) {
 

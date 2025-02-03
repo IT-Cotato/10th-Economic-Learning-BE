@@ -13,4 +13,8 @@ public record TermListDTO(List<TermDTO> termList, int totalPage, int currentPage
                 termPage.getTotalPages(),
                 termPage.getNumber());
     }
+
+    public static TermListDTO toTermListDTO(List<Term> termList) {
+        return new TermListDTO(termList.stream().map(TermDTO::toTermDTO).toList(), 1, 0);
+    }
 }

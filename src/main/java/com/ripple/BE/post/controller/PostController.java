@@ -41,7 +41,11 @@ public class PostController {
 
     private final PostService postService;
 
-    @Operation(summary = "게시물 작성", description = "게시물을 작성합니다. 게시물을 등록하기 전 이미지 등록을 완료해주세요")
+    @Operation(
+            summary = "게시물 작성",
+            description =
+                    "게시물을 작성합니다. 게시물을 등록하기 전 이미지 등록을 완료해주세요. 이미지 등록 후 반한 된 이미지 ID를 입력해주세요."
+                            + "게시물 타입은 FREE ,QUESTION, INFORMATION, BOOK_RECOMMENDATION 중 하나여야 합니다.")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<Object>> createPost(
             final @AuthenticationPrincipal CustomUserDetails currentUser,

@@ -67,7 +67,7 @@ public class NewsController {
 
     @Operation(summary = "뉴스 스크랩 취소", description = "뉴스 스크랩을 취소합니다.")
     @DeleteMapping("/{id}/scrap")
-    public ResponseEntity<ApiResponse<Object>> unscrapPost(
+    public ResponseEntity<ApiResponse<Object>> unscrapNews(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
             final @PathVariable("id") long id) {
 

@@ -12,4 +12,8 @@ public record NewsListDTO(List<NewsDTO> newsDTOList, int totalPage, int currentP
                 newsPage.getTotalPages(),
                 newsPage.getNumber());
     }
+
+    public static NewsListDTO toNewsListDTO(List<News> newsList) {
+        return new NewsListDTO(newsList.stream().map(NewsDTO::toNewsDTO).toList(), 1, 0);
+    }
 }

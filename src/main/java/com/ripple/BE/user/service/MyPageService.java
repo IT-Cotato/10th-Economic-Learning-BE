@@ -8,6 +8,9 @@ import com.ripple.BE.learning.dto.QuizListDTO;
 import com.ripple.BE.learning.repository.conceptScrap.ConceptScrapRepository;
 import com.ripple.BE.learning.repository.quiz.QuizRepository;
 import com.ripple.BE.learning.repository.quizScrap.QuizScrapRepository;
+import com.ripple.BE.news.domain.News;
+import com.ripple.BE.news.dto.NewsListDTO;
+import com.ripple.BE.news.repository.newscrap.NewsScrapRepository;
 import com.ripple.BE.post.domain.Comment;
 import com.ripple.BE.post.domain.Post;
 import com.ripple.BE.post.dto.LikeCommentListDTO;
@@ -17,6 +20,9 @@ import com.ripple.BE.post.repository.commentlike.CommentLikeRepository;
 import com.ripple.BE.post.repository.post.PostRepository;
 import com.ripple.BE.post.repository.postlike.PostLikeRepository;
 import com.ripple.BE.post.repository.postscrap.PostScrapRepository;
+import com.ripple.BE.term.domain.Term;
+import com.ripple.BE.term.dto.TermListDTO;
+import com.ripple.BE.term.repository.TermScrapRepository;
 import com.ripple.BE.user.domain.type.Level;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -38,8 +44,9 @@ public class MyPageService {
     private final QuizRepository quizRepository;
     private final QuizScrapRepository quizScrapRepository;
     private final ConceptScrapRepository conceptScrapRepository;
+    private final TermScrapRepository termScrapRepository;
+    private final NewsScrapRepository newsScrapRepository;
 
-    @Transactional(readOnly = true)
     public PostListDTO getMyPosts(final long userId) {
 
         List<Post> posts = postRepository.findUserNormalPosts(userId);
@@ -47,7 +54,6 @@ public class MyPageService {
         return PostListDTO.toPostListDTO(posts);
     }
 
-    @Transactional(readOnly = true)
     public PostListDTO getMyLikePosts(final long userId) {
 
         List<Post> posts = postLikeRepository.findPostsLikedByUser(userId);
@@ -55,7 +61,6 @@ public class MyPageService {
         return PostListDTO.toPostListDTO(posts);
     }
 
-    @Transactional(readOnly = true)
     public PostListDTO getMyCommentPosts(final long userId) {
 
         List<Post> posts = commentRepository.findPostsCommentedByUser(userId);
@@ -63,7 +68,6 @@ public class MyPageService {
         return PostListDTO.toPostListDTO(posts);
     }
 
-    @Transactional(readOnly = true)
     public PostListDTO getMyScrapPosts(final long userId) {
 
         List<Post> posts = postScrapRepository.findPostsScrappedByUser(userId);
@@ -71,7 +75,6 @@ public class MyPageService {
         return PostListDTO.toPostListDTO(posts);
     }
 
-    @Transactional(readOnly = true)
     public FailQuizListDTO getMyFailQuizzes(final long userId, Level level) {
 
         List<Quiz> failedQuizzesByUserAndLevel =
@@ -80,7 +83,6 @@ public class MyPageService {
         return FailQuizListDTO.toFailQuizListDTO(failedQuizzesByUserAndLevel);
     }
 
-    @Transactional(readOnly = true)
     public LikeCommentListDTO getMyLikeComments(final long userId) {
 
         List<Comment> commentsLikedByUser = commentLikeRepository.findCommentsLikedByUser(userId);
@@ -101,5 +103,24 @@ public class MyPageService {
                 conceptScrapRepository.findConceptsScrappedByUserAndLevel(userId, level);
 
         return ConceptListDTO.toScrapConceptListDTO(concepts);
+    }
+
+    public TermListDTO getMyScrapTermsByInitial(final long userId, final String initial) {
+
+        List<Term> terms = termScrapRepository.findTermsScrappedByUserAndInitial(userId, initial);
+
+        return TermListDTO.toTermListDTO(terms);
+    }
+
+    public TermListDTO getMyScrapTermsByKeyword(final long userId, final String keyword) {
+
+        List<Term> terms = termScrapRepository.findTermsScrappedByUserAndKeyword(userId, keyword);
+
+        return TermListDTO.toTermListDTO(terms);
+    }
+
+    public NewsListDTO getMyScrapNews(final long userId) {
+        List<News> news = newsScrapRepository.findNewsScrappedByUser(userId);
+        return NewsListDTO.toNewsListDTO(news);
     }
 }

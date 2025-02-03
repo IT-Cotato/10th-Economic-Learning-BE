@@ -4,7 +4,8 @@ import com.ripple.BE.term.domain.TermScrap;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TermScrapRepository extends JpaRepository<TermScrap, Long> {
+public interface TermScrapRepository
+        extends JpaRepository<TermScrap, Long>, TermScrapRepositoryCustom {
 
     Optional<TermScrap> findByTermIdAndUserId(long termId, long userId);
 
