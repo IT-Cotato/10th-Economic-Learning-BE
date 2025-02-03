@@ -1,6 +1,5 @@
 package com.ripple.BE.post.service;
 
-import static com.ripple.BE.post.domain.type.PostType.*;
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 
 import com.ripple.BE.post.domain.Comment;
@@ -12,6 +11,8 @@ import com.ripple.BE.post.dto.PostListDTO;
 import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.repository.comment.CommentRepository;
 import com.ripple.BE.post.repository.post.PostRepository;
+import com.ripple.BE.post.repository.postlike.PostLikeRepository;
+import com.ripple.BE.post.repository.postscrap.PostScrapRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
@@ -30,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ToktokService {
 
     private final PostRepository postRepository;
+    private final PostLikeRepository postLikeRepository;
+    private final PostScrapRepository postScrapRepository;
     private final CommentRepository commentRepository;
 
     private static final int PAGE_SIZE = 10;
@@ -46,13 +49,17 @@ public class ToktokService {
     }
 
     @Transactional(readOnly = true)
-    public PostDTO getToktok(final long id) {
+    public PostDTO getToktok(final long id, final long userId) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostException(POST_NOT_FOUND));
         if (post.getUsedDate() == null) {
             throw new PostException(POST_NOT_FOUND);
         }
 
-        CommentListDTO commentListDTO = getCommentList(post);
+        post.setIsAuthor(false);
+        post.setIsLiked(postLikeRepository.existsByPostIdAndUserId(id, userId));
+        post.setIsScrapped(postScrapRepository.existsByPostIdAndUserId(id, userId));
+
+        CommentListDTO commentListDTO = getCommentList(post, userId);
 
         return PostDTO.toPostDTO(post, commentListDTO);
     }
@@ -68,8 +75,8 @@ public class ToktokService {
         return PostListDTO.toPostListDTO(postPage);
     }
 
-    private CommentListDTO getCommentList(final Post post) {
-        List<Comment> commentList = commentRepository.findRootCommentsByPost(post);
+    private CommentListDTO getCommentList(final Post post, final long userId) {
+        List<Comment> commentList = commentRepository.findRootCommentsByPost(post, userId);
 
         return CommentListDTO.toCommentListDTO(commentList);
     }

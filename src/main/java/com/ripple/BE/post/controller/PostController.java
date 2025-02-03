@@ -115,9 +115,11 @@ public class PostController {
 
     @Operation(summary = "게시물 상세 조회", description = "게시물의 상세 정보를 조회합니다.")
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Object>> getPost(final @PathVariable("id") long id) {
+    public ResponseEntity<ApiResponse<Object>> getPost(
+            final @AuthenticationPrincipal CustomUserDetails currentUser,
+            final @PathVariable("id") long id) {
 
-        PostDTO postDTO = postService.getPost(id);
+        PostDTO postDTO = postService.getPost(id, currentUser.getId());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(PostResponse.toPostResponse(postDTO)));
     }
