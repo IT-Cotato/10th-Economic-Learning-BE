@@ -37,6 +37,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Table(name = "users")
 @Getter
@@ -99,6 +100,7 @@ public class User extends BaseEntity {
     @Column(name = "is_learning_alarm_allowed")
     private boolean isLearningAlarmAllowed = false; // 학습 푸시 알람 여부
 
+    @Setter
     @Column(name = "is_community_alarm_allowed")
     private boolean isCoummunityAlarmAllowed = false; // 커뮤니티 푸시 알람 여부
 

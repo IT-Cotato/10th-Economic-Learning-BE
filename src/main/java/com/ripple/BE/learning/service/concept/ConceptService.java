@@ -14,6 +14,7 @@ import com.ripple.BE.learning.repository.learningSet.UserLearningSetRepository;
 import com.ripple.BE.learning.service.learningset.LearningSetService;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
+import com.ripple.BE.user.service.UserProgressService;
 import com.ripple.BE.user.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class ConceptService {
 
     private final LearningSetService learningSetService;
     private final UserService userService;
+    private final UserProgressService userProgressService;
 
     private final UserLearningSetRepository userLearningSetRepository;
     private final ConceptRepository conceptRepository;
@@ -69,6 +71,8 @@ public class ConceptService {
         if (!userLearningSet.isConceptCompleted()) {
             userLearningSet.setConceptCompleted();
             userService.updateCompletedCountByLevel(user, level);
+
+            userProgressService.updateLevel(user);
         }
     }
 

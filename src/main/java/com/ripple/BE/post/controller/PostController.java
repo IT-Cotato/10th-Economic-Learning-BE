@@ -8,6 +8,7 @@ import com.ripple.BE.post.dto.PostListDTO;
 import com.ripple.BE.post.dto.request.CommentRequest;
 import com.ripple.BE.post.dto.request.PostRequest;
 import com.ripple.BE.post.dto.request.PostUpdateRequest;
+import com.ripple.BE.post.dto.response.PopularPostPreviewListResponse;
 import com.ripple.BE.post.dto.response.PostListResponse;
 import com.ripple.BE.post.dto.response.PostResponse;
 import com.ripple.BE.post.service.PostService;
@@ -96,6 +97,20 @@ public class PostController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(PostListResponse.toPostListResponse(postListDTO)));
+    }
+
+    @Operation(
+            summary = "인기 게시글 목록 조회",
+            description = "좋아요 수가 10개 이상인 인기 게시글 목록을 조회합니다. 최신순으로 10개 조회합니다.")
+    @GetMapping("/popular")
+    public ResponseEntity<ApiResponse<Object>> getPopularPosts() {
+
+        PostListDTO postListDTO = postService.getPopularPosts();
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(
+                        ApiResponse.from(
+                                PopularPostPreviewListResponse.toPopularPostPreviewListResponse(postListDTO)));
     }
 
     @Operation(summary = "게시물 상세 조회", description = "게시물의 상세 정보를 조회합니다.")
