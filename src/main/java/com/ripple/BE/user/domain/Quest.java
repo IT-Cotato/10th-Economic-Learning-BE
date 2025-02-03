@@ -39,7 +39,7 @@ public class Quest extends BaseEntity {
 
     private boolean conceptCompleted;
 
-    private boolean articleCompleted;
+    private long articleCompletedCount;
 
     private LocalDate date; // 퀘스트 완료 날짜
 }

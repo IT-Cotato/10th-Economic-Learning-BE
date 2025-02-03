@@ -44,7 +44,7 @@ public class AttendanceService {
         // 오늘의 퀘스트 조회 없으면 생성
         Quest quest =
                 questRepository
-                        .findByUserAndDate(userId, LocalDate.now().toString())
+                        .findByUserIdAndDate(userId, LocalDate.now())
                         .orElseGet(
                                 () ->
                                         questRepository.save(Quest.builder().user(user).date(LocalDate.now()).build()));
@@ -58,14 +58,16 @@ public class AttendanceService {
                 quest.setConceptCompleted(true);
                 break;
             case "ARTICLE":
-                quest.setArticleCompleted(true);
+                quest.setArticleCompletedCount(quest.getArticleCompletedCount() + 1);
                 break;
             default:
                 throw new UserException(INVALID_QUEST_TYPE);
         }
 
         // 퀘스트 3개 완료 시 출석 완료 처리
-        if (quest.isArticleCompleted() && quest.isConceptCompleted() && quest.isQuizCompleted()) {
+        if (quest.getArticleCompletedCount() >= 3
+                && quest.isConceptCompleted()
+                && quest.isQuizCompleted()) {
             completeAttendance(user, userId, quest);
         }
     }

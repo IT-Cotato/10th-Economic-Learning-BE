@@ -14,6 +14,7 @@ import com.ripple.BE.news.repository.news.NewsJdbcRepository;
 import com.ripple.BE.news.repository.news.NewsRepository;
 import com.ripple.BE.news.repository.newscrap.NewsScrapRepository;
 import com.ripple.BE.user.domain.User;
+import com.ripple.BE.user.service.AttendanceService;
 import com.ripple.BE.user.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class NewsService {
 
     private final UserService userService;
     private final List<NewsCrawler> crawlers;
+    private final AttendanceService attendanceService;
 
     private static final int PAGE_SIZE = 10;
 
@@ -60,11 +62,12 @@ public class NewsService {
     }
 
     @Transactional
-    public NewsDTO getNews(final long id) {
+    public NewsDTO getNews(final long id, final long userId) {
         News news =
                 newsRepository.findByIdForUpdate(id).orElseThrow(() -> new NewsException(NEWS_NOT_FOUND));
 
         news.increaseViews(); // 조회수 증가
+        attendanceService.completeQuest(userId, "ARTICLE"); // 퀘스트 완료
 
         return NewsDTO.toNewsDTO(news);
     }
