@@ -8,5 +8,5 @@ public interface CommentRepositoryCustom {
 
     List<Post> findPostsCommentedByUser(Long userId);
 
-    List<Comment> findRootCommentsByPost(Post post);
+    List<Comment> findRootCommentsByPost(Post post, Long userId);
 }
