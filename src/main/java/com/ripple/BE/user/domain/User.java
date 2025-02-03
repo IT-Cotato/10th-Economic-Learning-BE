@@ -1,6 +1,7 @@
 package com.ripple.BE.user.domain;
 
 import com.ripple.BE.global.entity.BaseEntity;
+import com.ripple.BE.image.domain.Image;
 import com.ripple.BE.learning.domain.learningset.UserLearningSet;
 import com.ripple.BE.learning.domain.quiz.FailQuiz;
 import com.ripple.BE.news.domain.NewsScrap;
@@ -22,9 +23,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -82,8 +85,9 @@ public class User extends BaseEntity {
     @Column(name = "gender")
     private Gender gender;
 
-    @Column(name = "profile_image_url", length = 255)
-    private String profileImageUrl; // 프로필 사진 URL
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "profile_image_id")
+    private Image profileImage; // 프로필 사진
 
     @Enumerated(EnumType.STRING)
     @Column(name = "login_type", nullable = false)
@@ -160,10 +164,9 @@ public class User extends BaseEntity {
 
     // 카카오 로그인 시 사용
     @Builder(builderMethodName = "kakaoBuilder", buildMethodName = "buildKakaoUser")
-    public User(String keyCode, String accountEmail, String profileImageUrl, LoginType loginType) {
+    public User(String keyCode, String accountEmail, LoginType loginType) {
         this.keyCode = keyCode;
         this.accountEmail = accountEmail;
-        this.profileImageUrl = profileImageUrl;
         this.loginType = loginType;
         this.role = Role.USER;
         this.currentLevel = Level.BEGINNER;
@@ -179,7 +182,7 @@ public class User extends BaseEntity {
         this.currentLevel = Level.BEGINNER;
     }
 
-    public void updateProfile(UpdateUserProfileRequest request) {
+    public void updateProfile(UpdateUserProfileRequest request, Image image) {
         this.nickname = request.nickname();
         this.businessType = BusinessType.from(request.businessType());
         this.job = Job.from(request.job());
@@ -188,6 +191,7 @@ public class User extends BaseEntity {
         this.profileIntro = request.profileIntro();
         this.isLearningAlarmAllowed = request.isLearningAlarmAllowed();
         this.isCoummunityAlarmAllowed = request.isCommunityAlarmAllowed();
+        this.profileImage = image;
         this.isProfileCompleted = true;
     }
 

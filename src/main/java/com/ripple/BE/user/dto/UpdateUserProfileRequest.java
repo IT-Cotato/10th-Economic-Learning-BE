@@ -12,4 +12,5 @@ public record UpdateUserProfileRequest(
         Gender gender,
         String profileIntro,
         Boolean isLearningAlarmAllowed,
-        Boolean isCommunityAlarmAllowed) {}
+        Boolean isCommunityAlarmAllowed,
+        Long imageId) {}

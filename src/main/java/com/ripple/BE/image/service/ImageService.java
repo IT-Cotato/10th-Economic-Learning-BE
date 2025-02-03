@@ -40,4 +40,13 @@ public class ImageService {
 
         imageRepository.delete(image);
     }
+
+    @Transactional
+    public long addProfileImage(MultipartFile file) {
+
+        S3Info s3Info = s3Uploader.uploadFiles(file, "profile");
+
+        Image image = imageRepository.save(Image.toImageEntity(s3Info));
+        return image.getId();
+    }
 }

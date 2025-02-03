@@ -3,6 +3,7 @@ package com.ripple.BE.image.domain;
 import com.ripple.BE.global.entity.BaseEntity;
 import com.ripple.BE.news.domain.News;
 import com.ripple.BE.post.domain.Post;
+import com.ripple.BE.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -43,6 +45,10 @@ public class Image extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "news_id")
     private News news;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_image_id")
+    private User user;
 
     public static Image toImageEntity(final S3Info s3Info) {
         return Image.builder().s3Info(s3Info).build();

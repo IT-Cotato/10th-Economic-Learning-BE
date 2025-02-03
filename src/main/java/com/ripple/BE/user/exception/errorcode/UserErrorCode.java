@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum UserErrorCode implements ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "User not found"),
+    IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "Image not found"),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "Invalid Password"),
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "Already exist Email"),
     ;

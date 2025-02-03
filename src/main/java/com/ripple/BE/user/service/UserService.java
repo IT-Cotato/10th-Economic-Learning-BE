@@ -4,6 +4,8 @@ import static com.ripple.BE.user.domain.User.*;
 import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
 import com.ripple.BE.auth.dto.kakao.KakaoUserInfoResponse;
+import com.ripple.BE.image.domain.Image;
+import com.ripple.BE.image.repository.ImageRepository;
 import com.ripple.BE.learning.domain.quiz.FailQuiz;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ImageRepository imageRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -36,7 +39,6 @@ public class UserService {
                         .orElse(
                                 User.kakaoBuilder()
                                         .accountEmail(response.kakao_account().email())
-                                        .profileImageUrl(response.properties().profile_image())
                                         .loginType(LoginType.KAKAO)
                                         .keyCode(response.id().toString())
                                         .buildKakaoUser());
@@ -47,9 +49,19 @@ public class UserService {
     }
 
     @Transactional
-    public void updateProfile(UpdateUserProfileRequest request, Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserException(USER_NOT_FOUND));
-        user.updateProfile(request);
+    public void updateProfile(UpdateUserProfileRequest request, Long userId) {
+        User user =
+                userRepository.findById(userId).orElseThrow(() -> new UserException(USER_NOT_FOUND));
+
+        Image image = null;
+        if (request.imageId() != null) {
+            image =
+                    imageRepository
+                            .findById(request.imageId())
+                            .orElseThrow(() -> new UserException(IMAGE_NOT_FOUND));
+        }
+
+        user.updateProfile(request, image);
     }
 
     @Transactional(readOnly = true)

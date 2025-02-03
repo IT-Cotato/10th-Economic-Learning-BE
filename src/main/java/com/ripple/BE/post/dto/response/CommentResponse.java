@@ -23,7 +23,7 @@ public record CommentResponse(
                 commentDTO.likeCount(),
                 commentDTO.commenter().id(),
                 commentDTO.commenter().nickname(),
-                commentDTO.commenter().profileImage().url(),
+                commentDTO.commenter().profileImage().getS3Info().getUrl(),
                 commentDTO.isDeleted(),
                 commentDTO.replyCount(),
                 RelativeTimeFormatter.formatRelativeTime(commentDTO.createdDate()),
