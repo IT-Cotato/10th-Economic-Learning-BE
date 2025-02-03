@@ -14,6 +14,7 @@ import com.ripple.BE.learning.repository.learningSet.UserLearningSetRepository;
 import com.ripple.BE.learning.service.learningset.LearningSetService;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
+import com.ripple.BE.user.service.AttendanceService;
 import com.ripple.BE.user.service.UserProgressService;
 import com.ripple.BE.user.service.UserService;
 import java.util.List;
@@ -31,6 +32,7 @@ public class ConceptService {
     private final LearningSetService learningSetService;
     private final UserService userService;
     private final UserProgressService userProgressService;
+    private final AttendanceService attendanceService;
 
     private final UserLearningSetRepository userLearningSetRepository;
     private final ConceptRepository conceptRepository;
@@ -74,6 +76,8 @@ public class ConceptService {
 
             userProgressService.updateLevel(user);
         }
+
+        attendanceService.completeQuest(userId, "CONCEPT");
     }
 
     /**
