@@ -9,15 +9,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Table(name = "attendance")
 @Getter
+@Setter
 @Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,10 +35,10 @@ public class Attendance extends BaseEntity {
     private Long currentStreak; // 현재 연속 출석일
 
     @Column(name = "last_reset_date")
-    private LocalDateTime lastResetDate; // 연속 출석일 초기화 날짜
+    private LocalDate lastResetDate; // 연속 출석일 초기화 날짜
 
     @Column(name = "last_attended_date")
-    private LocalDateTime lastAttendedDate; // 마지막 출석 날짜
+    private LocalDate lastAttendedDate; // 마지막 출석 날짜
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
