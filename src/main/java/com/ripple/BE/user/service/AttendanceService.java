@@ -41,13 +41,12 @@ public class AttendanceService {
         User user =
                 userRepository.findById(userId).orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
-        // 오늘의 퀘스트 조회 없으면 생성
         Quest quest =
-                questRepository
-                        .findByUserIdAndDate(userId, LocalDate.now())
-                        .orElseGet(
-                                () ->
-                                        questRepository.save(Quest.builder().user(user).date(LocalDate.now()).build()));
+                questRepository.findByUserId(userId).orElseThrow(() -> new UserException(QUEST_NOT_FOUND));
+
+        if (!quest.getLastUpdatedDate().equals(LocalDate.now())) {
+            quest.resetQuests();
+        }
 
         // 퀘스트 타입에 따라 완료 처리
         switch (questType) {
@@ -68,27 +67,33 @@ public class AttendanceService {
         if (quest.getArticleCompletedCount() >= 3
                 && quest.isConceptCompleted()
                 && quest.isQuizCompleted()) {
-            completeAttendance(user, userId, quest);
+            completeAttendance(userId);
         }
     }
 
     @Transactional
-    public void completeAttendance(User user, Long userId, Quest quest) {
-        // 출석 조회 없으면 생성
+    public void completeAttendance(Long userId) {
         Attendance attendance =
                 attendanceRepository
                         .findByUserId(userId)
-                        .orElseGet(() -> attendanceRepository.save(Attendance.builder().user(user).build()));
+                        .orElseThrow(() -> new UserException(ATTENDANCE_NOT_FOUND));
 
         // 연속 출석일 계산
-        if (attendance.getLastAttendedDate().plusDays(1).isEqual(LocalDate.now())) {
+        if (attendance.getLastAttendedDate() != null
+                && attendance.getLastAttendedDate().plusDays(1).isEqual(LocalDate.now())) {
             attendance.setCurrentStreak(attendance.getCurrentStreak() + 1);
         } else {
             attendance.setCurrentStreak(1L);
-            attendance.setLastResetDate(LocalDate.now());
         }
+        attendance.setLastAttendedDate(LocalDate.now());
 
         // 출석 로그 생성
         AttendanceLog.builder().attendance(attendance).date(LocalDate.now()).isAttended(true).build();
+    }
+
+    @Transactional
+    public void createAttendance(User user) {
+        attendanceRepository.save(Attendance.builder().user(user).currentStreak(0L).build());
+        questRepository.save(Quest.builder().user(user).lastUpdatedDate(LocalDate.now()).build());
     }
 }

@@ -28,6 +28,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
+    private final AttendanceService attendanceService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -62,6 +63,7 @@ public class UserService {
         }
 
         user.updateProfile(request, image);
+        attendanceService.createAttendance(user);
     }
 
     @Transactional(readOnly = true)

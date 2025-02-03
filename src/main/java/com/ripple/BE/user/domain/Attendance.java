@@ -34,9 +34,6 @@ public class Attendance extends BaseEntity {
     @Column(name = "current_streak")
     private Long currentStreak; // 현재 연속 출석일
 
-    @Column(name = "last_reset_date")
-    private LocalDate lastResetDate; // 연속 출석일 초기화 날짜
-
     @Column(name = "last_attended_date")
     private LocalDate lastAttendedDate; // 마지막 출석 날짜
 

@@ -41,5 +41,12 @@ public class Quest extends BaseEntity {
 
     private long articleCompletedCount;
 
-    private LocalDate date; // 퀘스트 완료 날짜
+    private LocalDate lastUpdatedDate; // 퀘스트 완료 날짜
+
+    public void resetQuests() {
+        this.quizCompleted = false;
+        this.conceptCompleted = false;
+        this.articleCompletedCount = 0;
+        this.lastUpdatedDate = LocalDate.now();
+    }
 }
