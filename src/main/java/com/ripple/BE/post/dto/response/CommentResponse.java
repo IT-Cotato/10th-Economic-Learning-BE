@@ -12,6 +12,8 @@ public record CommentResponse(
         String commenterName,
         String commenterProfileImageUrl,
         boolean isDeleted,
+        boolean isAuthor,
+        boolean isLiked,
         long replyCount,
         String createdDate,
         List<CommentResponse> children) {
@@ -25,6 +27,8 @@ public record CommentResponse(
                 commentDTO.commenter().nickname(),
                 commentDTO.commenter().profileImage().url(),
                 commentDTO.isDeleted(),
+                commentDTO.isAuthor(),
+                commentDTO.isLiked(),
                 commentDTO.replyCount(),
                 RelativeTimeFormatter.formatRelativeTime(commentDTO.createdDate()),
                 commentDTO.children().stream().map(CommentResponse::toCommentResponse).toList());

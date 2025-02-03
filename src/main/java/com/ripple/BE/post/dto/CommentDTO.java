@@ -15,6 +15,8 @@ public record CommentDTO(
         long likeCount,
         CommunityUserDTO commenter,
         boolean isDeleted,
+        boolean isLiked,
+        boolean isAuthor,
         long replyCount,
         List<CommentDTO> children,
         @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -31,6 +33,8 @@ public record CommentDTO(
                 comment.getLikeCount(),
                 CommunityUserDTO.toCommunityUserDTO(comment.getCommenter()),
                 comment.isDeleted(),
+                comment.getIsLiked(),
+                comment.getIsAuthor(),
                 comment.getReplyCount(),
                 comment.getChildren().stream().map(CommentDTO::toCommentDTO).toList(),
                 comment.getCreatedDate(),

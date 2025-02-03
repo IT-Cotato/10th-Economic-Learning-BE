@@ -26,6 +26,8 @@ public record PostDTO(
         Long scrapCount,
         ImageListDTO imageList,
         Boolean isScraped,
+        Boolean isLiked,
+        Boolean isAuthor,
         @JsonSerialize(using = LocalDateTimeSerializer.class)
                 @JsonDeserialize(using = LocalDateTimeDeserializer.class)
                 LocalDateTime createdDate,
@@ -49,6 +51,8 @@ public record PostDTO(
                 post.getScrapCount(),
                 ImageListDTO.toImageListDTO(post.getImageList()),
                 post.getIsScrapped(),
+                post.getIsLiked(),
+                post.getIsAuthor(),
                 post.getCreatedDate(),
                 post.getModifiedDate(),
                 post.getUsedDate(),
@@ -67,6 +71,8 @@ public record PostDTO(
                 post.getScrapCount(),
                 ImageListDTO.toImageListDTO(post.getImageList()),
                 post.getIsScrapped(),
+                post.getIsLiked(),
+                post.getIsAuthor(),
                 post.getCreatedDate(),
                 post.getModifiedDate(),
                 post.getUsedDate(),
@@ -88,6 +94,8 @@ public record PostDTO(
                 null,
                 null,
                 null,
+                null,
+                null,
                 null);
     }
 
@@ -98,6 +106,8 @@ public record PostDTO(
                 null,
                 request.content(),
                 request.type(),
+                null,
+                null,
                 null,
                 null,
                 null,

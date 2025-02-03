@@ -74,6 +74,10 @@ public class Post extends BaseEntity {
 
     @Setter @Transient private Boolean isScrapped;
 
+    @Setter @Transient private Boolean isLiked;
+
+    @Setter @Transient private Boolean isAuthor;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>(); // 댓글 목록
 

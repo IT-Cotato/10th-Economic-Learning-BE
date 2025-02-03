@@ -16,6 +16,9 @@ public record PostResponse(
         long likeCount,
         long commentCount,
         long scrapCount,
+        boolean isScraped,
+        boolean isLiked,
+        boolean isAuthor,
         List<ImageResponse> imageList,
         String createdDate,
         CommentListResponse commentListResponse) {
@@ -31,6 +34,9 @@ public record PostResponse(
                 postDTO.likeCount(),
                 postDTO.commentCount(),
                 postDTO.scrapCount(),
+                postDTO.isScraped(),
+                postDTO.isLiked(),
+                postDTO.isAuthor(),
                 postDTO.imageList().imageDTOList().stream().map(ImageResponse::toImageResponse).toList(),
                 RelativeTimeFormatter.formatRelativeTime(postDTO.createdDate()),
                 CommentListResponse.toCommentListResponse(postDTO.commentListDTO()));

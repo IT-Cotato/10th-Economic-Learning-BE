@@ -53,9 +53,11 @@ public class ToktokController {
 
     @Operation(summary = "경제 톡톡 게시물 상세 조회", description = "경제 톡톡 게시물을 상세 조회합니다.")
     @GetMapping("/toktok/{id}")
-    public ResponseEntity<ApiResponse<Object>> getToktok(final @PathVariable("id") long id) {
+    public ResponseEntity<ApiResponse<Object>> getToktok(
+            final @AuthenticationPrincipal CustomUserDetails currentUser,
+            final @PathVariable("id") long id) {
 
-        PostDTO postDTO = toktokService.getToktok(id);
+        PostDTO postDTO = toktokService.getToktok(id, currentUser.getId());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(ToktokResponse.toToktokResponse(postDTO)));
