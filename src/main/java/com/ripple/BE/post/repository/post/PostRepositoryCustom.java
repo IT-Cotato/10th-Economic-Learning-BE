@@ -15,6 +15,8 @@ public interface PostRepositoryCustom {
 
     Page<Post> findNormalPosts(Pageable pageable, PostSort postSort, long userId);
 
+    List<Post> findPopularPosts();
+
     List<Post> findUserNormalPosts(Long userId);
 
     List<Post> findNewToktokPosts();
