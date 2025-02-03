@@ -9,36 +9,35 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "attendance")
+@Table(name = "quests")
 @Getter
 @Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Attendance extends BaseEntity {
+public class Quest extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "attendance_id")
+    @Column(name = "quest_id")
     private Long id;
-
-    @Column(name = "current_streak")
-    private Long currentStreak; // 현재 연속 출석일
-
-    @Column(name = "last_reset_date")
-    private LocalDateTime lastResetDate; // 연속 출석일 초기화 날짜
-
-    @Column(name = "last_attended_date")
-    private LocalDateTime lastAttendedDate; // 마지막 출석 날짜
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    private boolean quizCompleted;
+
+    private boolean conceptCompleted;
+
+    private boolean articleCompleted;
+
+    private LocalDate date; // 퀘스트 완료 날짜
 }
