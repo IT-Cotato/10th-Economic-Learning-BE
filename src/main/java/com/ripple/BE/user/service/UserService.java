@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -97,7 +98,12 @@ public class UserService {
     @Transactional
     public void updateCompletedCountByLevel(User user, Level level) {
         user.increaseCompletedCountByLevel(level);
+    }
 
-        /** TODO: 레벨 업 조건 확인 후 레벨 업 처리 만약 상위 조건의 학습 세트를 완료한 경우 하위 레벨의 학습 세트가 완료되어야지 레벨 업이 가능하다. */
+    @Transactional
+    public void updateAlarm(final boolean alarm, final long userId) {
+
+        User user = findUserById(userId);
+        user.setCoummunityAlarmAllowed(alarm);
     }
 }

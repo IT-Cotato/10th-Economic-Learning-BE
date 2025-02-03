@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,7 +34,7 @@ public class LearningController {
     }
 
     @Operation(summary = "레벨별 학습 세트 조회", description = "레벨별 전체 학습 세트를 조회합니다.")
-    @PostMapping
+    @GetMapping
     public ResponseEntity<ApiResponse<Object>> getLearningSets(
             final @AuthenticationPrincipal CustomUserDetails currentUser) {
 

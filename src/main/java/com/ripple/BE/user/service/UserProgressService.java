@@ -1,11 +1,14 @@
 package com.ripple.BE.user.service;
 
+import com.ripple.BE.learning.domain.learningset.UserLearningSet;
 import com.ripple.BE.learning.repository.concept.ConceptRepository;
+import com.ripple.BE.learning.repository.learningSet.UserLearningSetRepository;
 import com.ripple.BE.learning.repository.quiz.QuizRepository;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.dto.ProgressDTO;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ public class UserProgressService {
 
     private final UserService userService;
 
+    private final UserLearningSetRepository userLearningSetRepository;
     private final ConceptRepository conceptRepository;
     private final QuizRepository quizRepository;
 
@@ -46,5 +50,21 @@ public class UserProgressService {
                                         level -> level,
                                         level ->
                                                 (double) user.getCompletedCountByLevel(level) / totalSets.get(level))));
+    }
+
+    @Transactional
+    public void updateLevel(final User user) {
+        List<UserLearningSet> userLearningSets =
+                userLearningSetRepository.findByUserIdAndLevel(user.getId(), user.getCurrentLevel());
+
+        if (!userLearningSets.isEmpty()) {
+            if (userLearningSets.stream().allMatch(UserLearningSet::isLearningSetCompleted)) {
+                if (user.getCurrentLevel() == Level.BEGINNER) {
+                    user.updateLevel(Level.INTERMEDIATE);
+                } else if (user.getCurrentLevel() == Level.INTERMEDIATE) {
+                    user.updateLevel(Level.ADVANCED);
+                }
+            }
+        }
     }
 }
