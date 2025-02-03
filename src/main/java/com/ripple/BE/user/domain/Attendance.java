@@ -15,11 +15,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Table(name = "attendance")
 @Getter
-@Setter
 @Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -40,4 +38,12 @@ public class Attendance extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public void updateCurrentStreak(long currentStreak) {
+        this.currentStreak = currentStreak;
+    }
+
+    public void updateLastAttendedDate(LocalDate lastAttendedDate) {
+        this.lastAttendedDate = lastAttendedDate;
+    }
 }

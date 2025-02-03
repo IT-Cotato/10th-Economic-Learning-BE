@@ -38,9 +38,6 @@ public class AttendanceService {
 
     @Transactional
     public void completeQuest(Long userId, String questType) {
-        User user =
-                userRepository.findById(userId).orElseThrow(() -> new UserException(USER_NOT_FOUND));
-
         Quest quest =
                 questRepository.findByUserId(userId).orElseThrow(() -> new UserException(QUEST_NOT_FOUND));
 
@@ -51,13 +48,13 @@ public class AttendanceService {
         // 퀘스트 타입에 따라 완료 처리
         switch (questType) {
             case "QUIZ":
-                quest.setQuizCompleted(true);
+                quest.updateQuizCompleted();
                 break;
             case "CONCEPT":
-                quest.setConceptCompleted(true);
+                quest.updateConceptCompleted();
                 break;
             case "ARTICLE":
-                quest.setArticleCompletedCount(quest.getArticleCompletedCount() + 1);
+                quest.updateArticleCompletedCount();
                 break;
             default:
                 throw new UserException(INVALID_QUEST_TYPE);
@@ -81,11 +78,11 @@ public class AttendanceService {
         // 연속 출석일 계산
         if (attendance.getLastAttendedDate() != null
                 && attendance.getLastAttendedDate().plusDays(1).isEqual(LocalDate.now())) {
-            attendance.setCurrentStreak(attendance.getCurrentStreak() + 1);
+            attendance.updateCurrentStreak(attendance.getCurrentStreak() + 1);
         } else {
-            attendance.setCurrentStreak(1L);
+            attendance.updateCurrentStreak(1L);
         }
-        attendance.setLastAttendedDate(LocalDate.now());
+        attendance.updateLastAttendedDate(LocalDate.now());
 
         // 출석 로그 생성
         AttendanceLog.builder().attendance(attendance).date(LocalDate.now()).isAttended(true).build();

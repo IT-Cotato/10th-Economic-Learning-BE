@@ -15,11 +15,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Table(name = "quests")
 @Getter
-@Setter
 @Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -48,5 +46,17 @@ public class Quest extends BaseEntity {
         this.conceptCompleted = false;
         this.articleCompletedCount = 0;
         this.lastUpdatedDate = LocalDate.now();
+    }
+
+    public void updateQuizCompleted() {
+        this.quizCompleted = true;
+    }
+
+    public void updateConceptCompleted() {
+        this.conceptCompleted = true;
+    }
+
+    public void updateArticleCompletedCount() {
+        this.articleCompletedCount++;
     }
 }
