@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +60,10 @@ public class Comment extends BaseEntity {
     @Setter
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false; // 삭제 여부
+
+    @Setter @Transient private Boolean isAuthor; // 작성자 여부
+
+    @Setter @Transient private Boolean isLiked; // 좋아요 여부
 
     private long replyCount = 0L; // 답글 수
 
