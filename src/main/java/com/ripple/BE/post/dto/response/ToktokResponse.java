@@ -12,6 +12,8 @@ public record ToktokResponse(
         long participantCount,
         List<String> imageList,
         String createdDate,
+        boolean isScraped,
+        boolean isLiked,
         CommentListResponse commentListResponse) {
 
     public static ToktokResponse toToktokResponse(PostDTO postDTO) {
@@ -23,6 +25,8 @@ public record ToktokResponse(
                 postDTO.commentCount(),
                 postDTO.imageList().imageDTOList().stream().map(ImageDTO::url).toList(),
                 RelativeTimeFormatter.formatRelativeTime(postDTO.usedDate().atStartOfDay()),
+                postDTO.isScraped(),
+                postDTO.isLiked(),
                 CommentListResponse.toCommentListResponse(postDTO.commentListDTO()));
     }
 }
