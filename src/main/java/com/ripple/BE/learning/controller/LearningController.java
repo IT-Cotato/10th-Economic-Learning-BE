@@ -33,7 +33,6 @@ public class LearningController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
     }
 
-
     @Operation(
             summary = "레벨별 학습 세트 조회",
             description = "레벨별 전체 학습 세트를 조회합니다. 사용자의 현재 레벨에 해당하는 학습 세트 목록을 반환합니다.")
