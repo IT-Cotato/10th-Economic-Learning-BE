@@ -17,7 +17,7 @@ import com.ripple.BE.user.domain.type.Job;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.domain.type.LoginType;
 import com.ripple.BE.user.domain.type.Role;
-import com.ripple.BE.user.dto.UpdateUserProfileRequest;
+import com.ripple.BE.user.dto.request.UpdateUserProfileRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

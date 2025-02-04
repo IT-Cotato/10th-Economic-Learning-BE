@@ -1,4 +1,4 @@
-package com.ripple.BE.user.dto;
+package com.ripple.BE.user.dto.request;
 
 import com.ripple.BE.user.domain.type.Gender;
 import jakarta.validation.constraints.NotNull;

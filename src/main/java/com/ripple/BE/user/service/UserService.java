@@ -10,7 +10,7 @@ import com.ripple.BE.learning.domain.quiz.FailQuiz;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.domain.type.LoginType;
-import com.ripple.BE.user.dto.UpdateUserProfileRequest;
+import com.ripple.BE.user.dto.request.UpdateUserProfileRequest;
 import com.ripple.BE.user.exception.UserException;
 import com.ripple.BE.user.repository.UserRepository;
 import java.util.List;
