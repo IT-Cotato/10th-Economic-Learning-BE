@@ -227,7 +227,11 @@ public class UserController {
                 .body(ApiResponse.from(TermListResponse.toTermListResponse(termListDTO)));
     }
 
-    @Operation(summary = "회원 정보 조회", description = "로그인한 유저의 회원 정보를 조회합니다.  ")
+    @Operation(
+            summary = "회원 정보 조회",
+            description =
+                    "로그인한 유저의 회원 정보를 조회합니다."
+                            + " 프로필 사진 URL, 닉네임, 한줄소개, 생일, 업종, 직업, 연속 출석 일수, 레벨, 퀴즈 정답률을 반환합니다.")
     @GetMapping("/info")
     public ResponseEntity<ApiResponse<Object>> getUserInfo(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
