@@ -33,10 +33,9 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
     public List<Comment> findRootCommentsByPost(Post post, Long userId) {
         List<Tuple> results =
                 queryFactory
-                        .select(comment, commentLike.id)
+                        .selectDistinct(comment, commentLike.id)
                         .from(comment)
                         .leftJoin(comment.children)
-                        .fetchJoin()
                         .leftJoin(commentLike)
                         .on(comment.id.eq(commentLike.comment.id).and(commentLike.user.id.eq(userId)))
                         .where(comment.post.eq(post))
