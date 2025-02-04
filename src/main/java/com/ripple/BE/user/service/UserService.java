@@ -10,10 +10,13 @@ import com.ripple.BE.learning.domain.quiz.FailQuiz;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.domain.type.LoginType;
+import com.ripple.BE.user.dto.UserInfoDTO;
 import com.ripple.BE.user.dto.request.UpdateUserProfileRequest;
 import com.ripple.BE.user.exception.UserException;
 import com.ripple.BE.user.repository.UserRepository;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -119,5 +122,33 @@ public class UserService {
 
         User user = findUserById(userId);
         user.setCoummunityAlarmAllowed(alarm);
+    }
+
+    public UserInfoDTO getUserInfo(final long userId) {
+        User user =
+                userRepository.findById(userId).orElseThrow(() -> new UserException(USER_NOT_FOUND));
+
+        String profileImageURL =
+                Optional.ofNullable(user.getProfileImage())
+                        .map(image -> image.getS3Info().getUrl())
+                        .orElse(null);
+
+        Date birthDate = user.getBirthDate() == null ? null : user.getBirthDate();
+        String profileIntro = user.getProfileIntro() == null ? null : user.getProfileIntro();
+        Long quizCorrectRate =
+                user.getQuizCount() == 0 ? 0L : user.getCorrectCount() * 100L / user.getQuizCount();
+
+        return UserInfoDTO.builder()
+                .userId(user.getId())
+                .profileImageURL(profileImageURL)
+                .nickname(user.getNickname())
+                .birthDate(birthDate)
+                .profileIntro(profileIntro)
+                .businessType(user.getBusinessType().getDescription())
+                .job(user.getJob().getDescription())
+                .currentStreak(attendanceService.getCurrentStreak(userId))
+                .level(user.getCurrentLevel())
+                .quizCorrectRate(quizCorrectRate)
+                .build();
     }
 }

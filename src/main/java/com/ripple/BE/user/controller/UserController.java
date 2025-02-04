@@ -21,8 +21,10 @@ import com.ripple.BE.term.exception.TermException;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.dto.ProgressDTO;
+import com.ripple.BE.user.dto.UserInfoDTO;
 import com.ripple.BE.user.dto.request.UpdateUserProfileRequest;
 import com.ripple.BE.user.dto.response.ProgressResponse;
+import com.ripple.BE.user.dto.response.UserInfoResponse;
 import com.ripple.BE.user.service.MyPageService;
 import com.ripple.BE.user.service.UserProgressService;
 import com.ripple.BE.user.service.UserService;
@@ -223,5 +225,16 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(TermListResponse.toTermListResponse(termListDTO)));
+    }
+
+    @Operation(summary = "회원 정보 조회", description = "로그인한 유저의 회원 정보를 조회합니다.  ")
+    @GetMapping("/info")
+    public ResponseEntity<ApiResponse<Object>> getUserInfo(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        UserInfoDTO userInfo = userService.getUserInfo(customUserDetails.getId());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(UserInfoResponse.toUserInfoResponse(userInfo)));
     }
 }
