@@ -6,12 +6,16 @@ import com.ripple.BE.user.domain.Attendance;
 import com.ripple.BE.user.domain.AttendanceLog;
 import com.ripple.BE.user.domain.Quest;
 import com.ripple.BE.user.domain.User;
+import com.ripple.BE.user.dto.AttendanceDTO;
 import com.ripple.BE.user.dto.QuestDTO;
 import com.ripple.BE.user.exception.UserException;
 import com.ripple.BE.user.repository.AttendanceLogRepository;
 import com.ripple.BE.user.repository.AttendanceRepository;
 import com.ripple.BE.user.repository.QuestRepository;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -91,7 +95,7 @@ public class AttendanceService {
 
         // 출석 로그 업데이트
         attendanceLogRepository
-                .findByAttendanceId(attendance.getId())
+                .findByAttendanceIdAndDate(attendance.getId(), today)
                 .ifPresent(AttendanceLog::updateIsAttended);
     }
 
@@ -104,5 +108,32 @@ public class AttendanceService {
         questRepository.save(Quest.builder().user(user).lastUpdatedDate(today).build());
         attendanceLogRepository.save(
                 AttendanceLog.builder().date(today).isAttended(false).attendance(attendance).build());
+    }
+
+    @Transactional
+    public AttendanceDTO getWeeklyAttendance(Long userId) {
+        Attendance attendance =
+                attendanceRepository
+                        .findByUserId(userId)
+                        .orElseThrow(() -> new UserException(ATTENDANCE_NOT_FOUND));
+
+        List<AttendanceLog> attendanceLogList =
+                attendanceLogRepository.findByAttendanceId(attendance.getId());
+        List<Boolean> weeklyAttendance = new ArrayList<>(Collections.nCopies(7, false));
+
+        for (AttendanceLog attendanceLog : attendanceLogList) {
+            int dayIndex = attendanceLog.getDate().getDayOfWeek().getValue() - 1;
+            weeklyAttendance.set(dayIndex, attendanceLog.isAttended());
+        }
+
+        return AttendanceDTO.builder()
+                .monday(weeklyAttendance.get(0))
+                .tuesday(weeklyAttendance.get(1))
+                .wednesday(weeklyAttendance.get(2))
+                .thursday(weeklyAttendance.get(3))
+                .friday(weeklyAttendance.get(4))
+                .saturday(weeklyAttendance.get(5))
+                .sunday(weeklyAttendance.get(6))
+                .build();
     }
 }

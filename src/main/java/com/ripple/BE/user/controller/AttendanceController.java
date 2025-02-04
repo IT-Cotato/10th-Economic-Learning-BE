@@ -33,7 +33,9 @@ public class AttendanceController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(currentStreak));
     }
 
-    @Operation(summary = "오늘의 퀘스트 완료 여부 조회", description = "오늘의 퀘스트 완료 여부를 조회합니다. 퍼센트로 반환됩니다.(0~100)")
+    @Operation(
+            summary = "오늘의 퀘스트 완료 여부 조회",
+            description = "오늘의 퀘스트 완료 여부를 조회합니다. 퍼센트로 반환됩니다. (0~100)")
     @GetMapping("/today-quest")
     public ResponseEntity<ApiResponse<?>> todayQuest(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
@@ -41,5 +43,14 @@ public class AttendanceController {
         QuestDTO todayQuest = attendanceService.getTodayQuest(customUserDetails.getId());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(QuestResponse.toQuestResponse(todayQuest)));
+    }
+
+    @Operation(summary = "요일별 출석 현황 조회", description = "요일별 출석 현황을 조회합니다. 매주 자동으로 초기화됩니다.")
+    @GetMapping("/weekly-attendance")
+    public ResponseEntity<ApiResponse<?>> weeklyAttendance(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(attendanceService.getWeeklyAttendance(customUserDetails.getId())));
     }
 }
