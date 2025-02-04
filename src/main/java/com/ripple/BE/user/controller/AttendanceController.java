@@ -2,6 +2,8 @@ package com.ripple.BE.user.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
 import com.ripple.BE.user.domain.CustomUserDetails;
+import com.ripple.BE.user.dto.QuestDTO;
+import com.ripple.BE.user.dto.response.QuestResponse;
 import com.ripple.BE.user.service.AttendanceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,12 +33,13 @@ public class AttendanceController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(currentStreak));
     }
 
-    @Operation(summary = "오늘의 퀘스트 완료 여부 조회", description = "오늘의 퀘스트 완료 여부를 조회합니다.")
+    @Operation(summary = "오늘의 퀘스트 완료 여부 조회", description = "오늘의 퀘스트 완료 여부를 조회합니다. 퍼센트로 반환됩니다.(0~100)")
     @GetMapping("/today-quest")
     public ResponseEntity<ApiResponse<?>> todayQuest(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        attendanceService.getTodayQuest(customUserDetails.getId());
-        return null;
+        QuestDTO todayQuest = attendanceService.getTodayQuest(customUserDetails.getId());
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(QuestResponse.toQuestResponse(todayQuest)));
     }
 }

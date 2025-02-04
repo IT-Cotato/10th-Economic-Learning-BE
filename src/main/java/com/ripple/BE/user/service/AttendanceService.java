@@ -6,11 +6,11 @@ import com.ripple.BE.user.domain.Attendance;
 import com.ripple.BE.user.domain.AttendanceLog;
 import com.ripple.BE.user.domain.Quest;
 import com.ripple.BE.user.domain.User;
+import com.ripple.BE.user.dto.QuestDTO;
 import com.ripple.BE.user.exception.UserException;
 import com.ripple.BE.user.repository.AttendanceLogRepository;
 import com.ripple.BE.user.repository.AttendanceRepository;
 import com.ripple.BE.user.repository.QuestRepository;
-import com.ripple.BE.user.repository.UserRepository;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class AttendanceService {
 
-    private final UserRepository userRepository;
     private final QuestRepository questRepository;
     private final AttendanceRepository attendanceRepository;
     private final AttendanceLogRepository attendanceLogRepository;
@@ -37,8 +36,14 @@ public class AttendanceService {
         return attendance.getCurrentStreak();
     }
 
-    public void getTodayQuest(Long id) {
-        // TODO Auto-generated method stub
+    public QuestDTO getTodayQuest(Long id) {
+        Quest quest =
+                questRepository.findByUserId(id).orElseThrow(() -> new UserException(QUEST_NOT_FOUND));
+
+        return QuestDTO.toQuestDTO(
+                quest.isConceptCompleted() ? 100L : 0L,
+                quest.isQuizCompleted() ? 100L : 0L,
+                quest.getArticleCompletedCount() / 3 * 100);
     }
 
     @Transactional
