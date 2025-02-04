@@ -30,7 +30,9 @@ public class ConceptController {
 
     private final ConceptService conceptService;
 
-    @Operation(summary = "개념 학습 세트 조회", description = "개념 학습 세트를 조회합니다.")
+    @Operation(
+            summary = "개념 학습 세트 조회",
+            description = "개념 학습 세트를 조회합니다. 개념 학습 세트 id와 레벨을 받아 개념 학습 목록을 반환합니다.")
     @GetMapping("/{learningSetId}/concepts")
     public ResponseEntity<ApiResponse<Object>> getConcepts(
             final @PathVariable("learningSetId") long learningSetId,
@@ -42,7 +44,9 @@ public class ConceptController {
                 .body(ApiResponse.from(ConceptListResponse.toConceptListResponse(conceptListDTO)));
     }
 
-    @Operation(summary = "개념 학습 완료 처리", description = "개념 학습을 완료 처리합니다.")
+    @Operation(
+            summary = "개념 학습 완료 처리",
+            description = "개념 학습을 완료 처리합니다. 개념 학습 세트 id와 레벨을 받아 개념 학습을 완료합니다.")
     @PostMapping("/{learningSetId}/concepts/complete")
     public ResponseEntity<ApiResponse<?>> completeConcept(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
@@ -74,7 +78,9 @@ public class ConceptController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
 
-    @Operation(summary = "개별 개념 학습 조회", description = "개별 개념 학습을 조회합니다.")
+    @Operation(
+            summary = "개별 개념 학습 조회",
+            description = "개별 개념 학습을 조회합니다." + " 개념 id를 받아 개념 상세 정보를 반환합니다. 스크랩한 개념보기 기능을 위한 API입니다.")
     @GetMapping("/concept/{conceptId}")
     public ResponseEntity<ApiResponse<Object>> getConcept(
             final @PathVariable("conceptId") long conceptId) {
