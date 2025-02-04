@@ -26,9 +26,9 @@ public class AttendanceController {
     public ResponseEntity<ApiResponse<?>> currentStreak(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        attendanceService.getCurrentStreak(customUserDetails.getId());
+        Long currentStreak = attendanceService.getCurrentStreak(customUserDetails.getId());
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(currentStreak));
     }
 
     @Operation(summary = "오늘의 퀘스트 완료 여부 조회", description = "오늘의 퀘스트 완료 여부를 조회합니다.")

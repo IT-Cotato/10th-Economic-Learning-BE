@@ -28,8 +28,13 @@ public class AttendanceService {
     private final AttendanceRepository attendanceRepository;
     private final AttendanceLogRepository attendanceLogRepository;
 
-    public void getCurrentStreak(Long id) {
-        // TODO Auto-generated method stub
+    public Long getCurrentStreak(Long id) {
+        Attendance attendance =
+                attendanceRepository
+                        .findByUserId(id)
+                        .orElseThrow(() -> new UserException(ATTENDANCE_NOT_FOUND));
+
+        return attendance.getCurrentStreak();
     }
 
     public void getTodayQuest(Long id) {
@@ -41,56 +46,58 @@ public class AttendanceService {
         Quest quest =
                 questRepository.findByUserId(userId).orElseThrow(() -> new UserException(QUEST_NOT_FOUND));
 
-        if (!quest.getLastUpdatedDate().equals(LocalDate.now())) {
-            quest.resetQuests();
-        }
-
         // 퀘스트 타입에 따라 완료 처리
-        switch (questType) {
-            case "QUIZ":
-                quest.updateQuizCompleted();
-                break;
-            case "CONCEPT":
-                quest.updateConceptCompleted();
-                break;
-            case "ARTICLE":
-                quest.updateArticleCompletedCount();
-                break;
-            default:
-                throw new UserException(INVALID_QUEST_TYPE);
+        switch (questType.toUpperCase()) {
+            case "QUIZ" -> quest.updateQuizCompleted();
+            case "CONCEPT" -> quest.updateConceptCompleted();
+            case "ARTICLE" -> quest.updateArticleCompletedCount();
+            default -> throw new UserException(INVALID_QUEST_TYPE);
         }
 
         // 퀘스트 3개 완료 시 출석 완료 처리
         if (quest.getArticleCompletedCount() >= 3
                 && quest.isConceptCompleted()
                 && quest.isQuizCompleted()) {
-            completeAttendance(userId);
+            completeAttendance(userId, LocalDate.now());
         }
     }
 
     @Transactional
-    public void completeAttendance(Long userId) {
+    public void completeAttendance(Long userId, LocalDate today) {
         Attendance attendance =
                 attendanceRepository
                         .findByUserId(userId)
                         .orElseThrow(() -> new UserException(ATTENDANCE_NOT_FOUND));
 
+        // 이미 출석 완료한 경우
+        if (attendance.getLastAttendedDate() != null
+                && attendance.getLastAttendedDate().equals(today)) {
+            return;
+        }
+
         // 연속 출석일 계산
         if (attendance.getLastAttendedDate() != null
-                && attendance.getLastAttendedDate().plusDays(1).isEqual(LocalDate.now())) {
+                && attendance.getLastAttendedDate().plusDays(1).isEqual(today)) {
             attendance.updateCurrentStreak(attendance.getCurrentStreak() + 1);
         } else {
             attendance.updateCurrentStreak(1L);
         }
-        attendance.updateLastAttendedDate(LocalDate.now());
+        attendance.updateLastAttendedDate(today);
 
-        // 출석 로그 생성
-        AttendanceLog.builder().attendance(attendance).date(LocalDate.now()).isAttended(true).build();
+        // 출석 로그 업데이트
+        attendanceLogRepository
+                .findByAttendanceId(attendance.getId())
+                .ifPresent(AttendanceLog::updateIsAttended);
     }
 
     @Transactional
     public void createAttendance(User user) {
-        attendanceRepository.save(Attendance.builder().user(user).currentStreak(0L).build());
-        questRepository.save(Quest.builder().user(user).lastUpdatedDate(LocalDate.now()).build());
+        LocalDate today = LocalDate.now();
+
+        Attendance attendance =
+                attendanceRepository.save(Attendance.builder().user(user).currentStreak(0L).build());
+        questRepository.save(Quest.builder().user(user).lastUpdatedDate(today).build());
+        attendanceLogRepository.save(
+                AttendanceLog.builder().date(today).isAttended(false).attendance(attendance).build());
     }
 }

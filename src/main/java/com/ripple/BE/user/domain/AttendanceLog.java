@@ -17,7 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "attendance_log")
+@Table(name = "attendance_logs")
 @Getter
 @Builder
 @Entity
@@ -37,4 +37,8 @@ public class AttendanceLog extends BaseEntity {
     private LocalDate date; // 출석 날짜
 
     private boolean isAttended; // 출석 여부
+
+    public void updateIsAttended() {
+        this.isAttended = true;
+    }
 }
