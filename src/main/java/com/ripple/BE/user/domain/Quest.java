@@ -16,34 +16,47 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "attendances")
+@Table(name = "quests")
 @Getter
 @Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Attendance extends BaseEntity {
+public class Quest extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "attendance_id")
+    @Column(name = "quest_id")
     private Long id;
-
-    @Column(name = "current_streak")
-    private Long currentStreak; // 현재 연속 출석일
-
-    @Column(name = "last_attended_date")
-    private LocalDate lastAttendedDate; // 마지막 출석 날짜
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public void updateCurrentStreak(long currentStreak) {
-        this.currentStreak = currentStreak;
+    private boolean quizCompleted;
+
+    private boolean conceptCompleted;
+
+    private long articleCompletedCount;
+
+    private LocalDate lastUpdatedDate; // 퀘스트 완료 날짜
+
+    public void resetQuests() {
+        this.quizCompleted = false;
+        this.conceptCompleted = false;
+        this.articleCompletedCount = 0;
+        this.lastUpdatedDate = LocalDate.now();
     }
 
-    public void updateLastAttendedDate(LocalDate lastAttendedDate) {
-        this.lastAttendedDate = lastAttendedDate;
+    public void updateQuizCompleted() {
+        this.quizCompleted = true;
+    }
+
+    public void updateConceptCompleted() {
+        this.conceptCompleted = true;
+    }
+
+    public void updateArticleCompletedCount() {
+        this.articleCompletedCount++;
     }
 }

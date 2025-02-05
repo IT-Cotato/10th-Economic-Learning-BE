@@ -48,9 +48,11 @@ public class NewsController {
 
     @Operation(summary = "뉴스 상세 조회", description = "뉴스의 상세 정보를 조회합니다.")
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Object>> getNews(final @PathVariable("id") long id) {
+    public ResponseEntity<ApiResponse<Object>> getNews(
+            final @PathVariable("id") long id,
+            final @AuthenticationPrincipal CustomUserDetails currentUser) {
 
-        NewsDTO newsDTO = newsService.getNews(id);
+        NewsDTO newsDTO = newsService.getNews(id, currentUser.getId());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(NewsResponse.toNewsResponse(newsDTO)));
     }

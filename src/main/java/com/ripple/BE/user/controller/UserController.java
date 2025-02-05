@@ -21,8 +21,10 @@ import com.ripple.BE.term.exception.TermException;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.dto.ProgressDTO;
-import com.ripple.BE.user.dto.ProgressResponse;
-import com.ripple.BE.user.dto.UpdateUserProfileRequest;
+import com.ripple.BE.user.dto.UserInfoDTO;
+import com.ripple.BE.user.dto.request.UpdateUserProfileRequest;
+import com.ripple.BE.user.dto.response.ProgressResponse;
+import com.ripple.BE.user.dto.response.UserInfoResponse;
 import com.ripple.BE.user.service.MyPageService;
 import com.ripple.BE.user.service.UserProgressService;
 import com.ripple.BE.user.service.UserService;
@@ -50,7 +52,10 @@ public class UserController {
     private final MyPageService myPageService;
     private final UserProgressService userProgressService;
 
-    @Operation(summary = "프로필 등록", description = "로그인 후 유저의 프로필을 등록합니다.")
+    @Operation(
+            summary = "프로필 등록",
+            description =
+                    "로그인 후 유저의 프로필을 등록합니다." + "프로필을 등록하기 전 이미지 등록을 완료해주세요. 이미지 등록 후 반한 된 이미지 ID를 입력해주세요.")
     @PostMapping("/profile")
     public ResponseEntity<ApiResponse<?>> profile(
             @Valid @RequestBody UpdateUserProfileRequest request,
@@ -220,5 +225,20 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(TermListResponse.toTermListResponse(termListDTO)));
+    }
+
+    @Operation(
+            summary = "회원 정보 조회",
+            description =
+                    "로그인한 유저의 회원 정보를 조회합니다."
+                            + " 프로필 사진 URL, 닉네임, 한줄소개, 생일, 업종, 직업, 연속 출석 일수, 레벨, 퀴즈 정답률을 반환합니다.")
+    @GetMapping("/info")
+    public ResponseEntity<ApiResponse<Object>> getUserInfo(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        UserInfoDTO userInfo = userService.getUserInfo(customUserDetails.getId());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(UserInfoResponse.toUserInfoResponse(userInfo)));
     }
 }

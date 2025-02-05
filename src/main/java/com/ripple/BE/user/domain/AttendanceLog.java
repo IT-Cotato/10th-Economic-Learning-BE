@@ -1,9 +1,6 @@
-package com.ripple.BE.image.domain;
+package com.ripple.BE.user.domain;
 
 import com.ripple.BE.global.entity.BaseEntity;
-import com.ripple.BE.news.domain.News;
-import com.ripple.BE.post.domain.Post;
-import com.ripple.BE.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,45 +9,36 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Table(name = "images")
+@Table(name = "attendance_logs")
 @Getter
 @Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Image extends BaseEntity {
+public class AttendanceLog extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "attendance_log_id")
     private Long id;
 
-    @Column(name = "s3_info")
-    private S3Info s3Info;
-
-    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @JoinColumn(name = "attendance_id")
+    private Attendance attendance;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "news_id")
-    private News news;
+    private LocalDate date; // 출석 날짜
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "profile_image_id")
-    private User user;
+    private boolean isAttended; // 출석 여부
 
-    public static Image toImageEntity(final S3Info s3Info) {
-        return Image.builder().s3Info(s3Info).build();
+    public void updateIsAttended() {
+        this.isAttended = true;
     }
 }

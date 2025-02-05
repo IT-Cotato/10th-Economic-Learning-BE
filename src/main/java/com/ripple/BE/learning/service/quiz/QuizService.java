@@ -21,6 +21,7 @@ import com.ripple.BE.learning.repository.quizScrap.QuizScrapRepository;
 import com.ripple.BE.learning.service.learningset.LearningSetService;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
+import com.ripple.BE.user.service.AttendanceService;
 import com.ripple.BE.user.service.UserProgressService;
 import com.ripple.BE.user.service.UserService;
 import java.util.Collections;
@@ -46,6 +47,7 @@ public class QuizService {
     private final LearningSetService learningSetService;
     private final UserService userService;
     private final UserProgressService userProgressService;
+    private final AttendanceService attendanceService;
 
     private static final String QUESTION_TYPE = "questions";
     private static final String WRONG_ANSWER_TYPE = "wrongAnswer";
@@ -145,6 +147,8 @@ public class QuizService {
         }
 
         quizRedisService.clearRedisKeys(userId); // 퀴즈 진행 관련 데이터 삭제
+
+        attendanceService.completeQuest(userId, "QUIZ");
     }
 
     @Transactional(readOnly = true)

@@ -42,4 +42,15 @@ public class ImageController {
         imageService.deleteImage(imageId);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
+
+    @Operation(summary = "유저 프로필 사진 추가", description = "프로필 등록 전 유저 프로필 사진을 추가합니다.")
+    @PostMapping(value = "/profile", consumes = "multipart/form-data")
+    public ResponseEntity<ApiResponse<Object>> createProfileImage(
+            final @RequestParam MultipartFile file) {
+
+        long imageId = imageService.addProfileImage(file);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(ImageIdResponse.toImageIdResponse(imageId)));
+    }
 }

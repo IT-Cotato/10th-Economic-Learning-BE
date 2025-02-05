@@ -28,7 +28,7 @@ public record PostResponse(
                 postDTO.id(),
                 postDTO.title(),
                 postDTO.author().nickname(),
-                postDTO.author().profileImage().url(),
+                postDTO.author().profileImage().getS3Info().getUrl(),
                 postDTO.content(),
                 postDTO.type(),
                 postDTO.likeCount(),

@@ -1,7 +1,8 @@
-package com.ripple.BE.user.dto;
+package com.ripple.BE.user.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ripple.BE.user.domain.type.Level;
+import com.ripple.BE.user.dto.ProgressDTO;
 import java.util.Map;
 import java.util.stream.Collectors;
 

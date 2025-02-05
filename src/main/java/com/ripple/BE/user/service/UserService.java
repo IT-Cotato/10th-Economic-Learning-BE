@@ -4,14 +4,19 @@ import static com.ripple.BE.user.domain.User.*;
 import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
 import com.ripple.BE.auth.dto.kakao.KakaoUserInfoResponse;
+import com.ripple.BE.image.domain.Image;
+import com.ripple.BE.image.repository.ImageRepository;
 import com.ripple.BE.learning.domain.quiz.FailQuiz;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.domain.type.LoginType;
-import com.ripple.BE.user.dto.UpdateUserProfileRequest;
+import com.ripple.BE.user.dto.UserInfoDTO;
+import com.ripple.BE.user.dto.request.UpdateUserProfileRequest;
 import com.ripple.BE.user.exception.UserException;
 import com.ripple.BE.user.repository.UserRepository;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ImageRepository imageRepository;
+    private final AttendanceService attendanceService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -36,7 +43,6 @@ public class UserService {
                         .orElse(
                                 User.kakaoBuilder()
                                         .accountEmail(response.kakao_account().email())
-                                        .profileImageUrl(response.properties().profile_image())
                                         .loginType(LoginType.KAKAO)
                                         .keyCode(response.id().toString())
                                         .buildKakaoUser());
@@ -47,9 +53,20 @@ public class UserService {
     }
 
     @Transactional
-    public void updateProfile(UpdateUserProfileRequest request, Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new UserException(USER_NOT_FOUND));
-        user.updateProfile(request);
+    public void updateProfile(UpdateUserProfileRequest request, Long userId) {
+        User user =
+                userRepository.findById(userId).orElseThrow(() -> new UserException(USER_NOT_FOUND));
+
+        Image image = null;
+        if (request.imageId() != null) {
+            image =
+                    imageRepository
+                            .findById(request.imageId())
+                            .orElseThrow(() -> new UserException(IMAGE_NOT_FOUND));
+        }
+
+        user.updateProfile(request, image);
+        attendanceService.createAttendance(user);
     }
 
     @Transactional(readOnly = true)
@@ -105,5 +122,33 @@ public class UserService {
 
         User user = findUserById(userId);
         user.setCoummunityAlarmAllowed(alarm);
+    }
+
+    public UserInfoDTO getUserInfo(final long userId) {
+        User user =
+                userRepository.findById(userId).orElseThrow(() -> new UserException(USER_NOT_FOUND));
+
+        String profileImageURL =
+                Optional.ofNullable(user.getProfileImage())
+                        .map(image -> image.getS3Info().getUrl())
+                        .orElse(null);
+
+        Date birthDate = user.getBirthDate() == null ? null : user.getBirthDate();
+        String profileIntro = user.getProfileIntro() == null ? null : user.getProfileIntro();
+        Long quizCorrectRate =
+                user.getQuizCount() == 0 ? 0L : user.getCorrectCount() * 100L / user.getQuizCount();
+
+        return UserInfoDTO.builder()
+                .userId(user.getId())
+                .profileImageURL(profileImageURL)
+                .nickname(user.getNickname())
+                .birthDate(birthDate)
+                .profileIntro(profileIntro)
+                .businessType(user.getBusinessType().getDescription())
+                .job(user.getJob().getDescription())
+                .currentStreak(attendanceService.getCurrentStreak(userId))
+                .level(user.getCurrentLevel())
+                .quizCorrectRate(quizCorrectRate)
+                .build();
     }
 }
