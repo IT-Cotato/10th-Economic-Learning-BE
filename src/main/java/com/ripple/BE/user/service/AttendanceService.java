@@ -136,4 +136,29 @@ public class AttendanceService {
                 .sunday(weeklyAttendance.get(6))
                 .build();
     }
+
+    @Transactional
+    public void resetWeeklyAttendanceLog() {
+        attendanceLogRepository.deleteAll();
+    }
+
+    @Transactional
+    public void resetAllQuests() {
+        questRepository.findAll().forEach(Quest::resetQuests);
+    }
+
+    @Transactional
+    public void recordAttendanceLog() {
+        attendanceRepository
+                .findAll()
+                .forEach(
+                        attendance -> {
+                            attendanceLogRepository.save(
+                                    AttendanceLog.builder()
+                                            .attendance(attendance)
+                                            .date(LocalDate.now())
+                                            .isAttended(false)
+                                            .build());
+                        });
+    }
 }
