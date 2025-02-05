@@ -41,7 +41,8 @@ public class AttendanceService {
                         .findByUserId(id)
                         .orElseThrow(() -> new UserException(ATTENDANCE_NOT_FOUND));
 
-        if (attendance.getLastAttendedDate().isBefore(LocalDate.now().minusDays(1))) {
+        if (attendance.getLastAttendedDate() != null
+                && attendance.getLastAttendedDate().isBefore(LocalDate.now().minusDays(1))) {
             attendance.updateCurrentStreak(1L);
         }
 

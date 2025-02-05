@@ -1,6 +1,7 @@
 package com.ripple.BE.user.domain;
 
 import com.ripple.BE.global.entity.BaseEntity;
+import com.ripple.BE.user.dto.UserGoalDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,6 +34,14 @@ public class UserGoal extends BaseEntity {
     private User user;
 
     private int quizGoal;
+
     private int conceptGoal;
+
     private int articleGoal;
+
+    public void updateQuizGoal(UserGoalDTO userGoalDTO) {
+        this.quizGoal = userGoalDTO.quizGoal();
+        this.conceptGoal = userGoalDTO.conceptGoal();
+        this.articleGoal = userGoalDTO.articleGoal();
+    }
 }
