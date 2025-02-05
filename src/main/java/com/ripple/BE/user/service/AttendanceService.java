@@ -31,11 +31,16 @@ public class AttendanceService {
     private final AttendanceRepository attendanceRepository;
     private final AttendanceLogRepository attendanceLogRepository;
 
+    @Transactional
     public Long getCurrentStreak(Long id) {
         Attendance attendance =
                 attendanceRepository
                         .findByUserId(id)
                         .orElseThrow(() -> new UserException(ATTENDANCE_NOT_FOUND));
+
+        if (attendance.getLastAttendedDate().isBefore(LocalDate.now().minusDays(1))) {
+            attendance.updateCurrentStreak(1L);
+        }
 
         return attendance.getCurrentStreak();
     }
