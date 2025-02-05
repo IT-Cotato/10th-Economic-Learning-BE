@@ -92,7 +92,7 @@ public class ChatbotService {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
-		Page<ChatMessage> chatMessagePage = chatbotRepository.findAllByUserIdOrderByCreatedDate(
+		Page<ChatMessage> chatMessagePage = chatbotRepository.findAllByUserIdOrderByCreatedDateDesc(
 			user.getId(), pageable);
 
 		return ChatListDTO.toChatListDTO(chatMessagePage);
