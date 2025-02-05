@@ -14,6 +14,7 @@ public enum UserErrorCode implements ErrorCode {
     INVALID_QUEST_TYPE(HttpStatus.BAD_REQUEST, "Invalid Quest Type"),
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "Already exist Email"),
     QUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "Quest not found"),
+    USER_GOAL_NOT_FOUND(HttpStatus.NOT_FOUND, "User Goal not found"),
     ATTENDANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "Attendance not found");
 
     private final HttpStatus httpStatus;
