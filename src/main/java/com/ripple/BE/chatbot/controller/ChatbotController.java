@@ -66,4 +66,13 @@ public class ChatbotController {
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
+
+    @Operation(summary = "이용 꿀팁 조회", description = "이용 꿀팁을 조회합니다.")
+    @GetMapping("/tips")
+    public ResponseEntity<ApiResponse<Object>> getTips(
+            final @AuthenticationPrincipal CustomUserDetails currentUser) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(chatbotService.getTips(currentUser.getId())));
+    }
 }
