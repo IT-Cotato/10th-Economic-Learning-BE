@@ -45,7 +45,7 @@ public class ChatbotController {
 
     @Operation(
             summary = "대화 내역 조회",
-            description = "챗봇과의 대화 내역을 조회합니다. 페이지네이션을 지원합니다. 페이지당 10개의 대화 내역을 반환합니다.")
+            description = "챗봇과의 대화 내역을 조회합니다. 페이지네이션을 지원합니다. 페이지당 10개의 대화 내역을 반환합니다. 최신 순으로 정렬됩니다.")
     @GetMapping("/list")
     public ResponseEntity<ApiResponse<Object>> getMessages(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
