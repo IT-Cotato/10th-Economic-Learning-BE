@@ -29,6 +29,9 @@ public class NotificationService {
 
     @Transactional
     public void createCommentNotification(final Post post, final Comment comment) {
+        if (post.getAuthor() == null) {
+            return;
+        }
 
         User postAuthor = post.getAuthor();
 
@@ -50,26 +53,34 @@ public class NotificationService {
         String content = comment.getContent();
         String title = post.getTitle();
 
-        Notification notificationForPostAuthor =
-                Notification.toNotificationEntity(postAuthor, content, title, NotificationType.REPLY, post);
+        if (post.getAuthor() != null) {
 
-        Notification notificationForCommentAuthor =
-                Notification.toNotificationEntity(
-                        commentAuthor, content, title, NotificationType.REPLY, post);
+            Notification notificationForPostAuthor =
+                    Notification.toNotificationEntity(
+                            postAuthor, content, title, NotificationType.REPLY, post);
+            notificationRepository.save(notificationForPostAuthor);
+            sendNotification(postAuthor, NotificationDTO.toNotificationDTO(notificationForPostAuthor));
+        }
+        if (comment.getCommenter() != null) {
 
-        notificationRepository.save(notificationForPostAuthor);
-        notificationRepository.save(notificationForCommentAuthor);
+            Notification notificationForCommentAuthor =
+                    Notification.toNotificationEntity(
+                            commentAuthor, content, title, NotificationType.REPLY, post);
 
-        // 게시글 작성자와 댓글 작성자에게 알림 전송
-        sendNotification(postAuthor, NotificationDTO.toNotificationDTO(notificationForPostAuthor));
-        sendNotification(
-                commentAuthor, NotificationDTO.toNotificationDTO(notificationForCommentAuthor));
+            notificationRepository.save(notificationForCommentAuthor);
+
+            sendNotification(
+                    commentAuthor, NotificationDTO.toNotificationDTO(notificationForCommentAuthor));
+        }
     }
 
     @Transactional
     public void createPopularNotification(final Post post) {
 
         User receiver = post.getAuthor();
+        if (receiver == null) {
+            return;
+        }
 
         Notification notification =
                 Notification.toNotificationEntity(
