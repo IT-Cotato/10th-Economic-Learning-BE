@@ -4,6 +4,7 @@ import com.ripple.BE.global.dto.response.ApiResponse;
 import com.ripple.BE.news.dto.NewsListDTO;
 import com.ripple.BE.news.dto.response.NewsListResponse;
 import com.ripple.BE.post.dto.PostListDTO;
+import com.ripple.BE.post.dto.ToktokListDTO;
 import com.ripple.BE.post.dto.response.PostListResponse;
 import com.ripple.BE.post.dto.response.ToktokPreviewListResponse;
 import com.ripple.BE.search.dto.SearchKeywordListDTO;
@@ -52,9 +53,11 @@ public class SearchController {
             final @RequestParam(value = "keyword", required = false) String keyword,
             final @RequestParam(value = "page", defaultValue = "0") @PositiveOrZero int page) {
 
-        PostListDTO postListDTO = searchService.searchToktoks(keyword, page, currentUser.getId());
+        ToktokListDTO toktokListDTO = searchService.searchToktoks(keyword, page, currentUser.getId());
+
         return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(ToktokPreviewListResponse.toToktokPreviewListResponse(postListDTO)));
+                .body(
+                        ApiResponse.from(ToktokPreviewListResponse.toToktokPreviewListResponse(toktokListDTO)));
     }
 
     @Operation(summary = "뉴스 검색", description = "뉴스를 검색합니다.")
