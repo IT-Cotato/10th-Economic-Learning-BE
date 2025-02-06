@@ -1,7 +1,5 @@
 package com.ripple.BE.post.repository.post;
 
-import static com.ripple.BE.news.domain.QNews.*;
-import static com.ripple.BE.news.domain.QNewsScrap.*;
 import static com.ripple.BE.post.domain.QPost.post;
 import static com.ripple.BE.post.domain.QPostScrap.*;
 
@@ -65,13 +63,10 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
     @Override
     public Page<Post> searchNormalPosts(String keyword, Pageable pageable, long userId) {
-        BooleanExpression predicate = null;
+        BooleanExpression predicate = post.type.ne(PostType.ECONOMY_TALK); // 기본 조건
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            predicate =
-                    post.type
-                            .ne(PostType.ECONOMY_TALK)
-                            .and(post.title.contains(keyword).or(post.content.contains(keyword)));
+            predicate = predicate.and(post.title.contains(keyword).or(post.content.contains(keyword)));
         }
 
         List<Post> posts = getPostsWithScrapByPageable(pageable, predicate, PostSort.RECENT, userId);
@@ -83,14 +78,12 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
 
     @Override
     public Page<Post> searchUsedToktokPosts(String keyword, Pageable pageable, long userId) {
-        BooleanExpression predicate = null;
+
+        BooleanExpression predicate =
+                post.type.eq(PostType.ECONOMY_TALK).and(post.usedDate.isNotNull()); // 기본 조건
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            predicate =
-                    post.type
-                            .eq(PostType.ECONOMY_TALK)
-                            .and(post.usedDate.isNotNull())
-                            .and(post.title.contains(keyword).or(post.content.contains(keyword)));
+            predicate = predicate.and(post.title.contains(keyword).or(post.content.contains(keyword)));
         }
 
         List<Post> posts = getToktoksWithScrapByPageable(pageable, predicate, PostSort.RECENT, userId);
