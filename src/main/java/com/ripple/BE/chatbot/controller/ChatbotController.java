@@ -45,7 +45,7 @@ public class ChatbotController {
 
     @Operation(
             summary = "대화 내역 조회",
-            description = "챗봇과의 대화 내역을 조회합니다. 페이지네이션을 지원합니다. 페이지당 10개의 대화 내역을 반환합니다.")
+            description = "챗봇과의 대화 내역을 조회합니다. 페이지네이션을 지원합니다. 페이지당 10개의 대화 내역을 반환합니다. 최신 순으로 정렬됩니다.")
     @GetMapping("/list")
     public ResponseEntity<ApiResponse<Object>> getMessages(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
@@ -65,5 +65,14 @@ public class ChatbotController {
         chatbotService.clearChat(currentUser.getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
+    }
+
+    @Operation(summary = "이용 꿀팁 조회", description = "이용 꿀팁을 조회합니다.")
+    @GetMapping("/tips")
+    public ResponseEntity<ApiResponse<Object>> getTips(
+            final @AuthenticationPrincipal CustomUserDetails currentUser) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(chatbotService.getTips(currentUser.getId())));
     }
 }
