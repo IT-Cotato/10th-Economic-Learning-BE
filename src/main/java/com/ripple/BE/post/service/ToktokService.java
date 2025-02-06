@@ -6,8 +6,8 @@ import com.ripple.BE.post.domain.Comment;
 import com.ripple.BE.post.domain.Post;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.dto.CommentListDTO;
-import com.ripple.BE.post.dto.PostDTO;
-import com.ripple.BE.post.dto.PostListDTO;
+import com.ripple.BE.post.dto.ToktokDTO;
+import com.ripple.BE.post.dto.ToktokListDTO;
 import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.repository.comment.CommentRepository;
 import com.ripple.BE.post.repository.post.PostRepository;
@@ -41,15 +41,15 @@ public class ToktokService {
 
     // 오늘의 경제톡톡 주제 미리보기
     @Transactional(readOnly = true)
-    public PostDTO getTodayToktok() {
+    public ToktokDTO getTodayToktok() {
 
         Post toktok = findTodayToktok();
 
-        return PostDTO.toPostDTO(toktok);
+        return ToktokDTO.toToktokDTO(toktok);
     }
 
     @Transactional(readOnly = true)
-    public PostDTO getToktok(final long id, final long userId) {
+    public ToktokDTO getToktok(final long id, final long userId) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostException(POST_NOT_FOUND));
         if (post.getUsedDate() == null) {
             throw new PostException(POST_NOT_FOUND);
@@ -61,18 +61,18 @@ public class ToktokService {
 
         CommentListDTO commentListDTO = getCommentList(post, userId);
 
-        return PostDTO.toPostDTO(post, commentListDTO);
+        return ToktokDTO.toToktokDTO(post, commentListDTO);
     }
 
     @Transactional(readOnly = true)
-    public PostListDTO getToktoks(final int page, final PostSort sort, final long userId) {
+    public ToktokListDTO getToktoks(final int page, final PostSort sort, final long userId) {
 
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
         // 게시글 조회 (타입에 따른 필터링)
         Page<Post> postPage = postRepository.findUsedToktokPosts(pageable, sort, userId);
 
-        return PostListDTO.toPostListDTO(postPage);
+        return ToktokListDTO.toToktokListDTO(postPage);
     }
 
     private CommentListDTO getCommentList(final Post post, final long userId) {
