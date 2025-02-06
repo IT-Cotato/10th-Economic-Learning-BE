@@ -8,11 +8,15 @@ import com.ripple.BE.image.domain.Image;
 import com.ripple.BE.image.repository.ImageRepository;
 import com.ripple.BE.learning.domain.quiz.FailQuiz;
 import com.ripple.BE.user.domain.User;
+import com.ripple.BE.user.domain.UserGoal;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.domain.type.LoginType;
+import com.ripple.BE.user.dto.UserGoalDTO;
 import com.ripple.BE.user.dto.UserInfoDTO;
 import com.ripple.BE.user.dto.request.UpdateUserProfileRequest;
+import com.ripple.BE.user.dto.request.UserGoalRequest;
 import com.ripple.BE.user.exception.UserException;
+import com.ripple.BE.user.repository.UserGoalRepository;
 import com.ripple.BE.user.repository.UserRepository;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +37,7 @@ public class UserService {
     private final ImageRepository imageRepository;
     private final AttendanceService attendanceService;
 
+    private final UserGoalRepository userGoalRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -150,5 +155,25 @@ public class UserService {
                 .level(user.getCurrentLevel())
                 .quizCorrectRate(quizCorrectRate)
                 .build();
+    }
+
+    public UserGoalDTO getUserGoal(final long userId) {
+        UserGoal userGoal =
+                userGoalRepository
+                        .findByUserId(userId)
+                        .orElseThrow(() -> new UserException(USER_GOAL_NOT_FOUND));
+
+        return new UserGoalDTO(
+                userGoal.getConceptGoal(), userGoal.getQuizGoal(), userGoal.getArticleGoal());
+    }
+
+    @Transactional
+    public void updateUserGoal(final UserGoalRequest userGoalRequest, final long userId) {
+        UserGoal userGoal =
+                userGoalRepository
+                        .findByUserId(userId)
+                        .orElseThrow(() -> new UserException(USER_GOAL_NOT_FOUND));
+
+        userGoal.updateQuizGoal(UserGoalDTO.toUserGoalDTO(userGoalRequest));
     }
 }

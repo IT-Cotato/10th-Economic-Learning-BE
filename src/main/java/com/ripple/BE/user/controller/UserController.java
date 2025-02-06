@@ -21,9 +21,12 @@ import com.ripple.BE.term.exception.TermException;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.dto.ProgressDTO;
+import com.ripple.BE.user.dto.UserGoalDTO;
 import com.ripple.BE.user.dto.UserInfoDTO;
 import com.ripple.BE.user.dto.request.UpdateUserProfileRequest;
+import com.ripple.BE.user.dto.request.UserGoalRequest;
 import com.ripple.BE.user.dto.response.ProgressResponse;
+import com.ripple.BE.user.dto.response.UserGoalResponse;
 import com.ripple.BE.user.dto.response.UserInfoResponse;
 import com.ripple.BE.user.service.MyPageService;
 import com.ripple.BE.user.service.UserProgressService;
@@ -240,5 +243,26 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(UserInfoResponse.toUserInfoResponse(userInfo)));
+    }
+
+    @Operation(summary = "사용자 퀘스트 목표 조회", description = "로그인한 유저의 퀘스트 목표를 조회합니다.")
+    @GetMapping("/goal")
+    public ResponseEntity<ApiResponse<Object>> getUserGoal(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        UserGoalDTO userGoal = userService.getUserGoal(customUserDetails.getId());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(UserGoalResponse.toUserGoalResponse(userGoal)));
+    }
+
+    @Operation(summary = "사용자 퀘스트 목표 수정", description = "로그인한 유저의 퀘스트 목표를 수정합니다. 목표는 1 이상이어야 합니다.")
+    @PostMapping("/goal")
+    public ResponseEntity<ApiResponse<?>> updateUserGoal(
+            @Valid @RequestBody UserGoalRequest userGoalRequest,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        userService.updateUserGoal(userGoalRequest, customUserDetails.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
     }
 }

@@ -6,12 +6,14 @@ import com.ripple.BE.user.domain.Attendance;
 import com.ripple.BE.user.domain.AttendanceLog;
 import com.ripple.BE.user.domain.Quest;
 import com.ripple.BE.user.domain.User;
+import com.ripple.BE.user.domain.UserGoal;
 import com.ripple.BE.user.dto.AttendanceDTO;
 import com.ripple.BE.user.dto.QuestDTO;
 import com.ripple.BE.user.exception.UserException;
 import com.ripple.BE.user.repository.AttendanceLogRepository;
 import com.ripple.BE.user.repository.AttendanceRepository;
 import com.ripple.BE.user.repository.QuestRepository;
+import com.ripple.BE.user.repository.UserGoalRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,12 +32,19 @@ public class AttendanceService {
     private final QuestRepository questRepository;
     private final AttendanceRepository attendanceRepository;
     private final AttendanceLogRepository attendanceLogRepository;
+    private final UserGoalRepository userGoalRepository;
 
+    @Transactional
     public Long getCurrentStreak(Long id) {
         Attendance attendance =
                 attendanceRepository
                         .findByUserId(id)
                         .orElseThrow(() -> new UserException(ATTENDANCE_NOT_FOUND));
+
+        if (attendance.getLastAttendedDate() != null
+                && attendance.getLastAttendedDate().isBefore(LocalDate.now().minusDays(1))) {
+            attendance.updateCurrentStreak(1L);
+        }
 
         return attendance.getCurrentStreak();
     }
@@ -43,30 +52,38 @@ public class AttendanceService {
     public QuestDTO getTodayQuest(Long id) {
         Quest quest =
                 questRepository.findByUserId(id).orElseThrow(() -> new UserException(QUEST_NOT_FOUND));
+        UserGoal userGoal =
+                userGoalRepository
+                        .findByUserId(id)
+                        .orElseThrow(() -> new UserException(USER_GOAL_NOT_FOUND));
 
         return QuestDTO.toQuestDTO(
-                quest.isConceptCompleted() ? 100L : 0L,
-                quest.isQuizCompleted() ? 100L : 0L,
-                quest.getArticleCompletedCount() / 3 * 100);
+                Math.min(100, quest.getConceptCompletedCount() * 100 / userGoal.getConceptGoal()),
+                Math.min(100, quest.getQuizCompletedCount() * 100 / userGoal.getQuizGoal()),
+                Math.min(100, quest.getArticleCompletedCount() * 100 / userGoal.getArticleGoal()));
     }
 
     @Transactional
     public void completeQuest(Long userId, String questType) {
         Quest quest =
                 questRepository.findByUserId(userId).orElseThrow(() -> new UserException(QUEST_NOT_FOUND));
+        UserGoal userGoal =
+                userGoalRepository
+                        .findByUserId(userId)
+                        .orElseThrow(() -> new UserException(USER_GOAL_NOT_FOUND));
 
         // 퀘스트 타입에 따라 완료 처리
         switch (questType.toUpperCase()) {
-            case "QUIZ" -> quest.updateQuizCompleted();
-            case "CONCEPT" -> quest.updateConceptCompleted();
+            case "QUIZ" -> quest.updateQuizCompletedCount();
+            case "CONCEPT" -> quest.updateConceptCompletedCount();
             case "ARTICLE" -> quest.updateArticleCompletedCount();
             default -> throw new UserException(INVALID_QUEST_TYPE);
         }
 
-        // 퀘스트 3개 완료 시 출석 완료 처리
-        if (quest.getArticleCompletedCount() >= 3
-                && quest.isConceptCompleted()
-                && quest.isQuizCompleted()) {
+        // 퀘스트 완료 시 출석 처리
+        if (quest.getArticleCompletedCount() >= userGoal.getArticleGoal()
+                && quest.getConceptCompletedCount() >= userGoal.getConceptGoal()
+                && quest.getQuizCompletedCount() >= userGoal.getQuizGoal()) {
             completeAttendance(userId, LocalDate.now());
         }
     }
@@ -108,6 +125,8 @@ public class AttendanceService {
         questRepository.save(Quest.builder().user(user).lastUpdatedDate(today).build());
         attendanceLogRepository.save(
                 AttendanceLog.builder().date(today).isAttended(false).attendance(attendance).build());
+        userGoalRepository.save(
+                UserGoal.builder().user(user).quizGoal(1).articleGoal(3).conceptGoal(1).build());
     }
 
     @Transactional
@@ -135,5 +154,30 @@ public class AttendanceService {
                 .saturday(weeklyAttendance.get(5))
                 .sunday(weeklyAttendance.get(6))
                 .build();
+    }
+
+    @Transactional
+    public void resetWeeklyAttendanceLog() {
+        attendanceLogRepository.deleteAll();
+    }
+
+    @Transactional
+    public void resetAllQuests() {
+        questRepository.findAll().forEach(Quest::resetQuests);
+    }
+
+    @Transactional
+    public void recordAttendanceLog() {
+        attendanceRepository
+                .findAll()
+                .forEach(
+                        attendance -> {
+                            attendanceLogRepository.save(
+                                    AttendanceLog.builder()
+                                            .attendance(attendance)
+                                            .date(LocalDate.now())
+                                            .isAttended(false)
+                                            .build());
+                        });
     }
 }
