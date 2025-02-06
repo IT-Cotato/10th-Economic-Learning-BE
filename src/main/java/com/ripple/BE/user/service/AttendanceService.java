@@ -80,7 +80,7 @@ public class AttendanceService {
             default -> throw new UserException(INVALID_QUEST_TYPE);
         }
 
-        // 퀘스트 3개 완료 시 출석 완료 처리
+        // 퀘스트 완료 시 출석 처리
         if (quest.getArticleCompletedCount() >= userGoal.getArticleGoal()
                 && quest.getConceptCompletedCount() >= userGoal.getConceptGoal()
                 && quest.getQuizCompletedCount() >= userGoal.getQuizGoal()) {
