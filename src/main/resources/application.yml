@@ -8,9 +8,6 @@ spring:
   ai:
     openai:
       api-key: ${OPENAI_API_KEY}
-  task:
-     scheduling:
-       enabled: true
 
   #JWT
   jwt:
