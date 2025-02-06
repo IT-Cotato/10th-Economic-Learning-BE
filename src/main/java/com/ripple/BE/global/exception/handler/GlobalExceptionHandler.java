@@ -75,6 +75,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
+        e.printStackTrace();
+
         return handleExceptionInternal(GlobalErrorCode.INTERNAL_SERVER_ERROR);
     }
 
