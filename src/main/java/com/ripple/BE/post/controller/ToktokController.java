@@ -33,7 +33,7 @@ public class ToktokController {
     private final ToktokService toktokService;
     private final ToktokAdminService toktokAdminService;
 
-    @Operation(summary = "오늘의 경제 톡톡 주제 조회", description = "오늘의 경제 톡톡 주제를 조회합니다.")
+    @Operation(summary = "오늘의 경제 톡톡 주제 조회", description = "오늘의 경제 톡톡 주제를 조회합니다. 커뮤니티 홈 화면에 표시됩니다.")
     @GetMapping("/toktok-today")
     public ResponseEntity<ApiResponse<Object>> getTodayToktok() {
         ToktokDTO toktokDTO = toktokService.getTodayToktok();
@@ -42,7 +42,9 @@ public class ToktokController {
                 .body(ApiResponse.from(ToktokPreviewResponse.toToktokPreviewResponse(toktokDTO)));
     }
 
-    @Operation(summary = "경제 톡톡 목록 조회", description = "경제 톡톡 목록을 조회합니다.")
+    @Operation(
+            summary = "경제 톡톡 목록 조회",
+            description = "경제 톡톡 목록을 조회합니다. 페이지 번호는 0부터 시작하며, 페이지 당 10개의 경제 톡톡을 반환합니다.")
     @GetMapping("/toktok")
     public ResponseEntity<ApiResponse<Object>> getToktoks(
             final @AuthenticationPrincipal CustomUserDetails currentUser,

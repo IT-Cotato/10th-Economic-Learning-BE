@@ -35,7 +35,9 @@ public class QuizController {
 
     private final QuizService quizService;
 
-    @Operation(summary = "퀴즈 시작", description = "퀴즈를 시작합니다.")
+    @Operation(
+            summary = "퀴즈 시작",
+            description = "퀴즈를 시작하기 전 호출해주세요. (틀린 문제 보기, 스크랩한 퀴즈 조회)에서는 호출하지 않습니다.")
     @PostMapping("/{learningSetId}/quizzes")
     public ResponseEntity<ApiResponse<Object>> startQuiz(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
@@ -49,7 +51,9 @@ public class QuizController {
     }
 
     @Validated
-    @Operation(summary = "퀴즈 제출", description = "퀴즈를 제출 후 정답 여부와 해설을 반환합니다. 정답 선지 번호는 0부터 3까지입니다.")
+    @Operation(
+            summary = "퀴즈 제출",
+            description = "퀴즈 한 문제를 풀고 나서 정답 여부와 해설을 반환합니다. 정답 선지 번호는 0부터 3까지입니다.")
     @PostMapping("/{learningSetId}/quizzes/{quizId}")
     public ResponseEntity<ApiResponse<Object>> submitAnswer(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
@@ -63,7 +67,10 @@ public class QuizController {
                 .body(ApiResponse.from(QuizResultResponse.toQuizResultResponse(quizResultDTO)));
     }
 
-    @Operation(summary = "퀴즈 완료", description = "퀴즈를 완료합니다.")
+    @Operation(
+            summary = "퀴즈 완료",
+            description =
+                    "퀴즈를 종료한 후 호출합니다. (틀린 문제 보기, 스크랩한 퀴즈 조회)에서는 호출하지 않습니다. 퀴즈를 시작한 후에 30 분이 지나면 퀴즈 정답률에 대한 사용자 통계를 저장할 수 없습니다.")
     @PostMapping("/{learningSetId}/quizzes/end")
     public ResponseEntity<ApiResponse<Object>> finishQuiz(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
@@ -96,7 +103,9 @@ public class QuizController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
 
-    @Operation(summary = "개별 퀴즈 조회", description = "개별 퀴즈를 조회합니다.")
+    @Operation(
+            summary = "개별(오답, 스크랩) 퀴즈 조회",
+            description = "퀴즈 id를 받아 퀴즈 상세 정보를 반환합니다. 오답 문제 보기, 스크랩한 퀴즈 보기 기능을 위한 API입니다.")
     @GetMapping("/quiz/{quizId}")
     public ResponseEntity<ApiResponse<Object>> getSingleQuiz(
             final @PathVariable("quizId") long quizId) {

@@ -85,7 +85,9 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
 
-    @Operation(summary = "게시글 목록 조회", description = "게시글 목록을 조회합니다.")
+    @Operation(
+            summary = "게시글 목록 조회",
+            description = "게시글 목록을 조회합니다.페이지 번호는 0부터 시작하며, 페이지 당 10개의 게시글을 반환합니다.")
     @GetMapping
     public ResponseEntity<ApiResponse<Object>> getPosts(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
