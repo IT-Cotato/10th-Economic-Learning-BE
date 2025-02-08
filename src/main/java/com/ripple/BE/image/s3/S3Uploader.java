@@ -49,6 +49,18 @@ public class S3Uploader {
         amazonS3.deleteObject(bucket, fileName);
     }
 
+    public boolean isValidS3Url(String folderName, String imageUrl) {
+        try {
+            // S3에서 해당 URL의 객체가 존재하는지 확인, 입력 예시 : "toktok/1234.jpg"
+            String fileName = folderName + "/" + imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+
+            return amazonS3.doesObjectExist(bucket, fileName);
+        } catch (Exception e) {
+            log.error("S3 URL 검증 중 오류 발생: {}", imageUrl, e);
+            return false;
+        }
+    }
+
     private String uploadToS3(File uploadFile, String fileName) {
         PutObjectRequest putObjectRequest =
                 new PutObjectRequest(bucket, fileName, uploadFile)
