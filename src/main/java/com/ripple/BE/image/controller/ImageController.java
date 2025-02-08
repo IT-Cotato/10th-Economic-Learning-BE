@@ -2,6 +2,7 @@ package com.ripple.BE.image.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
 import com.ripple.BE.image.dto.response.ImageIdResponse;
+import com.ripple.BE.image.dto.response.ImageUrlResponse;
 import com.ripple.BE.image.service.ImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,6 +33,16 @@ public class ImageController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(ImageIdResponse.toImageIdResponse(imageId)));
+    }
+
+    @Operation(summary = "경제 톡톡 사진 추가 (관리자용)", description = "경제 톡톡 게시물을 등록하기 전 사진을 추가합니다.")
+    @PostMapping(value = "/toktok", consumes = "multipart/form-data")
+    public ResponseEntity<ApiResponse<Object>> createToktok(final @RequestParam MultipartFile file) {
+
+        String imageUrl = imageService.addImageToToktok(file);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(ImageUrlResponse.toImageUrlResponse(imageUrl)));
     }
 
     @Operation(summary = "게시물 사진 삭제", description = "게시물에 등록된 사진을 삭제합니다.")
