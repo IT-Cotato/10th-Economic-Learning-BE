@@ -34,7 +34,10 @@ public class SearchController {
 
     private final SearchService searchService;
 
-    @Operation(summary = "일반 게시글 검색", description = "일반 게시글을 검색합니다.")
+    @Operation(
+            summary = "일반 게시글 검색",
+            description =
+                    "일반 게시글을 검색합니다. 검색어가 없을 경우 전체 게시글을 조회합니다. 페이지 번호는 0부터 시작하며, 페이지 당 10개의 게시글을 반환합니다.")
     @GetMapping("/posts")
     public ResponseEntity<ApiResponse<Object>> searchPosts(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
@@ -46,7 +49,10 @@ public class SearchController {
                 .body(ApiResponse.from(PostListResponse.toPostListResponse(postListDTO)));
     }
 
-    @Operation(summary = "톡톡 게시글 검색", description = "톡톡 게시글을 검색합니다.")
+    @Operation(
+            summary = "톡톡 게시글 검색",
+            description =
+                    "톡톡 게시글을 검색합니다. 검색어가 없을 경우 전체 게시글을 조회합니다. 페이지 번호는 0부터 시작하며, 페이지 당 10개의 게시글을 반환합니다.")
     @GetMapping("/toktoks")
     public ResponseEntity<ApiResponse<Object>> searchToktoks(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
@@ -60,7 +66,9 @@ public class SearchController {
                         ApiResponse.from(ToktokPreviewListResponse.toToktokPreviewListResponse(toktokListDTO)));
     }
 
-    @Operation(summary = "뉴스 검색", description = "뉴스를 검색합니다.")
+    @Operation(
+            summary = "뉴스 검색",
+            description = "뉴스를 검색합니다. 검색어가 없을 경우 전체 뉴스를 조회합니다. 페이지 번호는 0부터 시작하며, 페이지 당 10개의 뉴스를 반환합니다.")
     @GetMapping("/news")
     public ResponseEntity<ApiResponse<Object>> searchNews(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
@@ -72,7 +80,9 @@ public class SearchController {
                 .body(ApiResponse.from(NewsListResponse.toNewsListResponse(newsListDTO)));
     }
 
-    @Operation(summary = "용어 검색", description = "용어를 검색합니다.")
+    @Operation(
+            summary = "용어 검색",
+            description = "용어를 검색합니다. 검색어가 없을 경우 전체 용어를 조회합니다. 페이지 번호는 0부터 시작하며, 페이지 당 10개의 용어를 반환합니다.")
     @GetMapping("/terms")
     public ResponseEntity<ApiResponse<Object>> searchTerms(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
@@ -84,7 +94,9 @@ public class SearchController {
                 .body(ApiResponse.from(TermListResponse.toTermListResponse(termListDTO)));
     }
 
-    @Operation(summary = "최근 검색어 조회", description = "사용자의 최근 검색어를 조회합니다.")
+    @Operation(
+            summary = "최근 검색어 조회",
+            description = "사용자의 최근 검색어를 조회합니다. 최대 20개의 검색어를 반환되며, 7일 이내의 검색어만 조회됩니다.")
     @GetMapping("/recent")
     public ResponseEntity<ApiResponse<Object>> getRecentSearches(
             final @AuthenticationPrincipal CustomUserDetails currentUser) {

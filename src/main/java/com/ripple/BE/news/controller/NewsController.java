@@ -32,7 +32,9 @@ public class NewsController {
 
     private final NewsService newsService;
 
-    @Operation(summary = "뉴스 목록 조회", description = "뉴스 목록을 조회합니다.")
+    @Operation(
+            summary = "뉴스 목록 조회",
+            description = "뉴스 목록을 조회합니다. 페이지 번호는 0부터 시작하며, 페이지 당 10개의 뉴스를 반환합니다.")
     @GetMapping
     public ResponseEntity<ApiResponse<Object>> getNewsList(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
