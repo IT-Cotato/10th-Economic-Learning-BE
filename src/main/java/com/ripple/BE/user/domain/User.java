@@ -55,7 +55,7 @@ public class User extends BaseEntity {
     private Long id;
 
     @Size(min = 5, max = 50)
-    @Column(name = "account_email", nullable = false)
+    @Column(name = "account_email", nullable = false, unique = true)
     private String accountEmail; // 카카오 로그인 시에는 카카오 서버에서 받아옴
 
     @Size(min = 8, max = 255)
@@ -67,7 +67,7 @@ public class User extends BaseEntity {
     private Role role;
 
     @Size(min = 2, max = 20)
-    @Column(name = "nickname")
+    @Column(name = "nickname", nullable = false, unique = true)
     private String nickname;
 
     @Enumerated(EnumType.STRING)
