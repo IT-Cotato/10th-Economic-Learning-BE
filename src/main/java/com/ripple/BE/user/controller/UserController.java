@@ -60,7 +60,9 @@ public class UserController {
     @Operation(
             summary = "프로필 등록",
             description =
-                    "로그인 후 유저의 프로필을 등록합니다." + "프로필을 등록하기 전 이미지 등록을 완료해주세요. 이미지 등록 후 반한 된 이미지 ID를 입력해주세요.")
+                    "로그인 후 유저의 프로필을 등록합니다."
+                            + "닉네임, 업종, 직업, 생일은 필수입니다. 닉네임은 중복 불가능합니다. (2~10)"
+                            + "프로필을 등록하기 전 이미지 등록 후 반한 된 이미지 ID를 입력해주세요.")
     @PostMapping("/profile")
     public ResponseEntity<ApiResponse<?>> profile(
             @Valid @RequestBody UpdateUserProfileRequest request,
