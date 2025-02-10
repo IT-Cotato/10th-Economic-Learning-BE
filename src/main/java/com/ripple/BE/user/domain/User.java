@@ -67,7 +67,7 @@ public class User extends BaseEntity {
     private Role role;
 
     @Size(min = 2, max = 20)
-    @Column(name = "nickname", nullable = false, unique = true)
+    @Column(name = "nickname", unique = true)
     private String nickname;
 
     @Enumerated(EnumType.STRING)

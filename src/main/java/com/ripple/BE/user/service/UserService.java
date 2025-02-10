@@ -59,8 +59,10 @@ public class UserService {
 
     @Transactional
     public void updateProfile(UpdateUserProfileRequest request, Long userId) {
-        User user =
-                userRepository.findById(userId).orElseThrow(() -> new UserException(USER_NOT_FOUND));
+        User user = findUserById(userId);
+        if (userRepository.existsByNickname(request.nickname())) { // 닉네임 중복 확인
+            throw new UserException(DUPLICATED_NICKNAME);
+        }
 
         Image image = null;
         if (request.imageId() != null) {
