@@ -17,4 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select u from User u")
     List<User> findAllWithLock();
+
+    Boolean existsByNickname(String nickname);
 }

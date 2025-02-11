@@ -15,6 +15,8 @@ public enum UserErrorCode implements ErrorCode {
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "Already exist Email"),
     QUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "Quest not found"),
     USER_GOAL_NOT_FOUND(HttpStatus.NOT_FOUND, "User Goal not found"),
+    DUPLICATED_NICKNAME(
+            HttpStatus.BAD_REQUEST, "Duplicated Nickname is already exist. Please use another nickname"),
     ATTENDANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "Attendance not found");
 
     private final HttpStatus httpStatus;

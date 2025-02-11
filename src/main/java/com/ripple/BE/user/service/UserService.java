@@ -13,6 +13,7 @@ import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.domain.type.LoginType;
 import com.ripple.BE.user.dto.UserGoalDTO;
 import com.ripple.BE.user.dto.UserInfoDTO;
+import com.ripple.BE.user.dto.request.PatchUserProfileRequest;
 import com.ripple.BE.user.dto.request.UpdateUserProfileRequest;
 import com.ripple.BE.user.dto.request.UserGoalRequest;
 import com.ripple.BE.user.exception.UserException;
@@ -59,8 +60,10 @@ public class UserService {
 
     @Transactional
     public void updateProfile(UpdateUserProfileRequest request, Long userId) {
-        User user =
-                userRepository.findById(userId).orElseThrow(() -> new UserException(USER_NOT_FOUND));
+        User user = findUserById(userId);
+        if (userRepository.existsByNickname(request.nickname())) { // 닉네임 중복 확인
+            throw new UserException(DUPLICATED_NICKNAME);
+        }
 
         Image image = null;
         if (request.imageId() != null) {
@@ -175,5 +178,55 @@ public class UserService {
                         .orElseThrow(() -> new UserException(USER_GOAL_NOT_FOUND));
 
         userGoal.updateQuizGoal(UserGoalDTO.toUserGoalDTO(userGoalRequest));
+    }
+
+    @Transactional
+    public void patchUserProfile(
+            final PatchUserProfileRequest updateUserProfileRequest, final long userId) {
+        User user = findUserById(userId);
+
+        if (updateUserProfileRequest.nickname() != null) {
+            if (userRepository.existsByNickname(updateUserProfileRequest.nickname())) {
+                throw new UserException(DUPLICATED_NICKNAME);
+            }
+            user.updateNickname(updateUserProfileRequest.nickname());
+        }
+
+        if (updateUserProfileRequest.businessType() != null) {
+            user.updateBusinessType(updateUserProfileRequest.businessType());
+        }
+
+        if (updateUserProfileRequest.job() != null) {
+            user.updateJob(updateUserProfileRequest.job());
+        }
+
+        if (updateUserProfileRequest.birthDate() != null) {
+            user.updateBirthDate(updateUserProfileRequest.birthDate());
+        }
+
+        if (updateUserProfileRequest.gender() != null) {
+            user.updateGender(updateUserProfileRequest.gender());
+        }
+
+        if (updateUserProfileRequest.profileIntro() != null) {
+            user.updateProfileIntro(updateUserProfileRequest.profileIntro());
+        }
+
+        if (updateUserProfileRequest.isLearningAlarmAllowed() != null) {
+            user.updateLearningAlarmAllowed(updateUserProfileRequest.isLearningAlarmAllowed());
+        }
+
+        if (updateUserProfileRequest.isCommunityAlarmAllowed() != null) {
+            user.updateCommunityAlarmAllowed(updateUserProfileRequest.isCommunityAlarmAllowed());
+        }
+
+        if (updateUserProfileRequest.imageId() != null) {
+            Image image =
+                    imageRepository
+                            .findById(updateUserProfileRequest.imageId())
+                            .orElseThrow(() -> new UserException(IMAGE_NOT_FOUND));
+
+            user.updateProfileImage(image);
+        }
     }
 }

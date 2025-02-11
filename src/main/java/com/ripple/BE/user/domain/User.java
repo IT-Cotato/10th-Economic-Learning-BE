@@ -55,7 +55,7 @@ public class User extends BaseEntity {
     private Long id;
 
     @Size(min = 5, max = 50)
-    @Column(name = "account_email", nullable = false)
+    @Column(name = "account_email", nullable = false, unique = true)
     private String accountEmail; // 카카오 로그인 시에는 카카오 서버에서 받아옴
 
     @Size(min = 8, max = 255)
@@ -67,7 +67,7 @@ public class User extends BaseEntity {
     private Role role;
 
     @Size(min = 2, max = 20)
-    @Column(name = "nickname")
+    @Column(name = "nickname", unique = true)
     private String nickname;
 
     @Enumerated(EnumType.STRING)
@@ -221,5 +221,41 @@ public class User extends BaseEntity {
 
     public void updateLevel(Level level) {
         this.currentLevel = level;
+    }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updateBusinessType(String businessType) {
+        this.businessType = BusinessType.from(businessType);
+    }
+
+    public void updateJob(String job) {
+        this.job = Job.from(job);
+    }
+
+    public void updateBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public void updateGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public void updateProfileIntro(String profileIntro) {
+        this.profileIntro = profileIntro;
+    }
+
+    public void updateProfileImage(Image image) {
+        this.profileImage = image;
+    }
+
+    public void updateLearningAlarmAllowed(boolean isLearningAlarmAllowed) {
+        this.isLearningAlarmAllowed = isLearningAlarmAllowed;
+    }
+
+    public void updateCommunityAlarmAllowed(boolean isCommunityAlarmAllowed) {
+        this.isCoummunityAlarmAllowed = isCommunityAlarmAllowed;
     }
 }

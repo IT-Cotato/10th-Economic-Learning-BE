@@ -23,6 +23,7 @@ import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.dto.ProgressDTO;
 import com.ripple.BE.user.dto.UserGoalDTO;
 import com.ripple.BE.user.dto.UserInfoDTO;
+import com.ripple.BE.user.dto.request.PatchUserProfileRequest;
 import com.ripple.BE.user.dto.request.UpdateUserProfileRequest;
 import com.ripple.BE.user.dto.request.UserGoalRequest;
 import com.ripple.BE.user.dto.response.ProgressResponse;
@@ -39,6 +40,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,7 +60,9 @@ public class UserController {
     @Operation(
             summary = "프로필 등록",
             description =
-                    "로그인 후 유저의 프로필을 등록합니다." + "프로필을 등록하기 전 이미지 등록을 완료해주세요. 이미지 등록 후 반한 된 이미지 ID를 입력해주세요.")
+                    "로그인 후 유저의 프로필을 등록합니다."
+                            + "닉네임, 업종, 직업, 생일은 필수입니다. 닉네임은 중복 불가능합니다. (2~10)"
+                            + "프로필을 등록하기 전 이미지 등록 후 반한 된 이미지 ID를 입력해주세요.")
     @PostMapping("/profile")
     public ResponseEntity<ApiResponse<?>> profile(
             @Valid @RequestBody UpdateUserProfileRequest request,
@@ -262,6 +266,17 @@ public class UserController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         userService.updateUserGoal(userGoalRequest, customUserDetails.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
+    }
+
+    @Operation(summary = "유저 프로필 수정", description = "로그인한 유저의 프로필을 수정합니다. 수정할 필드만 입력하면 됩니다. ")
+    @PatchMapping("/profile")
+    public ResponseEntity<ApiResponse<?>> patchUserProfile(
+            @Valid @RequestBody PatchUserProfileRequest request,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        userService.patchUserProfile(request, customUserDetails.getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
     }
