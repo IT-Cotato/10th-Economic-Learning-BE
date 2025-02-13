@@ -21,12 +21,14 @@ import com.ripple.BE.term.exception.TermException;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.dto.ProgressDTO;
+import com.ripple.BE.user.dto.UserCompletedDTO;
 import com.ripple.BE.user.dto.UserGoalDTO;
 import com.ripple.BE.user.dto.UserInfoDTO;
 import com.ripple.BE.user.dto.request.PatchUserProfileRequest;
 import com.ripple.BE.user.dto.request.UpdateUserProfileRequest;
 import com.ripple.BE.user.dto.request.UserGoalRequest;
 import com.ripple.BE.user.dto.response.ProgressResponse;
+import com.ripple.BE.user.dto.response.UserCompletedResponse;
 import com.ripple.BE.user.dto.response.UserGoalResponse;
 import com.ripple.BE.user.dto.response.UserInfoResponse;
 import com.ripple.BE.user.service.MyPageService;
@@ -279,5 +281,19 @@ public class UserController {
         userService.patchUserProfile(request, customUserDetails.getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
+    }
+
+    @Operation(summary = "유저가 완료한 학습과 퀴즈 갯수 반환", description = "로그인한 유저가 완료한 학습과 퀴즈 갯수를 반환합니다.")
+    @GetMapping("/completed")
+    public ResponseEntity<ApiResponse<Object>> getCompletedConceptAndQuizCount(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        UserCompletedDTO completedConceptAndQuizCount =
+                myPageService.getCompletedConceptAndQuizCount(customUserDetails.getId());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(
+                        ApiResponse.from(
+                                UserCompletedResponse.toUserCompletedResponse(completedConceptAndQuizCount)));
     }
 }
