@@ -111,6 +111,9 @@ public class User extends BaseEntity {
     @Column(name = "is_profile_completed")
     private boolean isProfileCompleted = false; // 최초 1회 프로필 등록
 
+    @Column(name = "is_level_test_completed")
+    private boolean isLevelTestCompleted = false; // 레벨 테스트 완료 여부
+
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> postList = new ArrayList<>(); // 작성한 게시글 목록
 
@@ -257,5 +260,9 @@ public class User extends BaseEntity {
 
     public void updateCommunityAlarmAllowed(boolean isCommunityAlarmAllowed) {
         this.isCoummunityAlarmAllowed = isCommunityAlarmAllowed;
+    }
+
+    public void updateLevelTestCompleted(boolean isLevelTestCompleted) {
+        this.isLevelTestCompleted = isLevelTestCompleted;
     }
 }
