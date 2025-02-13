@@ -148,7 +148,9 @@ public class QuizService {
 
         quizRedisService.clearRedisKeys(userId); // 퀴즈 진행 관련 데이터 삭제
 
-        attendanceService.completeQuest(userId, "QUIZ");
+        if (userLearningSet.getLevel() == user.getCurrentLevel()) {
+            attendanceService.completeQuest(userId, "QUIZ");
+        }
     }
 
     @Transactional(readOnly = true)
