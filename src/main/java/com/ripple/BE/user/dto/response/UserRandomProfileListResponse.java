@@ -1,14 +1,15 @@
 package com.ripple.BE.user.dto.response;
 
-import com.ripple.BE.user.dto.UserRandomProfileDTO;
+import com.ripple.BE.user.dto.UserRandomProfileListDTO;
 import java.util.List;
 
 public record UserRandomProfileListResponse(
         List<UserRandomProfileResponse> userRandomProfileResponseList) {
+
     public static UserRandomProfileListResponse toUserRandomProfileListResponse(
-            List<UserRandomProfileDTO> userRandomProfileListDTOList) {
+            UserRandomProfileListDTO userRandomProfileListDTO) {
         return new UserRandomProfileListResponse(
-                userRandomProfileListDTOList.stream()
+                userRandomProfileListDTO.userRandomProfileDTOList().stream()
                         .map(UserRandomProfileResponse::toUserRandomProfileResponse)
                         .toList());
     }
