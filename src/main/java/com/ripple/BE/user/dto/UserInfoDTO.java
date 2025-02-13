@@ -15,4 +15,5 @@ public record UserInfoDTO(
         String job,
         Long currentStreak,
         Level level,
-        Long quizCorrectRate) {}
+        Long quizCorrectRate,
+        Boolean isLevelTestCompleted) {}

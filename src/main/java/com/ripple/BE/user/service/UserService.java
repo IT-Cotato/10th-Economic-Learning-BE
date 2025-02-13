@@ -157,6 +157,7 @@ public class UserService {
                 .currentStreak(attendanceService.getCurrentStreak(userId))
                 .level(user.getCurrentLevel())
                 .quizCorrectRate(quizCorrectRate)
+                .isLevelTestCompleted(user.isLevelTestCompleted())
                 .build();
     }
 
