@@ -3,12 +3,14 @@ package com.ripple.BE.post.repository.comment;
 import static com.ripple.BE.post.domain.QComment.comment;
 import static com.ripple.BE.post.domain.QCommentLike.*;
 import static com.ripple.BE.post.domain.QPost.post;
+import static com.ripple.BE.user.domain.QUser.*;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ripple.BE.post.domain.Comment;
 import com.ripple.BE.post.domain.Post;
 import com.ripple.BE.post.domain.QComment;
+import com.ripple.BE.user.domain.User;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -55,5 +57,16 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
                         })
                 .filter(comment -> comment.getParent() == null)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<User> findUsersByPostId(Long postId) {
+        return queryFactory
+                .select(user)
+                .from(comment)
+                .join(comment.commenter, user)
+                .where(comment.post.id.eq(postId))
+                .distinct()
+                .fetch();
     }
 }
