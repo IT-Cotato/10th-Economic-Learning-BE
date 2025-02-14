@@ -119,6 +119,7 @@ public class LevelTestService {
                 userRepository.findById(userId).orElseThrow(() -> new UserException(USER_NOT_FOUND));
         Level level = calculateLevel(score);
         user.updateLevel(level);
+        user.updateLevelTestCompleted(true);
         return level;
     }
 

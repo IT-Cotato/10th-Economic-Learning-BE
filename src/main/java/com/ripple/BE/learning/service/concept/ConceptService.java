@@ -77,7 +77,9 @@ public class ConceptService {
             userProgressService.updateLevel(user);
         }
 
-        attendanceService.completeQuest(userId, "CONCEPT");
+        if (user.getCurrentLevel() == userLearningSet.getLevel()) {
+            attendanceService.completeQuest(userId, "CONCEPT");
+        }
     }
 
     /**

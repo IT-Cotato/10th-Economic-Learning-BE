@@ -1,5 +1,7 @@
 package com.ripple.BE.user.service;
 
+import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
+
 import com.ripple.BE.learning.domain.concept.Concept;
 import com.ripple.BE.learning.domain.quiz.Quiz;
 import com.ripple.BE.learning.dto.ConceptListDTO;
@@ -23,7 +25,11 @@ import com.ripple.BE.post.repository.postscrap.PostScrapRepository;
 import com.ripple.BE.term.domain.Term;
 import com.ripple.BE.term.dto.TermListDTO;
 import com.ripple.BE.term.repository.TermScrapRepository;
+import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
+import com.ripple.BE.user.dto.UserCompletedDTO;
+import com.ripple.BE.user.exception.UserException;
+import com.ripple.BE.user.repository.UserRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +52,7 @@ public class MyPageService {
     private final ConceptScrapRepository conceptScrapRepository;
     private final TermScrapRepository termScrapRepository;
     private final NewsScrapRepository newsScrapRepository;
+    private final UserRepository userRepository;
 
     public PostListDTO getMyPosts(final long userId) {
 
@@ -122,5 +129,25 @@ public class MyPageService {
     public NewsListDTO getMyScrapNews(final long userId) {
         List<News> news = newsScrapRepository.findNewsScrappedByUser(userId);
         return NewsListDTO.toNewsListDTO(news);
+    }
+
+    public UserCompletedDTO getCompletedConceptAndQuizCount(final long userId) {
+        User user =
+                userRepository.findById(userId).orElseThrow(() -> new UserException(USER_NOT_FOUND));
+
+        long beginnerCompletedCount = user.getBeginnerCompletedCount();
+        long intermediateCompletedCount = user.getIntermediateCompletedCount();
+        long advancedCompletedCount = user.getAdvancedCompletedCount();
+        long totalConceptCompletedCount =
+                beginnerCompletedCount + intermediateCompletedCount + advancedCompletedCount;
+
+        return UserCompletedDTO.builder()
+                .userId(userId)
+                .beginnerCompletedCount(beginnerCompletedCount)
+                .intermediateCompletedCount(intermediateCompletedCount)
+                .advancedCompletedCount(advancedCompletedCount)
+                .totalConceptCompletedCount(totalConceptCompletedCount)
+                .quizCount(user.getQuizCount())
+                .build();
     }
 }
