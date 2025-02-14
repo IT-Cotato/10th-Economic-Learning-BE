@@ -1,11 +1,8 @@
 package com.ripple.BE.post.dto.response;
 
 import com.ripple.BE.global.utils.RelativeTimeFormatter;
-import com.ripple.BE.image.domain.Image;
-import com.ripple.BE.image.domain.S3Info;
 import com.ripple.BE.post.dto.CommentDTO;
 import java.util.List;
-import java.util.Optional;
 
 public record CommentResponse(
         Long id,
@@ -28,10 +25,7 @@ public record CommentResponse(
                 commentDTO.likeCount(),
                 commentDTO.commenter().id(),
                 commentDTO.commenter().nickname(),
-                Optional.ofNullable(commentDTO.commenter().profileImage())
-                        .map(Image::getS3Info)
-                        .map(S3Info::getUrl)
-                        .orElse(null),
+                commentDTO.commenter().profileImageUrl(),
                 commentDTO.isDeleted(),
                 commentDTO.isAuthor(),
                 commentDTO.isLiked(),

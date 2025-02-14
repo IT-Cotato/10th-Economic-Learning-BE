@@ -13,7 +13,11 @@ import com.ripple.BE.post.repository.comment.CommentRepository;
 import com.ripple.BE.post.repository.post.PostRepository;
 import com.ripple.BE.post.repository.postlike.PostLikeRepository;
 import com.ripple.BE.post.repository.postscrap.PostScrapRepository;
+import com.ripple.BE.user.domain.User;
+import com.ripple.BE.user.dto.UserRandomProfileListDTO;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +41,8 @@ public class ToktokService {
 
     private static final int PAGE_SIZE = 10;
 
+    private static final int RANDOM_USER_COUNT = 4;
+
     private final PostService postService;
 
     // 오늘의 경제톡톡 주제 미리보기
@@ -45,7 +51,11 @@ public class ToktokService {
 
         Post toktok = findTodayToktok();
 
-        return ToktokDTO.toToktokDTO(toktok);
+        List<User> users = commentRepository.findUsersByPostId(toktok.getId());
+        List<User> randomUsers = users.size() > 4 ? getRandomUsers(users) : users;
+
+        return ToktokDTO.toToktokDTO(
+                toktok, UserRandomProfileListDTO.toUserRandomProfileListDTO(randomUsers));
     }
 
     @Transactional(readOnly = true)
@@ -103,5 +113,11 @@ public class ToktokService {
 
         Post selectedPost = unusedPosts.get(random.nextInt(unusedPosts.size()));
         selectedPost.setUsedDate(LocalDate.now());
+    }
+
+    private List<User> getRandomUsers(List<User> users) {
+        List<User> randomUsers = new ArrayList<>(users);
+        Collections.shuffle(randomUsers);
+        return randomUsers.subList(0, RANDOM_USER_COUNT);
     }
 }

@@ -1,13 +1,10 @@
 package com.ripple.BE.post.dto.response;
 
 import com.ripple.BE.global.utils.RelativeTimeFormatter;
-import com.ripple.BE.image.domain.Image;
-import com.ripple.BE.image.domain.S3Info;
 import com.ripple.BE.image.dto.response.ImageResponse;
 import com.ripple.BE.post.domain.type.PostType;
 import com.ripple.BE.post.dto.PostDTO;
 import java.util.List;
-import java.util.Optional;
 
 public record PostResponse(
         Long id,
@@ -31,10 +28,7 @@ public record PostResponse(
                 postDTO.id(),
                 postDTO.title(),
                 postDTO.author().nickname(),
-                Optional.ofNullable(postDTO.author().profileImage())
-                        .map(Image::getS3Info)
-                        .map(S3Info::getUrl)
-                        .orElse(null),
+                postDTO.author().profileImageUrl(),
                 postDTO.content(),
                 postDTO.type(),
                 postDTO.likeCount(),

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.ripple.BE.image.dto.ImageListDTO;
 import com.ripple.BE.post.domain.Post;
 import com.ripple.BE.post.domain.type.PostType;
+import com.ripple.BE.user.dto.UserRandomProfileListDTO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -33,7 +34,8 @@ public record ToktokDTO(
         @JsonSerialize(using = LocalDateSerializer.class)
                 @JsonDeserialize(using = LocalDateDeserializer.class)
                 LocalDate usedDate,
-        CommentListDTO commentListDTO) {
+        CommentListDTO commentListDTO,
+        UserRandomProfileListDTO userRandomProfileListDTO) {
 
     private static final String TITLE = "title";
     private static final String CONTENT = "content";
@@ -53,6 +55,7 @@ public record ToktokDTO(
                 post.getCreatedDate(),
                 post.getModifiedDate(),
                 post.getUsedDate(),
+                null,
                 null);
     }
 
@@ -71,7 +74,8 @@ public record ToktokDTO(
                 post.getCreatedDate(),
                 post.getModifiedDate(),
                 post.getUsedDate(),
-                commentListDTO);
+                commentListDTO,
+                null);
     }
 
     public static ToktokDTO toToktokDTO(final Map<String, String> excelData) {
@@ -89,6 +93,27 @@ public record ToktokDTO(
                 null,
                 null,
                 null,
+                null,
                 null);
+    }
+
+    public static ToktokDTO toToktokDTO(
+            final Post post, final UserRandomProfileListDTO userRandomProfileListDTO) {
+        return new ToktokDTO(
+                post.getId(),
+                post.getTitle(),
+                post.getContent(),
+                post.getType(),
+                post.getLikeCount(),
+                post.getCommentCount(),
+                post.getScrapCount(),
+                ImageListDTO.toImageListDTO(post.getImageList()),
+                post.getIsScrapped(),
+                post.getIsLiked(),
+                post.getCreatedDate(),
+                post.getModifiedDate(),
+                post.getUsedDate(),
+                null,
+                userRandomProfileListDTO);
     }
 }
