@@ -75,7 +75,7 @@ public class MyPageService {
     }
 
     public UserCommentListDTO getMyCommentPosts(final long userId) {
-        List<Comment> comments = commentRepository.findByUserId(userId); // 유저가 단 모든 댓글 조회
+        List<Comment> comments = commentRepository.findAllByCommenterId(userId); // 유저가 단 모든 댓글 조회
 
         // 댓글이 달린 게시글의 id만 추출
         List<Long> postIds =

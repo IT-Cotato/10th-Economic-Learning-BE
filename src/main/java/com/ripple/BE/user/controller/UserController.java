@@ -29,6 +29,7 @@ import com.ripple.BE.user.dto.request.PatchUserProfileRequest;
 import com.ripple.BE.user.dto.request.UpdateUserProfileRequest;
 import com.ripple.BE.user.dto.request.UserGoalRequest;
 import com.ripple.BE.user.dto.response.ProgressResponse;
+import com.ripple.BE.user.dto.response.UserCommentListResponse;
 import com.ripple.BE.user.dto.response.UserCompletedResponse;
 import com.ripple.BE.user.dto.response.UserGoalResponse;
 import com.ripple.BE.user.dto.response.UserInfoResponse;
@@ -115,7 +116,8 @@ public class UserController {
 
         UserCommentListDTO myCommentPosts = myPageService.getMyCommentPosts(customUserDetails.getId());
 
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(UserCommentListResponse.toUserCommentListResponse(myCommentPosts)));
     }
 
     @Operation(summary = "내가 스크랩한 게시물 조회", description = "로그인한 유저가 스크랩한 게시물을 조회합니다.")
