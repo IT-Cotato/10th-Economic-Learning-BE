@@ -1,5 +1,6 @@
 package com.ripple.BE.user.service;
 
+import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
 import com.ripple.BE.learning.domain.concept.Concept;
@@ -17,6 +18,7 @@ import com.ripple.BE.post.domain.Comment;
 import com.ripple.BE.post.domain.Post;
 import com.ripple.BE.post.dto.LikeCommentListDTO;
 import com.ripple.BE.post.dto.PostListDTO;
+import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.repository.comment.CommentRepository;
 import com.ripple.BE.post.repository.commentlike.CommentLikeRepository;
 import com.ripple.BE.post.repository.post.PostRepository;
@@ -27,10 +29,14 @@ import com.ripple.BE.term.dto.TermListDTO;
 import com.ripple.BE.term.repository.TermScrapRepository;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
+import com.ripple.BE.user.dto.UserCommentDTO;
+import com.ripple.BE.user.dto.UserCommentListDTO;
 import com.ripple.BE.user.dto.UserCompletedDTO;
 import com.ripple.BE.user.exception.UserException;
 import com.ripple.BE.user.repository.UserRepository;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -68,11 +74,40 @@ public class MyPageService {
         return PostListDTO.toPostListDTO(posts);
     }
 
-    public PostListDTO getMyCommentPosts(final long userId) {
+    public UserCommentListDTO getMyCommentPosts(final long userId) {
+        List<Comment> comments = commentRepository.findByUserId(userId); // 유저가 단 모든 댓글 조회
 
-        List<Post> posts = commentRepository.findPostsCommentedByUser(userId);
+        // 댓글이 달린 게시글의 id만 추출
+        List<Long> postIds =
+                comments.stream()
+                        .map(comment -> comment.getPost().getId())
+                        .distinct()
+                        .collect(Collectors.toList());
 
-        return PostListDTO.toPostListDTO(posts);
+        List<Post> posts = postRepository.findByIdIn(postIds); // 게시글 id로 게시글 조회
+
+        Map<Long, Post> postMap =
+                posts.stream()
+                        .collect(Collectors.toMap(Post::getId, post -> post)); // 게시글 id를 key로 하는 map 생성
+
+        List<UserCommentDTO> userCommentDTOS =
+                comments.stream()
+                        .map(
+                                comment -> {
+                                    Post post = postMap.get(comment.getPost().getId());
+                                    if (post == null) {
+                                        throw new PostException(POST_NOT_FOUND);
+                                    }
+
+                                    return UserCommentDTO.of(
+                                            comment.getId(),
+                                            comment.getContent(),
+                                            post.getTitle(),
+                                            post.getType(),
+                                            comment.getCreatedDate());
+                                })
+                        .collect(Collectors.toList());
+        return new UserCommentListDTO(userCommentDTOS);
     }
 
     public PostListDTO getMyScrapPosts(final long userId) {

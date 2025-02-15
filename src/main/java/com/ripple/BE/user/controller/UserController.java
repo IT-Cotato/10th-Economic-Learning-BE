@@ -21,6 +21,7 @@ import com.ripple.BE.term.exception.TermException;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.dto.ProgressDTO;
+import com.ripple.BE.user.dto.UserCommentListDTO;
 import com.ripple.BE.user.dto.UserCompletedDTO;
 import com.ripple.BE.user.dto.UserGoalDTO;
 import com.ripple.BE.user.dto.UserInfoDTO;
@@ -112,10 +113,9 @@ public class UserController {
     public ResponseEntity<ApiResponse<Object>> getMyCommentPosts(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        PostListDTO postListDTO = myPageService.getMyCommentPosts(customUserDetails.getId());
+        UserCommentListDTO myCommentPosts = myPageService.getMyCommentPosts(customUserDetails.getId());
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(PostListResponse.toPostListResponse(postListDTO)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
 
     @Operation(summary = "내가 스크랩한 게시물 조회", description = "로그인한 유저가 스크랩한 게시물을 조회합니다.")
