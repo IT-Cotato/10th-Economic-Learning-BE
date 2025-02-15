@@ -129,6 +129,10 @@ public class PostService {
     public PostListDTO getPosts(
             final int page, final PostSort sort, final PostType type, final long userId) {
 
+        if (type == PostType.ECONOMY_TALK) {
+            throw new PostException(TOKTOK_NOT_AVAILABLE);
+        }
+
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
         // 게시글 조회 (타입에 따른 필터링)
