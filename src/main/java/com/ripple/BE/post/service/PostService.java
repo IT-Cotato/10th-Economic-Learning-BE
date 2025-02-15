@@ -61,6 +61,10 @@ public class PostService {
             final PostDTO postDTO,
             final PostType postType,
             final List<Long> imageIdList) {
+
+        if (postType == PostType.ECONOMY_TALK) {
+            throw new PostException(TOKTOK_NOT_AVAILABLE);
+        }
         User user = userService.findUserById(userId);
 
         Post post = Post.toPostEntity(postDTO);
