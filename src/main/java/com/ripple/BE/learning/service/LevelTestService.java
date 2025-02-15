@@ -4,11 +4,13 @@ import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
 import com.ripple.BE.learning.domain.quiz.Quiz;
 import com.ripple.BE.learning.domain.type.Type;
-import com.ripple.BE.learning.dto.AnswerDTO;
 import com.ripple.BE.learning.dto.QuizDTO;
 import com.ripple.BE.learning.dto.QuizListDTO;
 import com.ripple.BE.learning.dto.QuizSubmitDTO;
+import com.ripple.BE.learning.dto.response.LevelTestAnswerDTO;
 import com.ripple.BE.learning.dto.response.LevelTestResultResponse;
+import com.ripple.BE.learning.exception.QuizException;
+import com.ripple.BE.learning.exception.errorcode.QuizErrorCode;
 import com.ripple.BE.learning.repository.quiz.QuizRepository;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
@@ -82,23 +84,27 @@ public class LevelTestService {
         int correctCount = 0;
         int score = 0;
 
-        List<AnswerDTO> wrongAnswers = new ArrayList<>();
+        List<LevelTestAnswerDTO> answers = new ArrayList<>();
 
         for (QuizSubmitDTO.Answer answer : quizSubmitDTO.answers()) {
             Quiz quiz =
-                    quizList.stream().filter(q -> q.getId().equals(answer.quizId())).findFirst().orElse(null);
+                    quizList.stream()
+                            .filter(q -> q.getId().equals(answer.quizId()))
+                            .findFirst()
+                            .orElseThrow(() -> new QuizException(QuizErrorCode.QUIZ_NOT_FOUND));
 
-            if (quiz != null && quiz.getAnswer().equals(answer.answer())) {
+            if (quiz.getAnswer().equals(answer.answer())) {
                 correctCount++;
                 score += scoreMap.get(quiz.getType());
+                answers.add(LevelTestAnswerDTO.toLevelTestAnswerDTO(quiz, true));
             } else {
-                wrongAnswers.add(AnswerDTO.toanswerDTO(quiz));
+                answers.add(LevelTestAnswerDTO.toLevelTestAnswerDTO(quiz, false));
             }
         }
 
         Level level = updateLevel(userId, score);
 
-        return LevelTestResultResponse.toQuizResponse(correctCount, level, wrongAnswers);
+        return LevelTestResultResponse.toQuizResponse(correctCount, level, answers);
     }
 
     /**

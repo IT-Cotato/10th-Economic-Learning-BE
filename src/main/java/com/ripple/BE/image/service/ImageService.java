@@ -22,6 +22,7 @@ public class ImageService {
     private final S3Uploader s3Uploader;
 
     private static final String FOLDER_NAME = "post";
+    private static final String TOKTOK_FOLDER_NAME = "toktok";
 
     @Transactional
     public long addImageToPost(MultipartFile file) {
@@ -30,6 +31,15 @@ public class ImageService {
 
         Image image = imageRepository.save(Image.toImageEntity(s3Info));
         return image.getId();
+    }
+
+    @Transactional
+    public String addImageToToktok(MultipartFile file) {
+
+        S3Info s3Info = s3Uploader.uploadFiles(file, TOKTOK_FOLDER_NAME);
+
+        Image image = imageRepository.save(Image.toImageEntity(s3Info));
+        return image.getS3Info().getUrl();
     }
 
     @Transactional

@@ -4,6 +4,7 @@ import com.ripple.BE.global.entity.BaseEntity;
 import com.ripple.BE.image.domain.Image;
 import com.ripple.BE.post.domain.type.PostType;
 import com.ripple.BE.post.dto.PostDTO;
+import com.ripple.BE.post.dto.ToktokDTO;
 import com.ripple.BE.user.domain.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -74,6 +75,10 @@ public class Post extends BaseEntity {
 
     @Setter @Transient private Boolean isScrapped;
 
+    @Setter @Transient private Boolean isLiked;
+
+    @Setter @Transient private Boolean isAuthor;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>(); // 댓글 목록
 
@@ -118,6 +123,15 @@ public class Post extends BaseEntity {
                 .title(postDTO.title())
                 .content(postDTO.content())
                 .type(postDTO.type())
+                .imageList(new ArrayList<>())
+                .build();
+    }
+
+    public static Post toPostEntity(ToktokDTO toktokDTO) {
+        return Post.builder()
+                .title(toktokDTO.title())
+                .content(toktokDTO.content())
+                .type(toktokDTO.type())
                 .imageList(new ArrayList<>())
                 .build();
     }

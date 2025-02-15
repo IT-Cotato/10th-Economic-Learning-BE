@@ -150,18 +150,22 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostDTO getPost(final long id) {
+    public PostDTO getPost(final long id, final long userId) {
         Post post = postRepository.findById(id).orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
-        CommentListDTO commentListDTO = getCommentList(post);
+        post.setIsAuthor(post.getAuthor().getId() == userId);
+        post.setIsLiked(postLikeRepository.existsByPostIdAndUserId(id, userId));
+        post.setIsScrapped(postScrapRepository.existsByPostIdAndUserId(id, userId));
+
+        CommentListDTO commentListDTO = getCommentList(post, userId);
 
         return PostDTO.toPostDTO(post, commentListDTO);
     }
 
     @Transactional(readOnly = true)
-    public CommentListDTO getCommentList(final Post post) {
+    public CommentListDTO getCommentList(final Post post, final long userId) {
 
-        List<Comment> commentList = commentRepository.findRootCommentsByPost(post);
+        List<Comment> commentList = commentRepository.findRootCommentsByPost(post, userId);
 
         return CommentListDTO.toCommentListDTO(commentList);
     }
@@ -271,9 +275,11 @@ public class PostService {
             }
         } else { // 자식 댓글인 경우
             commentRepository.delete(comment);
+            parent.getChildren().remove(comment);
+
             parent.decreaseReplyCount();
 
-            if (parent.getChildren().size() == 1 && parent.isDeleted()) { // 부모 댓글이 삭제 처리된 경우
+            if (parent.getChildren().isEmpty() && parent.isDeleted()) { // 부모 댓글이 삭제 처리된 경우
                 commentRepository.delete(parent);
             }
         }
@@ -288,10 +294,10 @@ public class PostService {
         Post post = findPostByIdForUpdate(postId);
         User user = userService.findUserById(userId);
 
-        Comment parent =
-                commentRepository
-                        .findByIdAndCommenterId(commentId, userId)
-                        .orElseThrow(() -> new PostException(COMMENT_NOT_FOUND));
+        Comment parent = findCommentByIdForUpdate(commentId);
+        if (parent.isDeleted() || parent.getParent() != null) {
+            throw new PostException(COMMENT_NOT_FOUND);
+        }
 
         Comment comment = Comment.toCommentEntity(content);
         comment.setUser(user);
