@@ -312,4 +312,20 @@ public class UserController {
                         ApiResponse.from(
                                 UserCompletedResponse.toUserCompletedResponse(completedConceptAndQuizCount)));
     }
+
+    @Operation(
+            summary = "유저가 참여한 경제 톡톡 조회",
+            description = "유저가 참여한 경제 톡톡을 조회합니다. 유저 ID를 입력하지 않으면 로그인한 유저의 톡톡을 조회합니다.")
+    @GetMapping("/toktok")
+    public ResponseEntity<ApiResponse<Object>> getMyToktok(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam(required = false) Long userId) {
+
+        Long targetUserId = (userId == null) ? customUserDetails.getId() : userId;
+
+        PostListDTO myToktok = myPageService.getMyToktok(targetUserId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.from(PostListResponse.toPostListResponse(myToktok)));
+    }
 }
