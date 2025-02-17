@@ -87,12 +87,17 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
     }
 
-    @Operation(summary = "내가 쓴 게시물 조회", description = "로그인한 유저가 작성한 게시물을 조회합니다.")
+    @Operation(
+            summary = "유저가 쓴 게시물 조회",
+            description = "유저가 작성한 게시물을 조회합니다. 유저 ID를 입력하지 않으면 로그인한 유저의 게시물을 조회합니다.")
     @GetMapping("/posts")
     public ResponseEntity<ApiResponse<Object>> getMyPosts(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam(required = false) Long userId) {
 
-        PostListDTO postListDTO = myPageService.getMyPosts(customUserDetails.getId());
+        Long targetUserId = (userId == null) ? customUserDetails.getId() : userId;
+
+        PostListDTO postListDTO = myPageService.getMyPosts(targetUserId);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(PostListResponse.toPostListResponse(postListDTO)));
@@ -109,12 +114,17 @@ public class UserController {
                 .body(ApiResponse.from(PostListResponse.toPostListResponse(postListDTO)));
     }
 
-    @Operation(summary = "내가 댓글 단 게시물 조회", description = "로그인한 유저가 댓글을 단 게시물을 조회합니다.")
+    @Operation(
+            summary = "유저가 댓글 단 게시물 조회",
+            description = "유저가 댓글을 단 게시물을 조회합니다. 유저 ID를 입력하지 않으면 로그인한 유저의 댓글을 조회합니다.")
     @GetMapping("/comment-posts")
     public ResponseEntity<ApiResponse<Object>> getMyCommentPosts(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam(required = false) Long userId) {
 
-        UserCommentListDTO myCommentPosts = myPageService.getMyCommentPosts(customUserDetails.getId());
+        Long targetUserId = (userId == null) ? customUserDetails.getId() : userId;
+
+        UserCommentListDTO myCommentPosts = myPageService.getMyCommentPosts(targetUserId);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.from(UserCommentListResponse.toUserCommentListResponse(myCommentPosts)));
