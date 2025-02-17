@@ -23,5 +23,4 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostRepositor
 
     @Query("SELECT p.title FROM Post p WHERE p.type = :type")
     Set<String> findExistingTitlesByType(@Param("type") PostType type);
-
 }

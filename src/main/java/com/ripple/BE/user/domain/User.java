@@ -173,6 +173,7 @@ public class User extends BaseEntity {
         this.loginType = loginType;
         this.role = Role.USER;
         this.currentLevel = Level.BEGINNER;
+        this.isLevelTestCompleted = false;
     }
 
     // 기본 로그인 시 사용
@@ -183,6 +184,7 @@ public class User extends BaseEntity {
         this.loginType = LoginType.BASIC;
         this.role = Role.ADMIN;
         this.currentLevel = Level.BEGINNER;
+        this.isLevelTestCompleted = false;
     }
 
     public void updateProfile(UpdateUserProfileRequest request, Image image) {
