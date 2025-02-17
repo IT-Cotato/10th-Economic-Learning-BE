@@ -61,6 +61,10 @@ public class PostService {
             final PostDTO postDTO,
             final PostType postType,
             final List<Long> imageIdList) {
+
+        if (postType == PostType.ECONOMY_TALK) {
+            throw new PostException(TOKTOK_NOT_AVAILABLE);
+        }
         User user = userService.findUserById(userId);
 
         Post post = Post.toPostEntity(postDTO);
@@ -128,6 +132,10 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostListDTO getPosts(
             final int page, final PostSort sort, final PostType type, final long userId) {
+
+        if (type == PostType.ECONOMY_TALK) {
+            throw new PostException(TOKTOK_NOT_AVAILABLE);
+        }
 
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 

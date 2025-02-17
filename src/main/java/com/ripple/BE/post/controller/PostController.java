@@ -14,6 +14,7 @@ import com.ripple.BE.post.dto.response.PostResponse;
 import com.ripple.BE.post.service.PostService;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -93,7 +94,10 @@ public class PostController {
             final @AuthenticationPrincipal CustomUserDetails currentUser,
             final @RequestParam(required = false, defaultValue = "0") @PositiveOrZero int page,
             final @RequestParam(required = false, defaultValue = "RECENT") PostSort sort,
-            final @RequestParam(required = false) PostType type) {
+            @Parameter(
+                            description =
+                                    "게시글 타입은 FREE, QUESTION, INFORMATION, BOOK_RECOMMENDATION 중 선택할 수 있습니다. (ECONOMY_TALK 제외)")
+                    final @RequestParam(required = false) PostType type) {
 
         PostListDTO postListDTO = postService.getPosts(page, sort, type, currentUser.getId());
 

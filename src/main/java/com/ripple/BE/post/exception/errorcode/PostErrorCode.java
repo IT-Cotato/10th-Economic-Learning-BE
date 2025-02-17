@@ -20,6 +20,8 @@ public enum PostErrorCode implements ErrorCode {
     SCRAP_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Scrap already exists"),
 
     POST_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "Post not authorized"),
+
+    TOKTOK_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "Toktok은 post/toktok API를 통해 조회해주세요"),
     ;
 
     private final HttpStatus httpStatus;
