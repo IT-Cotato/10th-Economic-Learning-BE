@@ -16,6 +16,7 @@ import com.ripple.BE.news.dto.NewsListDTO;
 import com.ripple.BE.news.repository.newscrap.NewsScrapRepository;
 import com.ripple.BE.post.domain.Comment;
 import com.ripple.BE.post.domain.Post;
+import com.ripple.BE.post.domain.type.PostType;
 import com.ripple.BE.post.dto.LikeCommentListDTO;
 import com.ripple.BE.post.dto.PostListDTO;
 import com.ripple.BE.post.exception.PostException;
@@ -78,11 +79,7 @@ public class MyPageService {
         List<Comment> comments = commentRepository.findAllByCommenterId(userId); // 유저가 단 모든 댓글 조회
 
         // 댓글이 달린 게시글의 id만 추출
-        List<Long> postIds =
-                comments.stream()
-                        .map(comment -> comment.getPost().getId())
-                        .distinct()
-                        .collect(Collectors.toList());
+        List<Long> postIds = getPostIds(comments);
 
         List<Post> posts = postRepository.findByIdIn(postIds); // 게시글 id로 게시글 조회
 
@@ -108,6 +105,15 @@ public class MyPageService {
                                 })
                         .collect(Collectors.toList());
         return new UserCommentListDTO(userCommentDTOS);
+    }
+
+    private static List<Long> getPostIds(List<Comment> comments) {
+        List<Long> postIds =
+                comments.stream()
+                        .map(comment -> comment.getPost().getId())
+                        .distinct()
+                        .collect(Collectors.toList());
+        return postIds;
     }
 
     public PostListDTO getMyScrapPosts(final long userId) {
@@ -184,5 +190,18 @@ public class MyPageService {
                 .totalConceptCompletedCount(totalConceptCompletedCount)
                 .quizCount(user.getQuizCount())
                 .build();
+    }
+
+    public PostListDTO getMyToktok(final long userId) {
+        List<Comment> comments = commentRepository.findAllByCommenterId(userId);
+
+        List<Long> postIds = getPostIds(comments);
+
+        List<Post> posts =
+                postRepository.findByIdIn(postIds).stream()
+                        .filter(post -> post.getType() == PostType.ECONOMY_TALK)
+                        .toList();
+
+        return PostListDTO.toPostListDTO(posts);
     }
 }
