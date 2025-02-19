@@ -54,7 +54,7 @@ public class QuizController {
     @Operation(
             summary = "퀴즈 제출",
             description = "퀴즈 한 문제를 풀고 나서 정답 여부와 해설을 반환합니다. 정답 선지 번호는 0부터 3까지입니다.")
-    @PostMapping("/{learningSetId}/quizzes/{quizId}")
+    @PostMapping("/quizzes/{quizId}")
     public ResponseEntity<ApiResponse<Object>> submitAnswer(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
             final @PathVariable("quizId") long quizId,
