@@ -17,6 +17,7 @@ import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.service.AttendanceService;
 import com.ripple.BE.user.service.UserService;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -36,6 +37,7 @@ public class NewsService {
     private final NewsScrapRepository newsScrapRepository;
     private final NewsJdbcRepository newsJdbcRepository;
 
+    private final NewsCrawlerService newsCrawlerService;
     private final UserService userService;
     private final List<NewsCrawler> crawlers;
     private final AttendanceService attendanceService;
@@ -99,37 +101,11 @@ public class NewsService {
     }
 
     // 하루 한 번 뉴스 크롤링, 실제 배포시는 짧은 주기로 변경 필요
-    @Scheduled(cron = "0 0 0 * * *")
-    @Transactional
-    public void fetchAndSaveAllNews() {
-        for (NewsCrawler crawler : crawlers) {
-            List<NewsDTO> newsList = crawler.crawl();
+    @Scheduled(cron = "0 0 0 * * *") // 매일 자정 실행
+    public void fetchAndSaveAllNewsAsync() {
+        List<CompletableFuture<Void>> futures =
+                crawlers.stream().map(newsCrawlerService::crawl).toList();
 
-            List<News> filteredNews = filterOutDuplicateUrls(newsList);
-
-            saveNewsBatch(filteredNews);
-        }
-    }
-
-    private List<News> filterOutDuplicateUrls(List<NewsDTO> newsList) {
-        if (newsList.isEmpty()) {
-            return List.of();
-        }
-
-        List<String> urls = newsList.stream().map(NewsDTO::url).toList();
-        List<String> existingUrls = newsJdbcRepository.findExistingUrls(urls);
-
-        return newsList.stream()
-                .filter(dto -> !existingUrls.contains(dto.url()))
-                .map(News::toNewsEntity)
-                .toList();
-    }
-
-    private void saveNewsBatch(List<News> newsList) {
-        if (newsList.isEmpty()) {
-            return;
-        }
-
-        newsJdbcRepository.saveAllNewsByJdbcTemplate(newsList);
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join(); // 모든 크롤링이 끝날 때까지 대기
     }
 }
