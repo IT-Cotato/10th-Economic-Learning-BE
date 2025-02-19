@@ -9,6 +9,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -98,5 +99,12 @@ public class SseEmitterManager {
     public void deleteEmitter(final long userId) {
         emitterRepository.deleteAllEmitterById(userId);
         emitterRepository.deleteAllEventCacheById(userId);
+    }
+
+    @Async
+    public void sendNotification(final User receiver, final NotificationDTO notification) {
+        if (receiver.isCoummunityAlarmAllowed()) {
+            send(receiver, notification);
+        }
     }
 }

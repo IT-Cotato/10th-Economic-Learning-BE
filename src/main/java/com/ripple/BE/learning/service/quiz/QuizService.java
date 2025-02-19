@@ -1,6 +1,7 @@
 package com.ripple.BE.learning.service.quiz;
 
 import static com.ripple.BE.learning.exception.errorcode.LearningErrorCode.*;
+import static com.ripple.BE.learning.exception.errorcode.QuizErrorCode.*;
 
 import com.ripple.BE.learning.domain.learningset.LearningSet;
 import com.ripple.BE.learning.domain.learningset.UserLearningSet;
@@ -124,30 +125,75 @@ public class QuizService {
      */
     @Transactional
     public void finishQuiz(final long userId, final long learningSetId, final Level level) {
-
         User user = userService.findUserById(userId);
+
+        // 퀴즈 실패 목록 가져오기
+        Set<Integer> failSet = getFailSet(userId);
+
+        // 학습 세트 정보 가져오기
+        UserLearningSet userLearningSet = getUserLearningSet(userId, learningSetId, level);
+
+        // 퀴즈 개수 가져오기 및 만료 체크
+        Integer quizCount = quizRedisService.fetchFromRedis(userId, QUIZ_COUNT, Integer.class);
+        if (quizCount == null) {
+            throw new QuizException(QUIZ_EXPIRED);
+        }
+
+        // 실패한 퀴즈 리스트 생성
+        List<FailQuiz> failQuizList = createFailQuizList(user, failSet);
+
+        // 퀴즈 완료 처리
+        if (!userLearningSet.isQuizCompleted()) {
+            completeQuiz(user, userLearningSet, level, failQuizList, quizCount, failSet.size());
+        }
+
+        // Redis 데이터 정리
+        quizRedisService.clearRedisKeys(userId);
+
+        // 퀘스트 완료 체크
+        completeQuestIfEligible(user, userLearningSet, userId);
+    }
+
+    /** 실패한 퀴즈 ID 목록 가져오기 */
+    private Set<Integer> getFailSet(long userId) {
         Set<Integer> failSet =
                 new HashSet<>(
                         quizRedisService.fetchListFromRedis(userId, WRONG_ANSWER_TYPE, Integer.class));
-        UserLearningSet userLearningSet =
-                userLearningSetRepository
-                        .findByUserIdAndLearningSetIdAndLevel(userId, learningSetId, level)
-                        .orElseThrow(() -> new LearningException(LearningErrorCode.LEARNING_SET_NOT_FOUND));
-        List<FailQuiz> failQuizList =
-                failSet.stream().map(quizId -> FailQuiz.toFailQuiz(user, getQuizById(quizId))).toList();
-        int quizCount = quizRedisService.fetchFromRedis(userId, QUIZ_COUNT, Integer.class);
+        return failSet != null ? failSet : Collections.emptySet();
+    }
 
-        if (!userLearningSet.isQuizCompleted()) {
-            int correctCount = quizCount - failSet.size(); // 정답 개수 계산
-            userLearningSet.setQuizCompleted(); // 퀴즈 완료 처리
-            userService.updateUserStatsAfterQuiz(
-                    user, level, failQuizList, quizCount, correctCount); // 사용자 통계 업데이트
+    /** 사용자 학습 세트 가져오기 */
+    private UserLearningSet getUserLearningSet(long userId, long learningSetId, Level level) {
+        return userLearningSetRepository
+                .findByUserIdAndLearningSetIdAndLevel(userId, learningSetId, level)
+                .orElseThrow(() -> new LearningException(LearningErrorCode.LEARNING_SET_NOT_FOUND));
+    }
 
-            userProgressService.updateLevel(user); // 레벨 업데이트
-        }
+    /** 실패한 퀴즈 객체 리스트 생성 */
+    private List<FailQuiz> createFailQuizList(User user, Set<Integer> failSet) {
+        return failSet.stream().map(quizId -> FailQuiz.toFailQuiz(user, getQuizById(quizId))).toList();
+    }
 
-        quizRedisService.clearRedisKeys(userId); // 퀴즈 진행 관련 데이터 삭제
+    /** 퀴즈 완료 처리 */
+    private void completeQuiz(
+            User user,
+            UserLearningSet userLearningSet,
+            Level level,
+            List<FailQuiz> failQuizList,
+            int quizCount,
+            int failCount) {
+        int correctCount = quizCount - failCount;
 
+        userLearningSet.setQuizCompleted(); // 퀴즈 완료 처리
+
+        userService.updateUserStatsAfterQuiz(
+                user, level, failQuizList, quizCount, correctCount); // 통계 업데이트
+
+        userProgressService.updateLevel(user); // 레벨 업데이트
+    }
+
+    /** 퀘스트 완료 체크 */
+    private void completeQuestIfEligible(User user, UserLearningSet userLearningSet, long userId) {
         if (userLearningSet.getLevel() == user.getCurrentLevel()) {
             attendanceService.completeQuest(userId, "QUIZ");
         }

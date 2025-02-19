@@ -41,7 +41,7 @@ public class NotificationService {
 
         notificationRepository.save(notification);
 
-        sendNotification(postAuthor, NotificationDTO.toNotificationDTO(notification));
+        sseEmitterManager.sendNotification(postAuthor, NotificationDTO.toNotificationDTO(notification));
     }
 
     @Transactional
@@ -59,7 +59,8 @@ public class NotificationService {
                     Notification.toNotificationEntity(
                             postAuthor, content, title, NotificationType.REPLY, post);
             notificationRepository.save(notificationForPostAuthor);
-            sendNotification(postAuthor, NotificationDTO.toNotificationDTO(notificationForPostAuthor));
+            sseEmitterManager.sendNotification(
+                    postAuthor, NotificationDTO.toNotificationDTO(notificationForPostAuthor));
         }
         if (comment.getCommenter() != null) {
 
@@ -69,7 +70,7 @@ public class NotificationService {
 
             notificationRepository.save(notificationForCommentAuthor);
 
-            sendNotification(
+            sseEmitterManager.sendNotification(
                     commentAuthor, NotificationDTO.toNotificationDTO(notificationForCommentAuthor));
         }
     }
@@ -88,7 +89,7 @@ public class NotificationService {
 
         notificationRepository.save(notification);
 
-        sendNotification(receiver, NotificationDTO.toNotificationDTO(notification));
+        sseEmitterManager.sendNotification(receiver, NotificationDTO.toNotificationDTO(notification));
     }
 
     // 사용자 알림 목록 조회
@@ -120,11 +121,5 @@ public class NotificationService {
                         .orElseThrow(() -> new NotificationException(NOTIFICATION_NOT_FOUND));
 
         notificationRepository.delete(notification);
-    }
-
-    private void sendNotification(final User receiver, final NotificationDTO notification) {
-        if (receiver.isCoummunityAlarmAllowed()) {
-            sseEmitterManager.send(receiver, notification);
-        }
     }
 }
