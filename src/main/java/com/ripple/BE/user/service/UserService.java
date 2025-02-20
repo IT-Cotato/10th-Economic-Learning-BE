@@ -143,6 +143,11 @@ public class UserService {
 
         Date birthDate = user.getBirthDate() == null ? null : user.getBirthDate();
         String profileIntro = user.getProfileIntro() == null ? null : user.getProfileIntro();
+
+        String businessType =
+                user.getBusinessType() == null ? null : user.getBusinessType().getDescription();
+        String job = user.getJob() == null ? null : user.getJob().getDescription();
+
         Long quizCorrectRate =
                 user.getQuizCount() == 0 ? 0L : user.getCorrectCount() * 100L / user.getQuizCount();
 
@@ -152,8 +157,8 @@ public class UserService {
                 .nickname(user.getNickname())
                 .birthDate(birthDate)
                 .profileIntro(profileIntro)
-                .businessType(user.getBusinessType().getDescription())
-                .job(user.getJob().getDescription())
+                .businessType(businessType)
+                .job(job)
                 .currentStreak(attendanceService.getCurrentStreak(userId))
                 .level(user.getCurrentLevel())
                 .quizCorrectRate(quizCorrectRate)
