@@ -1,7 +1,8 @@
-# Ripple : 처음 시작하는 경제 학습
+# 처음 시작하는 경제 학습 : Ripple
 
 <div align="center">
-<img width="329" alt="스크린샷 2025-02-19 오후 10 01 53" src="https://github.com/user-attachments/assets/4012e3a9-1acf-49cd-974c-9fc98e647f93" />
+<img width="700" alt="스크린샷 2025-02-19 오후 10 01 53" src="https://github.com/user-attachments/assets/33c22a11-4bc1-4b97-85eb-ad085f4b86eb" />
+
 
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FIT-Cotato%2F10th-Economic-Learning-BE.git&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
@@ -29,8 +30,12 @@ Ripple은 누구나 경제를 쉽고 재미있게 배울 수 있도록 설계된
 ### 주요 기능 
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/ee0cd7ee-174a-437c-9195-e54849b5f971" width="500"/>
-  <img src="https://github.com/user-attachments/assets/f15c63e0-2d63-4039-862e-0f29877c77a7" width="500"/>
+  <img src="https://github.com/user-attachments/assets/ee0cd7ee-174a-437c-9195-e54849b5f971" width="400"/>
+  <img src="https://github.com/user-attachments/assets/f15c63e0-2d63-4039-862e-0f29877c77a7" width="400"/>
+  <img src="https://github.com/user-attachments/assets/fc4af2a3-5285-4131-b4e3-8b4e4f4d0d51" width="400"/>
+  <img src="https://github.com/user-attachments/assets/96db23ea-9327-45a9-ac2c-ec432733be2e" width="400"/>
+  <img src="https://github.com/user-attachments/assets/fc2989be-2572-477a-955b-c9088c13c6ad" width="400"/>
+
 </p>
 
 > 추후 추가
@@ -60,7 +65,7 @@ Ripple은 누구나 경제를 쉽고 재미있게 배울 수 있도록 설계된
 ![image](https://github.com/user-attachments/assets/272b41aa-0e96-4b5e-ac8d-daac8331dbd4)
 
 ## 🗄️ ERD 
->추후 추가
+![Ripple](https://github.com/user-attachments/assets/e0d0d7c5-9874-40f1-9ed8-6c3535f952c8)
 
 ---
 
