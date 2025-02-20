@@ -9,6 +9,7 @@ public record ToktokPreviewResponse(
         String title,
         long participantCount,
         long likeCount,
+        long scrapCount,
         String imageUrl,
         Boolean isScraped,
         String createdDate,
@@ -20,6 +21,7 @@ public record ToktokPreviewResponse(
                 toktokDTO.title(),
                 toktokDTO.commentCount(),
                 toktokDTO.likeCount(),
+                toktokDTO.scrapCount(),
                 toktokDTO.imageList().imageDTOList().isEmpty()
                         ? null
                         : toktokDTO.imageList().imageDTOList().get(0).url(),
