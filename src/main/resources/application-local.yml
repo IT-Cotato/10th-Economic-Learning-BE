@@ -40,3 +40,7 @@ cloud:
 logging:
   level:
     root: INFO
+
+swagger:
+  server:
+    url: http://localhost:8080

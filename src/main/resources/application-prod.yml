@@ -40,3 +40,7 @@ cloud:
 logging:
   level:
     root: INFO
+
+Swagger:
+  server:
+    url: https://api.cotato-ripple.kro.kr
