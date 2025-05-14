@@ -83,9 +83,6 @@ public class Post extends BaseEntity {
     private List<Comment> commentList = new ArrayList<>(); // 댓글 목록
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostCategory> postCategoryList = new ArrayList<>(); // 게시글 카테고리 목록
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostLike> postLikeList = new ArrayList<>(); // 게시글 좋아요 목록
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
