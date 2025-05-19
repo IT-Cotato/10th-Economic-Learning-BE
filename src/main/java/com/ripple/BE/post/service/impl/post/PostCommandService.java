@@ -8,7 +8,9 @@ import com.ripple.BE.image.exception.ImageException;
 import com.ripple.BE.image.repository.ImageRepository;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.exception.PostException;
+import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostRepository;
+import com.ripple.BE.post.persistence.PostScrapRepository;
 import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import com.ripple.BE.post.service.PostCommandUseCase;
 import com.ripple.BE.post.service.command.CreatePostCommand;
@@ -27,6 +29,8 @@ public class PostCommandService implements PostCommandUseCase {
 
     private final PostRepository postRepository;
     private final ImageRepository imageRepository;
+    private final PostLikeRepository postLikeRepository;
+    private final PostScrapRepository postScrapRepository;
 
     private final UserService userService;
 
@@ -89,13 +93,15 @@ public class PostCommandService implements PostCommandUseCase {
         Post post =
                 postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
-        if (post.isOwnedBy(userId)) {
+        if (!post.isOwnedBy(userId)) {
             throw new PostException(POST_NOT_AUTHORIZED);
         }
 
         List<Image> imageList = imageRepository.findByPostId(post.getId());
 
         imageRepository.deleteAll(imageList);
+        postScrapRepository.deleteAllByPostId(post.getId());
+        postLikeRepository.deleteAllByPostId(post.getId());
         postRepository.delete(post);
     }
 }

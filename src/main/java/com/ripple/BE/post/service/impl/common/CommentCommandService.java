@@ -6,6 +6,7 @@ import com.ripple.BE.notification.service.NotificationService;
 import com.ripple.BE.post.domain.comment.Comment;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.exception.PostException;
+import com.ripple.BE.post.persistence.CommentLikeRepository;
 import com.ripple.BE.post.persistence.CommentRepository;
 import com.ripple.BE.post.persistence.PostRepository;
 import com.ripple.BE.post.service.CommentCommandUseCase;
@@ -22,6 +23,7 @@ public class CommentCommandService implements CommentCommandUseCase {
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     private final UserService userService;
     private final NotificationService notificationService;
@@ -84,19 +86,23 @@ public class CommentCommandService implements CommentCommandUseCase {
 
     private void handleRootComment(Comment comment) {
         if (comment.hasNoChildren()) {
+            commentLikeRepository.deleteAllByCommentId(comment.getId());
             commentRepository.delete(comment);
         } else {
             comment.softDeleteAsRoot();
+            commentRepository.save(comment);
         }
     }
 
     private void handleChildComment(Comment comment, Comment parent) {
+        commentLikeRepository.deleteAllByCommentId(comment.getId());
         commentRepository.delete(comment);
 
         parent.decreaseReplyCount();
         commentRepository.updateReplyCount(parent);
 
         if (parent.isDeleted() && parent.hasNoChildren()) {
+            commentLikeRepository.deleteAllByCommentId(parent.getId());
             commentRepository.delete(parent);
         }
     }
