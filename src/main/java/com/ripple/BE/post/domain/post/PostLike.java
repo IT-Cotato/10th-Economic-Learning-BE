@@ -1,6 +1,5 @@
 package com.ripple.BE.post.domain.post;
 
-import com.ripple.BE.global.entity.BaseEntity;
 import com.ripple.BE.post.persistence.jpa.entity.PostLikeJpaEntity;
 import com.ripple.BE.user.domain.User;
 import lombok.AccessLevel;
@@ -9,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class PostLike extends BaseEntity {
+public class PostLike {
 
     private final Long id;
     private final User user;
