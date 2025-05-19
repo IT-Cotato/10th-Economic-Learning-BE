@@ -37,12 +37,10 @@ cloud:
       accessKey: ${S3_ACCESS_KEY}
       secretKey: ${S3_ACCESS_PASSWORD}
 
-server:
-  ssl:
-    key-store: classpath:keystore.p12
-    key-store-type: PKCS12
-    key-store-password: ${KEY_STORE_PASSWORD}
-
 logging:
   level:
     root: INFO
+
+Swagger:
+  server:
+    url: https://api.cotato-ripple.kro.kr
