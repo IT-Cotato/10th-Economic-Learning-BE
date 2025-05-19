@@ -3,10 +3,10 @@ package com.ripple.BE.search.controller;
 import com.ripple.BE.global.dto.response.ApiResponse;
 import com.ripple.BE.news.dto.NewsListDTO;
 import com.ripple.BE.news.dto.response.NewsListResponse;
-import com.ripple.BE.post.dto.PostListDTO;
-import com.ripple.BE.post.dto.ToktokListDTO;
-import com.ripple.BE.post.dto.response.PostListResponse;
-import com.ripple.BE.post.dto.response.ToktokPreviewListResponse;
+import com.ripple.BE.post.dto.response.PostPreviewListResponseDTO;
+import com.ripple.BE.post.dto.response.ToktokPreviewListResponseDTO;
+import com.ripple.BE.post.service.PostQueryUseCase;
+import com.ripple.BE.post.service.ToktokQueryUseCase;
 import com.ripple.BE.search.dto.SearchKeywordListDTO;
 import com.ripple.BE.search.dto.response.SearchKeywordListResponse;
 import com.ripple.BE.search.service.SearchService;
@@ -33,6 +33,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class SearchController {
 
     private final SearchService searchService;
+    private final PostQueryUseCase postQueryUseCase;
+    private final ToktokQueryUseCase toktokQueryUseCase;
 
     @Operation(
             summary = "일반 게시글 검색",
@@ -44,9 +46,10 @@ public class SearchController {
             final @RequestParam(value = "keyword", required = false) String keyword,
             final @RequestParam(value = "page", defaultValue = "0") @PositiveOrZero int page) {
 
-        PostListDTO postListDTO = searchService.searchPosts(keyword, page, currentUser.getId());
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(PostListResponse.toPostListResponse(postListDTO)));
+        PostPreviewListResponseDTO postPreviewListResponseDTO =
+                postQueryUseCase.searchPosts(keyword, page, currentUser.getId());
+
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(postPreviewListResponseDTO));
     }
 
     @Operation(
@@ -59,11 +62,11 @@ public class SearchController {
             final @RequestParam(value = "keyword", required = false) String keyword,
             final @RequestParam(value = "page", defaultValue = "0") @PositiveOrZero int page) {
 
-        ToktokListDTO toktokListDTO = searchService.searchToktoks(keyword, page, currentUser.getId());
+        ToktokPreviewListResponseDTO toktokPreviewListResponseDTO =
+                toktokQueryUseCase.searchToktoks(keyword, page, currentUser.getId());
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(
-                        ApiResponse.from(ToktokPreviewListResponse.toToktokPreviewListResponse(toktokListDTO)));
+                .body(ApiResponse.from(toktokPreviewListResponseDTO));
     }
 
     @Operation(

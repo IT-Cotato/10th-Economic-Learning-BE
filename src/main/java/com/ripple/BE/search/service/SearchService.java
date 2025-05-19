@@ -3,10 +3,6 @@ package com.ripple.BE.search.service;
 import com.ripple.BE.news.domain.News;
 import com.ripple.BE.news.dto.NewsListDTO;
 import com.ripple.BE.news.repository.news.NewsRepository;
-import com.ripple.BE.post.domain.Post;
-import com.ripple.BE.post.dto.PostListDTO;
-import com.ripple.BE.post.dto.ToktokListDTO;
-import com.ripple.BE.post.repository.post.PostRepository;
 import com.ripple.BE.search.dto.SearchKeywordListDTO;
 import com.ripple.BE.term.domain.Term;
 import com.ripple.BE.term.dto.TermListDTO;
@@ -36,31 +32,8 @@ public class SearchService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    private final PostRepository postRepository;
     private final NewsRepository newsRepository;
     private final TermRepository termRepository;
-
-    @Cacheable(value = "postSearch", key = "#keyword != null ? #keyword + #page : #page")
-    @Transactional(readOnly = true)
-    public PostListDTO searchPosts(final String keyword, final int page, final long userId) {
-        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
-
-        Page<Post> postPage = postRepository.searchNormalPosts(keyword, pageable, userId);
-        addRecentSearch(userId, keyword);
-
-        return PostListDTO.toPostListDTO(postPage);
-    }
-
-    @Cacheable(value = "toktokSearch", key = "#keyword != null ? #keyword + #page : #page")
-    @Transactional(readOnly = true)
-    public ToktokListDTO searchToktoks(final String keyword, final int page, final long userId) {
-        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
-
-        Page<Post> postPage = postRepository.searchUsedToktokPosts(keyword, pageable, userId);
-        addRecentSearch(userId, keyword);
-
-        return ToktokListDTO.toToktokListDTO(postPage);
-    }
 
     @Cacheable(value = "newsSearch", key = "#keyword != null ? #keyword + #page : #page")
     @Transactional(readOnly = true)

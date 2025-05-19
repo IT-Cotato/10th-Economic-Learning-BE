@@ -8,8 +8,8 @@ import com.ripple.BE.notification.dto.NotificationDTO;
 import com.ripple.BE.notification.dto.NotificationListDTO;
 import com.ripple.BE.notification.exception.NotificationException;
 import com.ripple.BE.notification.repository.NotificationRepository;
-import com.ripple.BE.post.domain.Comment;
-import com.ripple.BE.post.domain.Post;
+import com.ripple.BE.post.persistence.jpa.entity.CommentJpaEntity;
+import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import com.ripple.BE.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,8 @@ public class NotificationService {
     private static final String POPULAR_POST_CONTENT = "이 게시글이 인기글로 선정되었습니다.";
 
     @Transactional
-    public void createCommentNotification(final Post post, final Comment comment) {
+    public void createCommentNotification(
+            final PostJpaEntity post, final CommentJpaEntity commentJpaEntity) {
         if (post.getAuthor() == null) {
             return;
         }
@@ -37,7 +38,11 @@ public class NotificationService {
 
         Notification notification =
                 Notification.toNotificationEntity(
-                        postAuthor, comment.getContent(), post.getTitle(), NotificationType.COMMENT, post);
+                        postAuthor,
+                        commentJpaEntity.getContent(),
+                        post.getTitle(),
+                        NotificationType.COMMENT,
+                        post);
 
         notificationRepository.save(notification);
 
@@ -45,12 +50,13 @@ public class NotificationService {
     }
 
     @Transactional
-    public void createReplyNotification(final Post post, final Comment comment) {
+    public void createReplyNotification(
+            final PostJpaEntity post, final CommentJpaEntity commentJpaEntity) {
 
         User postAuthor = post.getAuthor();
-        User commentAuthor = comment.getParent().getCommenter();
+        User commentAuthor = commentJpaEntity.getParent().getCommenter();
 
-        String content = comment.getContent();
+        String content = commentJpaEntity.getContent();
         String title = post.getTitle();
 
         if (post.getAuthor() != null) {
@@ -62,7 +68,7 @@ public class NotificationService {
             sseEmitterManager.sendNotification(
                     postAuthor, NotificationDTO.toNotificationDTO(notificationForPostAuthor));
         }
-        if (comment.getCommenter() != null) {
+        if (commentJpaEntity.getCommenter() != null) {
 
             Notification notificationForCommentAuthor =
                     Notification.toNotificationEntity(
@@ -76,7 +82,7 @@ public class NotificationService {
     }
 
     @Transactional
-    public void createPopularNotification(final Post post) {
+    public void createPopularNotification(final PostJpaEntity post) {
 
         User receiver = post.getAuthor();
         if (receiver == null) {

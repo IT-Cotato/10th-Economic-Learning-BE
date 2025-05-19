@@ -2,8 +2,6 @@ package com.ripple.BE.learning.repository.quizScrap;
 
 import static com.ripple.BE.learning.domain.quiz.QQuiz.*;
 import static com.ripple.BE.learning.domain.quiz.QQuizScrap.*;
-import static com.ripple.BE.post.domain.QPost.*;
-import static com.ripple.BE.post.domain.QPostScrap.*;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ripple.BE.learning.domain.quiz.Quiz;
