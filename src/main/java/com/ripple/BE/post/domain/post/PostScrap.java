@@ -1,7 +1,7 @@
 package com.ripple.BE.post.domain.post;
 
 import com.ripple.BE.global.entity.BaseEntity;
-import com.ripple.BE.post.adapter.out.persistence.jpa.entity.PostScrapJpaEntity;
+import com.ripple.BE.post.persistence.jpa.entity.PostScrapJpaEntity;
 import com.ripple.BE.user.domain.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -24,9 +24,5 @@ public class PostScrap extends BaseEntity {
                 postScrapJpaEntity.getId(),
                 postScrapJpaEntity.getUser(),
                 Post.from(postScrapJpaEntity.getPost()));
-    }
-
-    public boolean isOwnedBy(User user) {
-        return this.user != null && this.user.equals(user);
     }
 }
