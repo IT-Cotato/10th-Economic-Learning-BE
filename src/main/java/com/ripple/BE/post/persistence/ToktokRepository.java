@@ -30,4 +30,6 @@ public interface ToktokRepository {
     Set<String> findAllTitles();
 
     Page<Post> searchUsedToktokPosts(final String keyword, final Pageable pageable);
+
+    void updateUsedDate(final Post post);
 }

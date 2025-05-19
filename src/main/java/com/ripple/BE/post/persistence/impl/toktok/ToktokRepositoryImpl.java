@@ -1,7 +1,10 @@
 package com.ripple.BE.post.persistence.impl.toktok;
 
+import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
+
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
+import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.ToktokRepository;
 import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import com.ripple.BE.post.persistence.jpa.repository.comment.CommentJpaRepository;
@@ -69,5 +72,15 @@ public class ToktokRepositoryImpl implements ToktokRepository {
     @Override
     public Page<Post> searchUsedToktokPosts(final String keyword, final Pageable pageable) {
         return toktokJpaRepository.searchUsedToktokPosts(keyword, pageable).map(Post::from);
+    }
+
+    @Override
+    public void updateUsedDate(final Post post) {
+        PostJpaEntity postJpaEntity =
+                toktokJpaRepository
+                        .findById(post.getId())
+                        .orElseThrow(() -> new PostException(POST_NOT_FOUND));
+
+        postJpaEntity.updateUsedDate(post.getUsedDate());
     }
 }
