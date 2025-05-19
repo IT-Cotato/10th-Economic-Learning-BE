@@ -1,4 +1,4 @@
-package com.ripple.BE.post.dto;
+package com.ripple.BE.post.dto.response;
 
 import com.ripple.BE.global.utils.RelativeTimeFormatter;
 import com.ripple.BE.image.dto.response.ImageResponse;
@@ -20,8 +20,8 @@ public record PostResponseDTO(
         boolean isLiked,
         boolean isAuthor,
         List<ImageResponse> imageList,
-        String createdDate,
-        List<CommentResponseDTO> commentList) {
+        List<CommentResponseDTO> commentList,
+        String createdDate) {
 
     public static PostResponseDTO of(
             Post post,
@@ -34,7 +34,9 @@ public record PostResponseDTO(
                 post.getTitle(),
                 post.getAuthor().getNickname(),
                 post.getAuthor().getId(),
-                post.getAuthor().getProfileImage().toString(),
+                post.getAuthor().getProfileImage() == null
+                        ? null
+                        : post.getAuthor().getProfileImage().getS3Info().getUrl(),
                 post.getContent(),
                 post.getType(),
                 post.getLikeCount(),
@@ -44,7 +46,7 @@ public record PostResponseDTO(
                 isLiked,
                 isAuthor,
                 imageList,
-                RelativeTimeFormatter.formatRelativeTime(post.getCreatedDate()),
-                commentList);
+                commentList,
+                RelativeTimeFormatter.formatRelativeTime(post.getCreatedDate()));
     }
 }
