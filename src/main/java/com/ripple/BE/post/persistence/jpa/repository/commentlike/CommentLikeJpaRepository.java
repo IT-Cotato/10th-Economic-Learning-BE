@@ -10,4 +10,6 @@ public interface CommentLikeJpaRepository
     Optional<CommentLikeJpaEntity> findByCommentIdAndUserId(long commentId, long userId);
 
     boolean existsByCommentIdAndUserId(long commentId, long userId);
+
+    void deleteAllByCommentId(long commentId);
 }

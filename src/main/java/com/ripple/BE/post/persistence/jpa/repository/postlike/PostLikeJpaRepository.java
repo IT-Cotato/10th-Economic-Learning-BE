@@ -12,4 +12,6 @@ public interface PostLikeJpaRepository
     Optional<PostLikeJpaEntity> findByPostIdAndUserId(long postId, long userId);
 
     boolean existsByPostIdAndUserId(long postId, long userId);
+
+    void deleteAllByPostId(long postId);
 }

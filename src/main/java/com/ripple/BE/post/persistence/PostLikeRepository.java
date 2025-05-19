@@ -17,4 +17,6 @@ public interface PostLikeRepository {
     void delete(final PostLike postLike);
 
     void save(final PostLike postLike);
+
+    void deleteAllByPostId(final long postId);
 }

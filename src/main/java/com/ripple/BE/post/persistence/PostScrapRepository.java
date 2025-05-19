@@ -17,4 +17,6 @@ public interface PostScrapRepository {
 
     // 사용자가 스크랩한 게시물 목록을 조회하낟.
     List<Post> findPostsScrappedByUser(final long userId);
+
+    void deleteAllByPostId(final long postId);
 }

@@ -44,4 +44,9 @@ public class CommentLikeRepositoryImpl implements CommentLikeRepository {
     public void delete(final CommentLike commentLike) {
         commentLikeJpaRepository.delete(CommentLikeJpaEntity.from(commentLike));
     }
+
+    @Override
+    public void deleteAllByCommentId(final long commentId) {
+        commentLikeJpaRepository.deleteAllByCommentId(commentId);
+    }
 }

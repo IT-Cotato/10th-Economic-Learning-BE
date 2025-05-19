@@ -40,4 +40,9 @@ public class PostScrapRepositoryImpl implements PostScrapRepository {
     public List<Post> findPostsScrappedByUser(final long userId) {
         return postScrapJpaRepository.findPostsScrappedByUser(userId).stream().map(Post::from).toList();
     }
+
+    @Override
+    public void deleteAllByPostId(final long postId) {
+        postScrapJpaRepository.deleteAllByPostId(postId);
+    }
 }
