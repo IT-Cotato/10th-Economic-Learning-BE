@@ -23,8 +23,9 @@ public class PostRepositoryImpl implements PostRepository {
     private final PostJpaRepository postJpaRepository;
 
     @Override
-    public void save(final Post post) {
-        postJpaRepository.save(PostJpaEntity.from(post));
+    public Post save(final Post post) {
+        PostJpaEntity postJpaEntity = postJpaRepository.save(PostJpaEntity.from(post));
+        return Post.from(postJpaEntity);
     }
 
     @Override

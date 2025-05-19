@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface PostRepository {
 
-    void save(final Post post);
+    Post save(final Post post);
 
     void delete(final Post post);
 

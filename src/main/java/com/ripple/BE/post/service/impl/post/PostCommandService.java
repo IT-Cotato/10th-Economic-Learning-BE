@@ -12,6 +12,7 @@ import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostRepository;
 import com.ripple.BE.post.persistence.PostScrapRepository;
 import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
+import com.ripple.BE.post.persistence.jpa.repository.post.PostJpaRepository;
 import com.ripple.BE.post.service.PostCommandUseCase;
 import com.ripple.BE.post.service.command.CreatePostCommand;
 import com.ripple.BE.post.service.command.UpdatePostCommand;
@@ -33,6 +34,7 @@ public class PostCommandService implements PostCommandUseCase {
     private final PostScrapRepository postScrapRepository;
 
     private final UserService userService;
+    private final PostJpaRepository postJpaRepository;
 
     @Override
     public void createPost(final CreatePostCommand createPostCommand) {
@@ -45,18 +47,18 @@ public class PostCommandService implements PostCommandUseCase {
                         createPostCommand.type(),
                         null);
 
+        Post saved = postRepository.save(post);
+
         if (createPostCommand.imageIds() != null) {
             for (long imageId : createPostCommand.imageIds()) {
                 Image image =
                         imageRepository
                                 .findById(imageId)
                                 .orElseThrow(() -> new ImageException(IMAGE_NOT_FOUND));
-                image.setPost(PostJpaEntity.from(post)); // 추후 Post로 변경
+                image.setPost(PostJpaEntity.from(saved)); // 추후 Post로 변경
                 imageRepository.save(image);
             }
         }
-
-        postRepository.save(post);
     }
 
     @Override
