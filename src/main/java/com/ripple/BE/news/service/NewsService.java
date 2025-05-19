@@ -100,8 +100,8 @@ public class NewsService {
         newsScrapRepository.delete(newsScrap);
     }
 
-    // 3시간마다 뉴스 크롤링
-    @Scheduled(fixedRate = 10800000) // 3시간
+    // 오전 6시 30분에 크롤링
+    @Scheduled(cron = "0 30 6 * * *")
     public void fetchAndSaveAllNewsAsync() {
         List<CompletableFuture<Void>> futures =
                 crawlers.stream().map(newsCrawlerService::crawl).toList();
