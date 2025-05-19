@@ -1,6 +1,6 @@
-package com.ripple.BE.post.adapter.out.persistence.jpa.repository.postscrap;
+package com.ripple.BE.post.persistence.jpa.repository.postscrap;
 
-import com.ripple.BE.post.adapter.out.persistence.jpa.entity.PostScrapJpaEntity;
+import com.ripple.BE.post.persistence.jpa.entity.PostScrapJpaEntity;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

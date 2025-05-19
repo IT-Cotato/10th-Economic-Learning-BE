@@ -1,4 +1,4 @@
-package com.ripple.BE.post.adapter.out.persistence.jpa.entity;
+package com.ripple.BE.post.persistence.jpa.entity;
 
 import com.ripple.BE.post.domain.comment.CommentLike;
 import com.ripple.BE.user.domain.User;
@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentLikeJpaEntity {
 
     @Id

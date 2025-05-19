@@ -1,7 +1,7 @@
-package com.ripple.BE.post.adapter.out.persistence.jpa.entity;
+package com.ripple.BE.post.persistence.jpa.entity;
 
 import com.ripple.BE.global.entity.BaseJpaEntity;
-import com.ripple.BE.post.domain.post.PostLike;
+import com.ripple.BE.post.domain.post.PostScrap;
 import com.ripple.BE.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,13 +18,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "post_likes")
+@Table(name = "post_scraps")
 @Getter
 @Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class PostLikeJpaEntity extends BaseJpaEntity {
+public class PostScrapJpaEntity extends BaseJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,14 +36,14 @@ public class PostLikeJpaEntity extends BaseJpaEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
+    @JoinColumn(name = "post_id")
     private PostJpaEntity post;
 
-    public static PostLikeJpaEntity from(PostLike postLike) {
-        return PostLikeJpaEntity.builder()
-                .id(postLike.getId())
-                .user(postLike.getUser())
-                .post(PostJpaEntity.from(postLike.getPost()))
+    public static PostScrapJpaEntity from(PostScrap postScrap) {
+        return PostScrapJpaEntity.builder()
+                .id(postScrap.getId())
+                .user(postScrap.getUser())
+                .post(PostJpaEntity.from(postScrap.getPost()))
                 .build();
     }
 }
