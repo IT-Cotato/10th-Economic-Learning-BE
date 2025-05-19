@@ -2,6 +2,7 @@ package com.ripple.BE.post.service.impl.post;
 
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 
+import com.ripple.BE.global.config.cache.PostCacheKeyGenerator;
 import com.ripple.BE.image.dto.response.ImageResponse;
 import com.ripple.BE.image.repository.ImageRepository;
 import com.ripple.BE.post.domain.post.Post;
@@ -44,9 +45,8 @@ public class PostQueryService implements PostQueryUseCase {
 
     @Override
     @Cacheable(
-            value = "posts",
-            key =
-                    "#page + (#sort != null ? #sort.toString() : '') + (#type != null ? #type.toString() : '')")
+            value = PostCacheKeyGenerator.CACHE_NAME_POSTS,
+            keyGenerator = PostCacheKeyGenerator.POST_CACHE_KEY_GENERATOR)
     public PostPreviewListResponseDTO getPosts(
             final int page, final PostSort sort, final PostType type, final long userId) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
@@ -63,13 +63,17 @@ public class PostQueryService implements PostQueryUseCase {
     }
 
     @Override
-    @Cacheable(value = "popularPosts")
+    @Cacheable(
+            value = PostCacheKeyGenerator.CACHE_NAME_POPULAR_POSTS,
+            keyGenerator = PostCacheKeyGenerator.POST_CACHE_KEY_GENERATOR)
     public List<PostPreviewResponseDTO> getPopularPosts(final long userId) {
         return postRepository.findPopularPosts().stream().map(post -> toPreview(post, userId)).toList();
     }
 
     @Override
-    @Cacheable(value = "postSearch", key = "#keyword != null ? #keyword + #page : #page")
+    @Cacheable(
+            value = PostCacheKeyGenerator.CACHE_NAME_POST_SEARCH,
+            keyGenerator = PostCacheKeyGenerator.POST_CACHE_KEY_GENERATOR)
     public PostPreviewListResponseDTO searchPosts(
             final String keyword, final int page, final long userId) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);

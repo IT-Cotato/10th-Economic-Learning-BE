@@ -2,6 +2,7 @@ package com.ripple.BE.post.service.impl.toktok;
 
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 
+import com.ripple.BE.global.config.cache.PostCacheKeyGenerator;
 import com.ripple.BE.image.dto.response.ImageResponse;
 import com.ripple.BE.image.repository.ImageRepository;
 import com.ripple.BE.post.domain.post.Post;
@@ -95,7 +96,9 @@ public class ToktokQueryService implements ToktokQueryUseCase {
     }
 
     @Override
-    @Cacheable(value = "toktokSearch", key = "#keyword != null ? #keyword + #page : #page")
+    @Cacheable(
+            value = PostCacheKeyGenerator.CACHE_NAME_TOKTOK_SEARCH,
+            keyGenerator = PostCacheKeyGenerator.POST_CACHE_KEY_GENERATOR)
     public ToktokPreviewListResponseDTO searchToktoks(
             final String keyword, final int page, final long userId) {
 
