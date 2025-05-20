@@ -19,4 +19,6 @@ public interface CommentLikeRepository {
     void delete(final CommentLike commentLike);
 
     void deleteAllByCommentId(final long commentId);
+
+    void deleteAllByPostId(final long postId);
 }

@@ -24,4 +24,6 @@ public interface CommentRepository {
 
     // 댓글 작성자 ID로 댓글을 조회한다.
     List<Comment> findAllByCommenterId(final long userId);
+
+    void deleteAllByPostId(final long postId);
 }
