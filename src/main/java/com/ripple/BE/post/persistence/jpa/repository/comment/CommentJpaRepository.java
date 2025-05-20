@@ -18,4 +18,6 @@ public interface CommentJpaRepository
     List<CommentJpaEntity> findAllByCommenterId(Long userId);
 
     List<CommentJpaEntity> findChildrenByParentId(Long parentId);
+
+    void deleteAllByPostId(Long postId);
 }

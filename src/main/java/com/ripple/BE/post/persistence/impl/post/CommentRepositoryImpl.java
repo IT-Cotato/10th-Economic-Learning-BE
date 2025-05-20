@@ -70,4 +70,9 @@ public class CommentRepositoryImpl implements CommentRepository {
     public List<Comment> findAllByCommenterId(final long userId) {
         return commentJpaRepository.findAllByCommenterId(userId).stream().map(Comment::from).toList();
     }
+
+    @Override
+    public void deleteAllByPostId(final long postId) {
+        commentJpaRepository.deleteAllByPostId(postId);
+    }
 }

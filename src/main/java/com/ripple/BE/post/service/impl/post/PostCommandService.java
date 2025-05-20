@@ -8,6 +8,8 @@ import com.ripple.BE.image.exception.ImageException;
 import com.ripple.BE.image.repository.ImageRepository;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.exception.PostException;
+import com.ripple.BE.post.persistence.CommentLikeRepository;
+import com.ripple.BE.post.persistence.CommentRepository;
 import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostRepository;
 import com.ripple.BE.post.persistence.PostScrapRepository;
@@ -32,6 +34,8 @@ public class PostCommandService implements PostCommandUseCase {
     private final ImageRepository imageRepository;
     private final PostLikeRepository postLikeRepository;
     private final PostScrapRepository postScrapRepository;
+    private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     private final UserService userService;
     private final PostJpaRepository postJpaRepository;
@@ -104,6 +108,10 @@ public class PostCommandService implements PostCommandUseCase {
         imageRepository.deleteAll(imageList);
         postScrapRepository.deleteAllByPostId(post.getId());
         postLikeRepository.deleteAllByPostId(post.getId());
+        commentLikeRepository.deleteAllByPostId(post.getId());
+
+        commentRepository.deleteAllByPostId(post.getId());
+
         postRepository.delete(post);
     }
 }
