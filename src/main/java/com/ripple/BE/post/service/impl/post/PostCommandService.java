@@ -72,7 +72,7 @@ public class PostCommandService implements PostCommandUseCase {
                         .findById(updatePostCommand.postId())
                         .orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
-        if (post.isOwnedBy(updatePostCommand.authorId())) {
+        if (!post.isOwnedBy(updatePostCommand.authorId())) {
             throw new PostException(POST_NOT_AUTHORIZED);
         }
         post.update(
