@@ -1,14 +1,10 @@
 package com.ripple.BE.image.dto.response;
 
-import com.ripple.BE.image.dto.ImageDTO;
+import com.ripple.BE.image.domain.Image;
 
 public record ImageResponse(Long id, String url) {
 
-    public static ImageResponse toImageResponse(final Long id, final String url) {
-        return new ImageResponse(id, url);
-    }
-
-    public static ImageResponse toImageResponse(final ImageDTO imageDTO) {
-        return new ImageResponse(imageDTO.id(), imageDTO.url());
+    public static ImageResponse from(final Image image) {
+        return new ImageResponse(image.getId(), image.getS3Info().getUrl());
     }
 }

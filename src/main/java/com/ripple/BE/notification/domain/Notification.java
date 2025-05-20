@@ -1,7 +1,7 @@
 package com.ripple.BE.notification.domain;
 
-import com.ripple.BE.global.entity.BaseEntity;
-import com.ripple.BE.post.domain.Post;
+import com.ripple.BE.global.entity.BaseJpaEntity;
+import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import com.ripple.BE.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,7 +27,7 @@ import lombok.Setter;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Notification extends BaseEntity {
+public class Notification extends BaseJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +40,7 @@ public class Notification extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
-    private Post post;
+    private PostJpaEntity post;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -62,7 +62,7 @@ public class Notification extends BaseEntity {
             final String content,
             final String title,
             final NotificationType type,
-            final Post post) {
+            final PostJpaEntity post) {
 
         return Notification.builder()
                 .receiver(receiver)

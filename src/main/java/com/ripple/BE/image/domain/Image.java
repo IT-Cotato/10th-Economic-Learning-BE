@@ -1,8 +1,8 @@
 package com.ripple.BE.image.domain;
 
-import com.ripple.BE.global.entity.BaseEntity;
+import com.ripple.BE.global.entity.BaseJpaEntity;
 import com.ripple.BE.news.domain.News;
-import com.ripple.BE.post.domain.Post;
+import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -25,7 +25,7 @@ import lombok.Setter;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Image extends BaseEntity {
+public class Image extends BaseJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,7 +38,7 @@ public class Image extends BaseEntity {
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
-    private Post post;
+    private PostJpaEntity post;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "news_id")

@@ -1,6 +1,6 @@
 package com.ripple.BE.news.domain;
 
-import com.ripple.BE.global.entity.BaseEntity;
+import com.ripple.BE.global.entity.BaseJpaEntity;
 import com.ripple.BE.image.domain.Image;
 import com.ripple.BE.news.domain.type.NewsCategory;
 import com.ripple.BE.news.dto.NewsDTO;
@@ -30,7 +30,7 @@ import lombok.Setter;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class News extends BaseEntity {
+public class News extends BaseJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

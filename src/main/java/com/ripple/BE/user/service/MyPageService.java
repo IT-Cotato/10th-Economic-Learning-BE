@@ -3,6 +3,7 @@ package com.ripple.BE.user.service;
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
+import com.ripple.BE.image.repository.ImageRepository;
 import com.ripple.BE.learning.domain.concept.Concept;
 import com.ripple.BE.learning.domain.quiz.Quiz;
 import com.ripple.BE.learning.dto.ConceptListDTO;
@@ -14,17 +15,17 @@ import com.ripple.BE.learning.repository.quizScrap.QuizScrapRepository;
 import com.ripple.BE.news.domain.News;
 import com.ripple.BE.news.dto.NewsListDTO;
 import com.ripple.BE.news.repository.newscrap.NewsScrapRepository;
-import com.ripple.BE.post.domain.Comment;
-import com.ripple.BE.post.domain.Post;
+import com.ripple.BE.post.domain.comment.Comment;
+import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostType;
-import com.ripple.BE.post.dto.LikeCommentListDTO;
-import com.ripple.BE.post.dto.PostListDTO;
+import com.ripple.BE.post.dto.response.LikeCommentResponseDTO;
+import com.ripple.BE.post.dto.response.PostPreviewResponseDTO;
 import com.ripple.BE.post.exception.PostException;
-import com.ripple.BE.post.repository.comment.CommentRepository;
-import com.ripple.BE.post.repository.commentlike.CommentLikeRepository;
-import com.ripple.BE.post.repository.post.PostRepository;
-import com.ripple.BE.post.repository.postlike.PostLikeRepository;
-import com.ripple.BE.post.repository.postscrap.PostScrapRepository;
+import com.ripple.BE.post.persistence.CommentLikeRepository;
+import com.ripple.BE.post.persistence.CommentRepository;
+import com.ripple.BE.post.persistence.PostLikeRepository;
+import com.ripple.BE.post.persistence.PostRepository;
+import com.ripple.BE.post.persistence.PostScrapRepository;
 import com.ripple.BE.term.domain.Term;
 import com.ripple.BE.term.dto.TermListDTO;
 import com.ripple.BE.term.repository.TermScrapRepository;
@@ -35,8 +36,7 @@ import com.ripple.BE.user.dto.UserCommentListDTO;
 import com.ripple.BE.user.dto.UserCompletedDTO;
 import com.ripple.BE.user.exception.UserException;
 import com.ripple.BE.user.repository.UserRepository;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,9 +51,10 @@ public class MyPageService {
 
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
-    private final CommentLikeRepository commentLikeRepository;
-    private final CommentRepository commentRepository;
     private final PostScrapRepository postScrapRepository;
+    private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
+
     private final QuizRepository quizRepository;
     private final QuizScrapRepository quizScrapRepository;
     private final ConceptScrapRepository conceptScrapRepository;
@@ -61,31 +62,62 @@ public class MyPageService {
     private final NewsScrapRepository newsScrapRepository;
     private final UserRepository userRepository;
 
-    public PostListDTO getMyPosts(final long userId) {
+    private final ImageRepository imageRepository;
 
+    public List<PostPreviewResponseDTO> getMyPosts(final long userId) {
         List<Post> posts = postRepository.findUserNormalPosts(userId);
 
-        return PostListDTO.toPostListDTO(posts);
+        return posts.stream().map(post -> toPreview(post, userId)).toList();
     }
 
-    public PostListDTO getMyLikePosts(final long userId) {
-
+    public List<PostPreviewResponseDTO> getMyLikePosts(final long userId) {
         List<Post> posts = postLikeRepository.findPostsLikedByUser(userId);
+        return posts.stream().map(post -> toPreview(post, userId)).collect(Collectors.toList());
+    }
 
-        return PostListDTO.toPostListDTO(posts);
+    public List<PostPreviewResponseDTO> getMyToktok(final long userId) {
+        List<Comment> comments = commentRepository.findAllByCommenterId(userId);
+        List<Long> postIds = getPostIds(comments);
+
+        List<Post> posts =
+                postRepository.findByIdIn(postIds).stream()
+                        .filter(post -> post.getType() == PostType.ECONOMY_TALK)
+                        .toList();
+
+        return posts.stream().map(post -> toPreview(post, userId)).toList();
+    }
+
+    public List<PostPreviewResponseDTO> getMyScrapPosts(final long userId) {
+        List<Post> posts = postScrapRepository.findPostsScrappedByUser(userId);
+        return posts.stream().map(post -> toPreview(post, userId)).toList();
+    }
+
+    private PostPreviewResponseDTO toPreview(Post post, long userId) {
+        String imageUrl =
+                imageRepository.findByPostId(post.getId()).stream()
+                        .findFirst()
+                        .map(image -> image.getS3Info().getUrl())
+                        .orElse(null);
+
+        boolean isScraped = postScrapRepository.existsByPostIdAndUserId(post.getId(), userId);
+
+        return PostPreviewResponseDTO.of(post, imageUrl, isScraped);
+    }
+
+    public List<LikeCommentResponseDTO> getMyLikeComments(final long userId) {
+        List<Comment> commentsLikedByUser = commentLikeRepository.findCommentsLikedByUser(userId);
+
+        return commentsLikedByUser.stream()
+                .map(LikeCommentResponseDTO::from)
+                .collect(Collectors.toList());
     }
 
     public UserCommentListDTO getMyCommentPosts(final long userId) {
-        List<Comment> comments = commentRepository.findAllByCommenterId(userId); // 유저가 단 모든 댓글 조회
-
-        // 댓글이 달린 게시글의 id만 추출
+        List<Comment> comments = commentRepository.findAllByCommenterId(userId);
         List<Long> postIds = getPostIds(comments);
+        List<Post> posts = postRepository.findByIdIn(postIds);
 
-        List<Post> posts = postRepository.findByIdIn(postIds); // 게시글 id로 게시글 조회
-
-        Map<Long, Post> postMap =
-                posts.stream()
-                        .collect(Collectors.toMap(Post::getId, post -> post)); // 게시글 id를 key로 하는 map 생성
+        Map<Long, Post> postMap = posts.stream().collect(Collectors.toMap(Post::getId, post -> post));
 
         List<UserCommentDTO> userCommentDTOS =
                 comments.stream()
@@ -95,7 +127,6 @@ public class MyPageService {
                                     if (post == null) {
                                         throw new PostException(POST_NOT_FOUND);
                                     }
-
                                     return UserCommentDTO.of(
                                             comment.getId(),
                                             comment.getContent(),
@@ -104,66 +135,40 @@ public class MyPageService {
                                             comment.getCreatedDate());
                                 })
                         .collect(Collectors.toList());
+
         return new UserCommentListDTO(userCommentDTOS);
     }
 
     private static List<Long> getPostIds(List<Comment> comments) {
-        List<Long> postIds =
-                comments.stream()
-                        .map(comment -> comment.getPost().getId())
-                        .distinct()
-                        .collect(Collectors.toList());
-        return postIds;
-    }
-
-    public PostListDTO getMyScrapPosts(final long userId) {
-
-        List<Post> posts = postScrapRepository.findPostsScrappedByUser(userId);
-
-        return PostListDTO.toPostListDTO(posts);
+        return comments.stream()
+                .map(comment -> comment.getPost().getId())
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public FailQuizListDTO getMyFailQuizzes(final long userId, Level level) {
-
-        List<Quiz> failedQuizzesByUserAndLevel =
-                quizRepository.findFailedQuizzesByUserAndLevel(userId, level);
-
-        return FailQuizListDTO.toFailQuizListDTO(failedQuizzesByUserAndLevel);
-    }
-
-    public LikeCommentListDTO getMyLikeComments(final long userId) {
-
-        List<Comment> commentsLikedByUser = commentLikeRepository.findCommentsLikedByUser(userId);
-
-        return LikeCommentListDTO.toLikeCommentListDTO(commentsLikedByUser);
+        List<Quiz> failedQuizzes = quizRepository.findFailedQuizzesByUserAndLevel(userId, level);
+        return FailQuizListDTO.toFailQuizListDTO(failedQuizzes);
     }
 
     public QuizListDTO getMyScrapQuizzes(final long userId, final Level level) {
-
         List<Quiz> quizzes = quizScrapRepository.findQuizScrappedByUserAndLevel(userId, level);
-
         return QuizListDTO.toQuizScrapListDTO(quizzes);
     }
 
     public ConceptListDTO getMyConcepts(final long userId, final Level level) {
-
         List<Concept> concepts =
                 conceptScrapRepository.findConceptsScrappedByUserAndLevel(userId, level);
-
         return ConceptListDTO.toScrapConceptListDTO(concepts);
     }
 
     public TermListDTO getMyScrapTermsByInitial(final long userId, final String initial) {
-
         List<Term> terms = termScrapRepository.findTermsScrappedByUserAndInitial(userId, initial);
-
         return TermListDTO.toTermListDTO(terms);
     }
 
     public TermListDTO getMyScrapTermsByKeyword(final long userId, final String keyword) {
-
         List<Term> terms = termScrapRepository.findTermsScrappedByUserAndKeyword(userId, keyword);
-
         return TermListDTO.toTermListDTO(terms);
     }
 
@@ -176,32 +181,18 @@ public class MyPageService {
         User user =
                 userRepository.findById(userId).orElseThrow(() -> new UserException(USER_NOT_FOUND));
 
-        long beginnerCompletedCount = user.getBeginnerCompletedCount();
-        long intermediateCompletedCount = user.getIntermediateCompletedCount();
-        long advancedCompletedCount = user.getAdvancedCompletedCount();
-        long totalConceptCompletedCount =
-                beginnerCompletedCount + intermediateCompletedCount + advancedCompletedCount;
+        long beginner = user.getBeginnerCompletedCount();
+        long intermediate = user.getIntermediateCompletedCount();
+        long advanced = user.getAdvancedCompletedCount();
+        long total = beginner + intermediate + advanced;
 
         return UserCompletedDTO.builder()
                 .userId(userId)
-                .beginnerCompletedCount(beginnerCompletedCount)
-                .intermediateCompletedCount(intermediateCompletedCount)
-                .advancedCompletedCount(advancedCompletedCount)
-                .totalConceptCompletedCount(totalConceptCompletedCount)
+                .beginnerCompletedCount(beginner)
+                .intermediateCompletedCount(intermediate)
+                .advancedCompletedCount(advanced)
+                .totalConceptCompletedCount(total)
                 .quizCount(user.getQuizCount())
                 .build();
-    }
-
-    public PostListDTO getMyToktok(final long userId) {
-        List<Comment> comments = commentRepository.findAllByCommenterId(userId);
-
-        List<Long> postIds = getPostIds(comments);
-
-        List<Post> posts =
-                postRepository.findByIdIn(postIds).stream()
-                        .filter(post -> post.getType() == PostType.ECONOMY_TALK)
-                        .toList();
-
-        return PostListDTO.toPostListDTO(posts);
     }
 }

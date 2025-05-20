@@ -1,6 +1,6 @@
 package com.ripple.BE.term.domain;
 
-import com.ripple.BE.global.entity.BaseEntity;
+import com.ripple.BE.global.entity.BaseJpaEntity;
 import com.ripple.BE.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,7 +24,7 @@ import lombok.Setter;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class TermScrap extends BaseEntity {
+public class TermScrap extends BaseJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

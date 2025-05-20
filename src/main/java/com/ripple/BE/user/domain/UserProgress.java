@@ -1,6 +1,6 @@
 package com.ripple.BE.user.domain;
 
-import com.ripple.BE.global.entity.BaseEntity;
+import com.ripple.BE.global.entity.BaseJpaEntity;
 import com.ripple.BE.user.domain.type.Level;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class UserProgress extends BaseEntity {
+public class UserProgress extends BaseJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

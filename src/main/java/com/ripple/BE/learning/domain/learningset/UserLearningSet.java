@@ -1,6 +1,6 @@
 package com.ripple.BE.learning.domain.learningset;
 
-import com.ripple.BE.global.entity.BaseEntity;
+import com.ripple.BE.global.entity.BaseJpaEntity;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
 import jakarta.persistence.Column;
@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class UserLearningSet extends BaseEntity { // 학습 세트 완료 여부
+public class UserLearningSet extends BaseJpaEntity { // 학습 세트 완료 여부
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

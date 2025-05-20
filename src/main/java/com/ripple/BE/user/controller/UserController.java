@@ -11,10 +11,8 @@ import com.ripple.BE.learning.dto.response.ScrapConceptListResponse;
 import com.ripple.BE.learning.dto.response.ScrapQuizListResponse;
 import com.ripple.BE.news.dto.NewsListDTO;
 import com.ripple.BE.news.dto.response.NewsListResponse;
-import com.ripple.BE.post.dto.LikeCommentListDTO;
-import com.ripple.BE.post.dto.PostListDTO;
-import com.ripple.BE.post.dto.response.LikeCommentListResponse;
-import com.ripple.BE.post.dto.response.PostListResponse;
+import com.ripple.BE.post.dto.response.LikeCommentResponseDTO;
+import com.ripple.BE.post.dto.response.PostPreviewResponseDTO;
 import com.ripple.BE.term.dto.TermListDTO;
 import com.ripple.BE.term.dto.response.TermListResponse;
 import com.ripple.BE.term.exception.TermException;
@@ -39,17 +37,12 @@ import com.ripple.BE.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -73,7 +66,6 @@ public class UserController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         userService.updateProfile(request, customUserDetails.getId());
-
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
     }
 
@@ -83,7 +75,6 @@ public class UserController {
             @RequestParam boolean alarm, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         userService.updateAlarm(alarm, customUserDetails.getId());
-
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
     }
 
@@ -97,10 +88,9 @@ public class UserController {
 
         Long targetUserId = (userId == null) ? customUserDetails.getId() : userId;
 
-        PostListDTO postListDTO = myPageService.getMyPosts(targetUserId);
+        List<PostPreviewResponseDTO> myPosts = myPageService.getMyPosts(targetUserId);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(PostListResponse.toPostListResponse(postListDTO)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(myPosts));
     }
 
     @Operation(summary = "내가 좋아요한 게시물 조회", description = "로그인한 유저가 좋아요한 게시물을 조회합니다.")
@@ -108,10 +98,10 @@ public class UserController {
     public ResponseEntity<ApiResponse<Object>> getMyLikePosts(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        PostListDTO postListDTO = myPageService.getMyLikePosts(customUserDetails.getId());
+        List<PostPreviewResponseDTO> postPreviewResponseDTOList =
+                myPageService.getMyLikePosts(customUserDetails.getId());
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(PostListResponse.toPostListResponse(postListDTO)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(postPreviewResponseDTOList));
     }
 
     @Operation(
@@ -123,7 +113,6 @@ public class UserController {
             @RequestParam(required = false) Long userId) {
 
         Long targetUserId = (userId == null) ? customUserDetails.getId() : userId;
-
         UserCommentListDTO myCommentPosts = myPageService.getMyCommentPosts(targetUserId);
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -135,10 +124,10 @@ public class UserController {
     public ResponseEntity<ApiResponse<Object>> getMyScrapPosts(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        PostListDTO postListDTO = myPageService.getMyScrapPosts(customUserDetails.getId());
+        List<PostPreviewResponseDTO> postPreviewResponseDTOList =
+                myPageService.getMyScrapPosts(customUserDetails.getId());
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(PostListResponse.toPostListResponse(postListDTO)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(postPreviewResponseDTOList));
     }
 
     @Operation(
@@ -172,10 +161,10 @@ public class UserController {
     public ResponseEntity<ApiResponse<Object>> getMyLikeComments(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        LikeCommentListDTO myLikeComments = myPageService.getMyLikeComments(customUserDetails.getId());
+        List<LikeCommentResponseDTO> myLikeComments =
+                myPageService.getMyLikeComments(customUserDetails.getId());
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(LikeCommentListResponse.toLikeCommentListResponse(myLikeComments)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(myLikeComments));
     }
 
     @Operation(summary = "내가 스크랩한 퀴즈 조회", description = "로그인한 유저가 스크랩한 퀴즈를 조회합니다.")
@@ -304,13 +293,11 @@ public class UserController {
     public ResponseEntity<ApiResponse<Object>> getCompletedConceptAndQuizCount(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        UserCompletedDTO completedConceptAndQuizCount =
+        UserCompletedDTO completedDTO =
                 myPageService.getCompletedConceptAndQuizCount(customUserDetails.getId());
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(
-                        ApiResponse.from(
-                                UserCompletedResponse.toUserCompletedResponse(completedConceptAndQuizCount)));
+                .body(ApiResponse.from(UserCompletedResponse.toUserCompletedResponse(completedDTO)));
     }
 
     @Operation(
@@ -323,9 +310,8 @@ public class UserController {
 
         Long targetUserId = (userId == null) ? customUserDetails.getId() : userId;
 
-        PostListDTO myToktok = myPageService.getMyToktok(targetUserId);
+        List<PostPreviewResponseDTO> myToktok = myPageService.getMyToktok(targetUserId);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(PostListResponse.toPostListResponse(myToktok)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(myToktok));
     }
 }
