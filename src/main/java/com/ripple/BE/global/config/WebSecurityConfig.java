@@ -71,7 +71,8 @@ public class WebSecurityConfig {
                         "http://localhost:8080",
                         "http://api.cotato-ripple.kro.kr",
                         "https://api.cotato-ripple.kro.kr"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(
+                Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(
                 Arrays.asList("X-Requested-With", "Content-Type", "Authorization", "X-XSRF-token"));
         configuration.setAllowCredentials(false);
