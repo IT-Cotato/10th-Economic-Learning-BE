@@ -1,5 +1,6 @@
 package com.ripple.BE.global.exception.handler;
 
+import com.ripple.BE.chatbot.exception.ChatbotException;
 import com.ripple.BE.global.exception.errorcode.ErrorCode;
 import com.ripple.BE.global.exception.errorcode.GlobalErrorCode;
 import com.ripple.BE.global.exception.response.ErrorResponse;
@@ -117,6 +118,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(NotificationException.class)
     public ResponseEntity<Object> handleNotificationException(final NotificationException e) {
+        return handleExceptionInternal(e.getErrorCode());
+    }
+
+    @ExceptionHandler(ChatbotException.class)
+    public ResponseEntity<Object> handleChatbotException(final ChatbotException e) {
         return handleExceptionInternal(e.getErrorCode());
     }
 
