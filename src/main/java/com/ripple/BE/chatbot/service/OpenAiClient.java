@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OpenAiClient {
 
-	@Value("${openai.api.key}")
+	@Value("${spring.ai.openai.api-key}")
 	private String apiKey;
 
 	private static final String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
@@ -43,13 +43,13 @@ public class OpenAiClient {
 	
 			""";
 
-	private final WebClient webClient = WebClient.builder()
-		.baseUrl(OPENAI_API_URL)
-		.defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
-		.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-		.build();
-
 	public String getResponseFromOpenAi(String question) {
+		WebClient webClient = WebClient.builder()
+			.baseUrl(OPENAI_API_URL)
+			.defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
+			.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+			.build();
+
 		Map<String, Object> requestBody = Map.of(
 			"model", "gpt-3.5-turbo",
 			"messages", List.of(
