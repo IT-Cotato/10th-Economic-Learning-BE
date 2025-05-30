@@ -11,6 +11,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import com.ripple.BE.chatbot.dto.response.OpenAiResponse;
+import com.ripple.BE.chatbot.exception.ChatbotException;
+import com.ripple.BE.chatbot.exception.errorcode.ChatbotErrorCode;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,11 +68,10 @@ public class OpenAiClient {
 				.map(res -> res.getChoices().get(0).getMessage().getContent())
 				.block();
 		} catch (WebClientResponseException e) {
-			log.error("❌ OpenAI API 응답 에러: {}", e.getResponseBodyAsString());
-			throw new RuntimeException("OpenAI API 호출 실패: " + e.getMessage());
+			throw new ChatbotException(ChatbotErrorCode.OPEN_AI_INTERNAL_SERVER_ERROR);
 		} catch (Exception e) {
-			log.error("❌ OpenAI API 예외 발생: {}", e.getMessage());
-			throw new RuntimeException("OpenAI API 호출 중 예외 발생");
+			new ChatbotException(ChatbotErrorCode.OPEN_API_RESPONSE_EXCEPTION);
 		}
+		return null; // 이 부분은 예외가 발생하지 않을 때만 도달합니다.
 	}
 }
