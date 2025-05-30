@@ -70,8 +70,7 @@ public class OpenAiClient {
 		} catch (WebClientResponseException e) {
 			throw new ChatbotException(ChatbotErrorCode.OPEN_AI_INTERNAL_SERVER_ERROR);
 		} catch (Exception e) {
-			new ChatbotException(ChatbotErrorCode.OPEN_API_RESPONSE_EXCEPTION);
+			throw new ChatbotException(ChatbotErrorCode.OPEN_API_RESPONSE_EXCEPTION);
 		}
-		return null; // 이 부분은 예외가 발생하지 않을 때만 도달합니다.
 	}
 }

@@ -14,7 +14,6 @@ import com.ripple.BE.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.openai.OpenAiChatClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Transactional(readOnly = true)
 public class ChatbotService {
-    private final OpenAiChatClient openAiChatClient;
 
     private final UserRepository userRepository;
     private final ChatbotRepository chatbotRepository;
@@ -57,7 +55,7 @@ public class ChatbotService {
 
         // 유저의 메세지 저장
         chatbotRepository.save(
-                ChatMessage.builder().user(user).message(responseFromOpenAi).sender(Sender.USER).build());
+                ChatMessage.builder().user(user).message(chatDTO.message()).sender(Sender.USER).build());
 
         // 챗봇의 응답 저장
         ChatMessage saved =
