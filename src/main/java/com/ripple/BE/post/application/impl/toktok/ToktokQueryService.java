@@ -1,10 +1,11 @@
-package com.ripple.BE.post.service.impl.toktok;
+package com.ripple.BE.post.application.impl.toktok;
 
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 
 import com.ripple.BE.global.config.cache.PostCacheKeyGenerator;
 import com.ripple.BE.image.dto.response.ImageResponse;
 import com.ripple.BE.image.repository.ImageRepository;
+import com.ripple.BE.post.application.ToktokQueryUseCase;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.dto.response.CommentResponseDTO;
@@ -17,7 +18,6 @@ import com.ripple.BE.post.persistence.CommentRepository;
 import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostScrapRepository;
 import com.ripple.BE.post.persistence.ToktokRepository;
-import com.ripple.BE.post.service.ToktokQueryUseCase;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.dto.UserRandomProfileListDTO;
 import java.time.LocalDate;

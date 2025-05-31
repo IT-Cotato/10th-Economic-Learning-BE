@@ -1,10 +1,11 @@
-package com.ripple.BE.post.service.impl.post;
+package com.ripple.BE.post.application.impl.post;
 
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 
 import com.ripple.BE.global.config.cache.PostCacheKeyGenerator;
 import com.ripple.BE.image.dto.response.ImageResponse;
 import com.ripple.BE.image.repository.ImageRepository;
+import com.ripple.BE.post.application.PostQueryUseCase;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.domain.type.PostType;
@@ -18,7 +19,6 @@ import com.ripple.BE.post.persistence.CommentRepository;
 import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostRepository;
 import com.ripple.BE.post.persistence.PostScrapRepository;
-import com.ripple.BE.post.service.PostQueryUseCase;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;

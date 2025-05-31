@@ -1,4 +1,4 @@
-package com.ripple.BE.post.service.impl.toktok;
+package com.ripple.BE.post.application.impl.toktok;
 
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
@@ -9,11 +9,11 @@ import com.ripple.BE.image.domain.S3Info;
 import com.ripple.BE.image.exception.ImageException;
 import com.ripple.BE.image.repository.ImageRepository;
 import com.ripple.BE.image.s3.S3Uploader;
+import com.ripple.BE.post.application.ToktokAdminUseCase;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.ToktokRepository;
 import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
-import com.ripple.BE.post.service.ToktokAdminUseCase;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;

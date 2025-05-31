@@ -1,7 +1,8 @@
-package com.ripple.BE.post.service.impl.common;
+package com.ripple.BE.post.application.impl.common;
 
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 
+import com.ripple.BE.post.application.CommentLikeUseCase;
 import com.ripple.BE.post.domain.comment.Comment;
 import com.ripple.BE.post.domain.comment.CommentLike;
 import com.ripple.BE.post.domain.post.Post;
@@ -9,7 +10,6 @@ import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.CommentLikeRepository;
 import com.ripple.BE.post.persistence.CommentRepository;
 import com.ripple.BE.post.persistence.PostRepository;
-import com.ripple.BE.post.service.CommentLikeUseCase;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.service.UserService;
 import lombok.RequiredArgsConstructor;
