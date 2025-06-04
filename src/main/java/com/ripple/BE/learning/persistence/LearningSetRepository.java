@@ -6,8 +6,6 @@ import java.util.Optional;
 
 public interface LearningSetRepository {
 
-    Optional<String> getLearningSetNameById(final long learningSetId);
-
     Optional<LearningSet> findById(final long learningSetId);
 
     List<LearningSet> findAll();

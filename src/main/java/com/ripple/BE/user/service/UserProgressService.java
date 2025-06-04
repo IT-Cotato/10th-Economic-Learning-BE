@@ -1,7 +1,6 @@
 package com.ripple.BE.user.service;
 
 import com.ripple.BE.learning.persistence.jpa.repository.concept.ConceptJpaRepository;
-import com.ripple.BE.learning.persistence.jpa.repository.learningset.UserLearningSetJpaRepository;
 import com.ripple.BE.learning.persistence.jpa.repository.quiz.QuizJpaRepository;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
@@ -31,7 +30,6 @@ public class UserProgressService {
 
     private final UserService userService;
 
-    private final UserLearningSetJpaRepository userLearningSetJpaRepository;
     private final ConceptJpaRepository conceptJpaRepository;
     private final QuizJpaRepository quizJpaRepository;
 

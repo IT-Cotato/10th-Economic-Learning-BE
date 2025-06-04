@@ -29,7 +29,7 @@ public class ConceptScrapJpaEntity {
     @Column(name = "concept_id", nullable = false)
     private Long conceptId;
 
-    @Builder
+    @Builder(access = AccessLevel.PRIVATE)
     public ConceptScrapJpaEntity(Long id, Long userId, Long conceptId) {
         this.id = id;
         this.userId = userId;

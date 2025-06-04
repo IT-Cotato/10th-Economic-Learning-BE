@@ -1,7 +1,6 @@
 package com.ripple.BE.user.repository;
 
 import com.ripple.BE.user.domain.User;
-import com.ripple.BE.user.domain.type.Level;
 
 import jakarta.persistence.LockModeType;
 

@@ -16,11 +16,6 @@ public class LearningSetRepositoryImpl implements LearningSetRepository {
     private final LearningSetJpaRepository learningSetJpaRepository;
 
     @Override
-    public Optional<String> getLearningSetNameById(final long learningSetId) {
-        return learningSetJpaRepository.findNameById(learningSetId);
-    }
-
-    @Override
     public Optional<LearningSet> findById(final long learningSetId) {
         return learningSetJpaRepository.findById(learningSetId).map(LearningSetJpaEntity::toModel);
     }

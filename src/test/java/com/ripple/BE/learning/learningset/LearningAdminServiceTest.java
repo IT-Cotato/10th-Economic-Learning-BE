@@ -36,8 +36,6 @@ public class LearningAdminServiceTest {
 
     @Autowired private UserLearningSetRepository userLearningSetRepository;
 
-    private LearningSet set1;
-    private LearningSet set2;
     private List<LearningSet> learningSetList;
 
     @BeforeEach
@@ -52,8 +50,8 @@ public class LearningAdminServiceTest {
 
         userRepository.saveAll(List.of(user1, user2));
 
-        set1 = LearningSet.withoutId("세트1");
-        set2 = LearningSet.withoutId("세트2");
+        LearningSet set1 = LearningSet.withoutId("세트1");
+        LearningSet set2 = LearningSet.withoutId("세트2");
         learningSetList = learningSetRepository.saveAll(List.of(set1, set2));
     }
 
