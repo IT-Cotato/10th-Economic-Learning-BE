@@ -109,4 +109,15 @@ public class QuizController {
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(quizResponseDTO));
     }
+
+    @Operation(
+            summary = "저장한 퀴즈 다시 풀기",
+            description = "저장한 퀴즈를 다시 풀기 위한 API입니다. 퀴즈 id와 답안 인덱스를 받아 정답 여부와 퀴즈 정보를 반환합니다.")
+    @PostMapping("/quiz/{quizId}/retry")
+    public ResponseEntity<ApiResponse<Object>> retryScrapQuiz(
+            final @PathVariable("quizId") long quizId,
+            @RequestParam @Min(0) @Max(3) Integer answerIndex) {
+        QuizResultResponseDTO quizResultResponseDTO = quizService.retryScrapQuiz(quizId, answerIndex);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(quizResultResponseDTO));
+    }
 }
