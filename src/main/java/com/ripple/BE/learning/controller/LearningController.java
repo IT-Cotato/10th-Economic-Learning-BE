@@ -1,13 +1,13 @@
 package com.ripple.BE.learning.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
-import com.ripple.BE.learning.dto.UserLearningSetListDTO;
-import com.ripple.BE.learning.dto.response.LearningSetPreviewListResponse;
-import com.ripple.BE.learning.service.learningset.LearningAdminService;
-import com.ripple.BE.learning.service.learningset.LearningSetService;
+import com.ripple.BE.learning.application.learningset.LearningAdminService;
+import com.ripple.BE.learning.application.learningset.LearningSetService;
+import com.ripple.BE.learning.dto.response.learningset.UserLearningSetPreviewResponseDTO;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +27,7 @@ public class LearningController {
     private final LearningAdminService learningAdminService;
 
     @Operation(summary = "학습 세트 생성 (관리자 전용)", description = "엑셀 파일로부터 학습 세트를 생성합니다. (관리자 전용)")
-    @PostMapping("/excel")
+    @PostMapping("/admin/excel")
     public ResponseEntity<ApiResponse<?>> saveLearningSetsByExcel() {
         learningAdminService.createLearningSetByExcel();
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
@@ -40,13 +40,9 @@ public class LearningController {
     public ResponseEntity<ApiResponse<Object>> getLearningSets(
             final @AuthenticationPrincipal CustomUserDetails currentUser) {
 
-        UserLearningSetListDTO userLearningSetListDTO =
+        List<UserLearningSetPreviewResponseDTO> userLearningSetPreviewList =
                 learningSetService.getLearningSetPreviewList(currentUser.getId());
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(
-                        ApiResponse.from(
-                                LearningSetPreviewListResponse.toLearningSetPreviewListResponse(
-                                        userLearningSetListDTO)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(userLearningSetPreviewList));
     }
 }
