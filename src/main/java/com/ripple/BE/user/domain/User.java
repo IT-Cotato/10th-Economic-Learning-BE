@@ -2,8 +2,6 @@ package com.ripple.BE.user.domain;
 
 import com.ripple.BE.global.entity.BaseJpaEntity;
 import com.ripple.BE.image.domain.Image;
-import com.ripple.BE.learning.domain.learningset.UserLearningSet;
-import com.ripple.BE.learning.domain.quiz.FailQuiz;
 import com.ripple.BE.news.domain.NewsScrap;
 import com.ripple.BE.term.domain.TermScrap;
 import com.ripple.BE.user.domain.type.BusinessType;
@@ -114,12 +112,6 @@ public class User extends BaseJpaEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TermScrap> termScrapList = new ArrayList<>(); // 스크랩한 용어 목록
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserLearningSet> userLearningSetList = new ArrayList<>(); // 학습 완료 목록
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FailQuiz> failQuizList = new ArrayList<>(); // 틀린 퀴즈 목록
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Attendance attendance; // 출석 정보
