@@ -1,46 +1,28 @@
 package com.ripple.BE.learning.domain.quiz;
 
-import com.ripple.BE.user.domain.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Table(name = "fail_quizzes")
 @Getter
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FailQuiz {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "fail_quiz_id")
-    private Long id;
+    private final Long id;
+    private final Long userId;
+    private final Long quizId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "quiz_id", nullable = false)
-    private Quiz quiz;
-
-    @Builder
-    public FailQuiz(User user, Quiz quiz) {
-        this.user = user;
-        this.quiz = quiz;
+    @Builder(access = AccessLevel.PRIVATE)
+    public FailQuiz(Long id, Long userId, Long quizId) {
+        this.id = id;
+        this.userId = userId;
+        this.quizId = quizId;
     }
 
-    public static FailQuiz toFailQuiz(User user, Quiz quiz) {
-        return FailQuiz.builder().user(user).quiz(quiz).build();
+    public static FailQuiz withoutId(Long userId, Long quizId) {
+        return FailQuiz.builder().userId(userId).quizId(quizId).build();
+    }
+
+    public static FailQuiz withId(Long id, Long userId, Long quizId) {
+        return FailQuiz.builder().id(id).userId(userId).quizId(quizId).build();
     }
 }
