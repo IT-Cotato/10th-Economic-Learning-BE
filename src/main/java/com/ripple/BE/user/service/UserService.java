@@ -6,10 +6,8 @@ import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 import com.ripple.BE.auth.dto.kakao.KakaoUserInfoResponse;
 import com.ripple.BE.image.domain.Image;
 import com.ripple.BE.image.repository.ImageRepository;
-import com.ripple.BE.learning.domain.quiz.FailQuiz;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.UserGoal;
-import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.domain.type.LoginType;
 import com.ripple.BE.user.dto.UserGoalDTO;
 import com.ripple.BE.user.dto.UserInfoDTO;
@@ -20,7 +18,6 @@ import com.ripple.BE.user.exception.UserException;
 import com.ripple.BE.user.repository.UserGoalRepository;
 import com.ripple.BE.user.repository.UserRepository;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -104,25 +101,6 @@ public class UserService {
                         .accountEmail(accountEmail)
                         .password(passwordEncoder.encode(password))
                         .buildBasicUser());
-    }
-
-    @Transactional
-    public void updateUserStatsAfterQuiz(
-            User user, Level level, List<FailQuiz> failList, int quizCount, int correctCount) {
-        // 완료된 학습 레벨 카운트 증가
-        updateCompletedCountByLevel(user, level);
-
-        // 실패한 퀴즈 목록 추가
-        user.getFailQuizList().addAll(failList);
-
-        // 퀴즈 수와 정답 수 업데이트
-        user.increaseQuizCount(quizCount);
-        user.increaseCorrectCount(correctCount);
-    }
-
-    @Transactional
-    public void updateCompletedCountByLevel(User user, Level level) {
-        user.increaseCompletedCountByLevel(level);
     }
 
     @Transactional

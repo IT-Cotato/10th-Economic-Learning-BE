@@ -1,14 +1,12 @@
 package com.ripple.BE.user.service;
 
-import com.ripple.BE.learning.domain.learningset.UserLearningSet;
-import com.ripple.BE.learning.repository.concept.ConceptRepository;
-import com.ripple.BE.learning.repository.learningSet.UserLearningSetRepository;
-import com.ripple.BE.learning.repository.quiz.QuizRepository;
+import com.ripple.BE.learning.persistence.jpa.repository.concept.ConceptJpaRepository;
+import com.ripple.BE.learning.persistence.jpa.repository.learningset.UserLearningSetJpaRepository;
+import com.ripple.BE.learning.persistence.jpa.repository.quiz.QuizJpaRepository;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.dto.ProgressDTO;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -33,9 +31,9 @@ public class UserProgressService {
 
     private final UserService userService;
 
-    private final UserLearningSetRepository userLearningSetRepository;
-    private final ConceptRepository conceptRepository;
-    private final QuizRepository quizRepository;
+    private final UserLearningSetJpaRepository userLearningSetJpaRepository;
+    private final ConceptJpaRepository conceptJpaRepository;
+    private final QuizJpaRepository quizJpaRepository;
 
     /**
      * 레벨별 총 학습 세트 수를 조회한다. 개념 + 퀴즈 이 데이터는 캐시에 저장되며, 1일간 유효하다.
@@ -53,8 +51,8 @@ public class UserProgressService {
                                     Collectors.toMap(
                                             Enum::name,
                                             level ->
-                                                    conceptRepository.countByLevel(level)
-                                                            + quizRepository.countByLevel(level)));
+                                                    conceptJpaRepository.countByLevel(level)
+                                                            + quizJpaRepository.countByLevel(level)));
 
             redisTemplate
                     .opsForValue()
@@ -100,21 +98,5 @@ public class UserProgressService {
                 .set(cacheKey, progressDTO, PROGRESS_CACHE_EXPIRE_MINUTES, TimeUnit.MINUTES);
 
         return progressDTO;
-    }
-
-    @Transactional
-    public void updateLevel(final User user) {
-        List<UserLearningSet> userLearningSets =
-                userLearningSetRepository.findByUserIdAndLevel(user.getId(), user.getCurrentLevel());
-
-        if (!userLearningSets.isEmpty()) {
-            if (userLearningSets.stream().allMatch(UserLearningSet::isLearningSetCompleted)) {
-                if (user.getCurrentLevel() == Level.BEGINNER) {
-                    user.updateLevel(Level.INTERMEDIATE);
-                } else if (user.getCurrentLevel() == Level.INTERMEDIATE) {
-                    user.updateLevel(Level.ADVANCED);
-                }
-            }
-        }
     }
 }
