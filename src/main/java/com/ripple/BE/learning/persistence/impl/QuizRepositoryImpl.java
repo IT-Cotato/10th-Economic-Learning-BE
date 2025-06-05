@@ -41,10 +41,10 @@ public class QuizRepositoryImpl implements QuizRepository {
     }
 
     @Override
-    public void saveAll(final List<Quiz> quizzes) {
+    public List<Quiz> saveAll(final List<Quiz> quizzes) {
         List<QuizJpaEntity> quizEntities = quizzes.stream().map(QuizJpaEntity::from).toList();
 
-        quizJpaRepository.saveAll(quizEntities);
+        return quizJpaRepository.saveAll(quizEntities).stream().map(QuizJpaEntity::toModel).toList();
     }
 
     @Override

@@ -29,9 +29,11 @@ public class ConceptRepositoryImpl implements ConceptRepository {
     }
 
     @Override
-    public void saveAll(final List<Concept> concepts) {
+    public List<Concept> saveAll(final List<Concept> concepts) {
         List<ConceptJpaEntity> conceptEntities = concepts.stream().map(ConceptJpaEntity::from).toList();
-        conceptJpaRepository.saveAll(conceptEntities);
+        return conceptJpaRepository.saveAll(conceptEntities).stream()
+                .map(ConceptJpaEntity::toModel)
+                .toList();
     }
 
     @Override

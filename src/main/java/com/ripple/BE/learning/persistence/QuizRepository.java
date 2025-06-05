@@ -15,7 +15,7 @@ public interface QuizRepository {
 
     List<Quiz> findFailedQuizzesByUserAndLevel(long userId, Level level);
 
-    void saveAll(final List<Quiz> quizzes);
+    List<Quiz> saveAll(final List<Quiz> quizzes);
 
     boolean existsById(final long quizId);
 }

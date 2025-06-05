@@ -11,7 +11,7 @@ public interface ConceptRepository {
 
     Optional<Concept> findById(final long id);
 
-    void saveAll(final List<Concept> concepts);
+    List<Concept> saveAll(final List<Concept> concepts);
 
     boolean existsById(final long id);
 }
