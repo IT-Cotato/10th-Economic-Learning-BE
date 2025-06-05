@@ -10,8 +10,8 @@ import com.ripple.BE.learning.dto.response.leveltest.LevelTestQuizAnswerDTO;
 import com.ripple.BE.learning.dto.response.leveltest.LevelTestQuizResponseDTO;
 import com.ripple.BE.learning.dto.response.leveltest.LevelTestQuizStartResponseDTO;
 import com.ripple.BE.learning.dto.response.leveltest.LevelTestResultResponseDTO;
-import com.ripple.BE.learning.exception.QuizException;
-import com.ripple.BE.learning.exception.errorcode.QuizErrorCode;
+import com.ripple.BE.learning.exception.LearningException;
+import com.ripple.BE.learning.exception.errorcode.LearningErrorCode;
 import com.ripple.BE.learning.persistence.QuizRepository;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
@@ -73,7 +73,7 @@ public class LevelTestService {
                 quizSessionCacheManager.getLevelTestQuizQuestions(levelTestKey);
 
         if (quizAnswerMap.isEmpty()) {
-            throw new QuizException(QuizErrorCode.LEVEL_TEST_QUIZ_SESSION_EXPIRED);
+            throw new LearningException(LearningErrorCode.LEVEL_TEST_QUIZ_SESSION_EXPIRED);
         }
 
         int score = 0;
@@ -83,7 +83,7 @@ public class LevelTestService {
         for (SubmitLevelTestRequest.Answer answer : quizSubmitDTO.answers()) {
             LevelTestQuizAnswerDTO expected = quizAnswerMap.get(answer.quizId());
             if (expected == null) {
-                throw new QuizException(QuizErrorCode.LEVEL_TEST_QUIZ_NOT_FOUND);
+                throw new LearningException(LearningErrorCode.LEVEL_TEST_QUIZ_NOT_FOUND);
             }
             boolean isCorrect = expected.answer().equals(answer.answer());
 

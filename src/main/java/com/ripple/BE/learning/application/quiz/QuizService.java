@@ -1,7 +1,6 @@
 package com.ripple.BE.learning.application.quiz;
 
 import static com.ripple.BE.learning.exception.errorcode.LearningErrorCode.*;
-import static com.ripple.BE.learning.exception.errorcode.QuizErrorCode.QUIZ_NOT_FOUND;
 
 import com.ripple.BE.learning.domain.quiz.FailQuiz;
 import com.ripple.BE.learning.domain.quiz.Quiz;
@@ -11,9 +10,7 @@ import com.ripple.BE.learning.dto.response.quiz.QuizResultResponseDTO;
 import com.ripple.BE.learning.dto.response.quiz.RandomQuizResponseDTO;
 import com.ripple.BE.learning.dto.response.quiz.RandomQuizResponseListDTO;
 import com.ripple.BE.learning.exception.LearningException;
-import com.ripple.BE.learning.exception.QuizException;
 import com.ripple.BE.learning.exception.errorcode.LearningErrorCode;
-import com.ripple.BE.learning.exception.errorcode.QuizErrorCode;
 import com.ripple.BE.learning.persistence.QuizRepository;
 import com.ripple.BE.learning.persistence.QuizScrapRepository;
 import com.ripple.BE.user.domain.type.Level;
@@ -76,7 +73,7 @@ public class QuizService {
 
         // 퀴즈 ID로 퀴즈 정보 조회
         Quiz quiz =
-                quizRepository.findById(quizId).orElseThrow(() -> new QuizException(QUIZ_NOT_FOUND));
+                quizRepository.findById(quizId).orElseThrow(() -> new LearningException(QUIZ_NOT_FOUND));
 
         // 캐시에서 사용자 퀴즈 목록 조회
         List<RandomQuizResponseDTO> quizList =
@@ -107,7 +104,7 @@ public class QuizService {
      */
     public QuizResultResponseDTO retryScrapQuiz(final long quizId, final int answerIndex) {
         Quiz quiz =
-                quizRepository.findById(quizId).orElseThrow(() -> new QuizException(QUIZ_NOT_FOUND));
+                quizRepository.findById(quizId).orElseThrow(() -> new LearningException(QUIZ_NOT_FOUND));
 
         // 정답 여부 확인
         boolean isCorrect = quiz.isCorrectAnswer(quiz.getChoices().get(answerIndex).getContent());
@@ -150,10 +147,10 @@ public class QuizService {
     public void scrapQuiz(final long userId, final long quizId) {
         // 이미 스크랩한 퀴즈인지 확인
         if (quizScrapRepository.existsByQuizIdAndUserId(quizId, userId)) {
-            throw new QuizException(QuizErrorCode.QUIZ_ALREADY_SCRAP);
+            throw new LearningException(LearningErrorCode.QUIZ_ALREADY_SCRAP);
         }
         if (!quizRepository.existsById(quizId)) {
-            throw new QuizException(QuizErrorCode.QUIZ_NOT_FOUND);
+            throw new LearningException(LearningErrorCode.QUIZ_NOT_FOUND);
         }
 
         QuizScrap quizScrap = QuizScrap.withoutId(userId, quizId);
@@ -166,7 +163,7 @@ public class QuizService {
         QuizScrap quizScrap =
                 quizScrapRepository
                         .findByQuizIdAndUserId(quizId, userId)
-                        .orElseThrow(() -> new QuizException(QuizErrorCode.QUIZ_SCRAP_NOT_FOUND));
+                        .orElseThrow(() -> new LearningException(LearningErrorCode.QUIZ_SCRAP_NOT_FOUND));
 
         quizScrapRepository.delete(quizScrap);
     }
