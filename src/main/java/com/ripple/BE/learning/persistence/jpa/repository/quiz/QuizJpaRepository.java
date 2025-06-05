@@ -8,8 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface QuizJpaRepository extends JpaRepository<QuizJpaEntity, Long>, QuizQueryRepository {
 
-    int countByLevel(Level level);
-
     @Query(
             "SELECT q FROM QuizJpaEntity q "
                     + "LEFT JOIN FETCH q.choices "

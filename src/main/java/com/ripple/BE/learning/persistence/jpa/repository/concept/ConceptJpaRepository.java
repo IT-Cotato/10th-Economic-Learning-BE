@@ -7,8 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ConceptJpaRepository extends JpaRepository<ConceptJpaEntity, Long> {
 
-    int countByLevel(Level level);
-
     List<ConceptJpaEntity> findAllByLearningSetIdAndLevel(
             final long learningSetId, final Level level);
 }
