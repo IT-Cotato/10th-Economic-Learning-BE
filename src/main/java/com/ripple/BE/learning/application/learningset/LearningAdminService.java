@@ -3,6 +3,7 @@ package com.ripple.BE.learning.application.learningset;
 import com.ripple.BE.global.excel.ExcelUtils;
 import com.ripple.BE.learning.domain.concept.Concept;
 import com.ripple.BE.learning.domain.learningset.LearningSet;
+import com.ripple.BE.learning.domain.learningset.LearningSetStat;
 import com.ripple.BE.learning.domain.learningset.UserLearningSet;
 import com.ripple.BE.learning.domain.quiz.Choice;
 import com.ripple.BE.learning.domain.quiz.Quiz;
@@ -13,6 +14,7 @@ import com.ripple.BE.learning.exception.LearningException;
 import com.ripple.BE.learning.exception.errorcode.LearningErrorCode;
 import com.ripple.BE.learning.persistence.ConceptRepository;
 import com.ripple.BE.learning.persistence.LearningSetRepository;
+import com.ripple.BE.learning.persistence.LearningSetStatRepository;
 import com.ripple.BE.learning.persistence.QuizRepository;
 import com.ripple.BE.learning.persistence.UserLearningSetRepository;
 import com.ripple.BE.user.domain.User;
@@ -40,6 +42,7 @@ public class LearningAdminService {
 
     private final UserLearningSetRepository userLearningSetRepository;
     private final LearningSetRepository learningSetRepository;
+    private final LearningSetStatRepository learningSetStatRepository;
     private final QuizRepository quizJpaRepository;
     private final ConceptRepository conceptRepository;
     private final UserRepository userRepository;
@@ -71,18 +74,24 @@ public class LearningAdminService {
             Map<String, LearningSet> savedSetMap =
                     savedLearningSets.stream().collect(Collectors.toMap(LearningSet::getName, ls -> ls));
 
-            // 각 학습 세트에 개념 및 퀴즈 추가
-            addConceptsToLearningSets(savedSetMap);
-            addQuizzesToLearningSets(savedSetMap);
+            // 각 학습 세트에 개념 추가, 그리고 통계 업데이트
+            List<Concept> conceptList = addConceptsToLearningSets(savedSetMap);
+            updateConceptStatsByLevel(conceptList);
+
+            // 각 학습 세트에 퀴즈 추가, 그리고 통계 업데이트
+            List<Quiz> quizList = addQuizzesToLearningSets(savedSetMap);
+            updateQuizStatsByLevel(quizList);
 
             // 사용자 학습 세트 추가
             addUserLearningSetsForNewLearningSets(savedLearningSets);
+
         } catch (Exception e) {
             log.error("Failed to save learning set by excel", e);
             throw new LearningException(LearningErrorCode.SAVE_LEARNING_SET_EXCEL_FILE_FAILED);
         }
     }
 
+    /** 엑셀 파일에서 학습 세트 목록을 파싱 */
     private List<LearningSet> parseLearningSetsFromExcel() throws Exception {
         return ExcelUtils.parseExcelFile(FILE_PATH, LEARNING_SET_SHEET_INDEX).stream()
                 .map(LearningSetExcelDTO::from)
@@ -91,7 +100,9 @@ public class LearningAdminService {
                 .toList();
     }
 
-    private void addConceptsToLearningSets(Map<String, LearningSet> learningSetMap) throws Exception {
+    /** 엑셀 파일에서 학습 세트 이름을 기준으로 개념을 추가 */
+    private List<Concept> addConceptsToLearningSets(Map<String, LearningSet> learningSetMap)
+            throws Exception {
         List<Concept> conceptList = new ArrayList<>();
 
         ExcelUtils.parseExcelFile(FILE_PATH, CONCEPT_SHEET_INDEX).stream()
@@ -111,10 +122,12 @@ public class LearningAdminService {
                                             learningSet.getName()));
                         });
 
-        conceptRepository.saveAll(conceptList);
+        return conceptRepository.saveAll(conceptList);
     }
 
-    private void addQuizzesToLearningSets(Map<String, LearningSet> learningSetMap) throws Exception {
+    /** 엑셀 파일에서 학습 세트 이름을 기준으로 퀴즈를 추가 */
+    private List<Quiz> addQuizzesToLearningSets(Map<String, LearningSet> learningSetMap)
+            throws Exception {
         List<Quiz> quizList = new ArrayList<>();
 
         ExcelUtils.parseExcelFile(LearningAdminService.FILE_PATH, QUIZ_SHEET_INDEX).stream()
@@ -139,18 +152,62 @@ public class LearningAdminService {
                                                     .map(choice -> Choice.withoutId(choice.content()))
                                                     .toList()));
                         });
-        quizJpaRepository.saveAll(quizList);
+        return quizJpaRepository.saveAll(quizList);
     }
 
-    @Transactional
-    public void addUserLearningSetsForNewLearningSets(List<LearningSet> newLearningSets) {
+    /** 레벨별 개념 통계 업데이트 */
+    private void updateConceptStatsByLevel(List<Concept> concepts) {
+        Map<Level, Long> counts =
+                concepts.stream().collect(Collectors.groupingBy(Concept::getLevel, Collectors.counting()));
+
+        counts.forEach(
+                (level, count) -> {
+                    LearningSetStat stat =
+                            learningSetStatRepository
+                                    .findByLevel(level)
+                                    .orElseGet(() -> new LearningSetStat(level, 0, 0));
+                    stat.addConcepts(count.intValue());
+                    learningSetStatRepository.save(stat);
+                });
+    }
+
+    /** 레벨별 퀴즈 통계 업데이트 */
+    private void updateQuizStatsByLevel(List<Quiz> quizzes) {
+        Map<Level, Long> counts =
+                quizzes.stream().collect(Collectors.groupingBy(Quiz::getLevel, Collectors.counting()));
+
+        counts.forEach(
+                (level, count) -> {
+                    LearningSetStat stat =
+                            learningSetStatRepository
+                                    .findByLevel(level)
+                                    .orElseGet(() -> new LearningSetStat(level, 0, 0));
+                    stat.addQuizzes(count.intValue());
+                    learningSetStatRepository.save(stat);
+                });
+    }
+
+    /** 새 학습 세트에 대한 사용자 학습 세트 추가 */
+    private void addUserLearningSetsForNewLearningSets(List<LearningSet> newLearningSets) {
         log.info("새 학습 세트에 대한 사용자 학습 세트 추가 시작...");
 
         List<User> users = userRepository.findAll();
 
         List<UserLearningSet> userLearningSetsToSave =
                 users.stream()
-                        .flatMap(user -> generateUserLearningSets(user, newLearningSets).stream())
+                        .flatMap(
+                                user ->
+                                        newLearningSets.stream()
+                                                .flatMap(
+                                                        learningSet ->
+                                                                Arrays.stream(Level.values())
+                                                                        .map(
+                                                                                level ->
+                                                                                        UserLearningSet.withoutId(
+                                                                                                user.getId(),
+                                                                                                learningSet.getId(),
+                                                                                                learningSet.getName(),
+                                                                                                level))))
                         .toList();
 
         if (!userLearningSetsToSave.isEmpty()) {
@@ -158,18 +215,5 @@ public class LearningAdminService {
         }
 
         log.info("사용자 학습 세트 추가 완료.");
-    }
-
-    private List<UserLearningSet> generateUserLearningSets(
-            User user, List<LearningSet> learningSets) {
-        return learningSets.stream()
-                .flatMap(
-                        learningSet ->
-                                Arrays.stream(Level.values())
-                                        .map(
-                                                level ->
-                                                        UserLearningSet.withoutId(
-                                                                user.getId(), learningSet.getId(), learningSet.getName(), level)))
-                .collect(Collectors.toList());
     }
 }

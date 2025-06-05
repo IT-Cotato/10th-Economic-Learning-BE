@@ -10,7 +10,6 @@ import com.ripple.BE.term.dto.TermListDTO;
 import com.ripple.BE.term.dto.response.TermListResponse;
 import com.ripple.BE.term.exception.TermException;
 import com.ripple.BE.user.domain.CustomUserDetails;
-import com.ripple.BE.user.dto.ProgressDTO;
 import com.ripple.BE.user.dto.UserCommentListDTO;
 import com.ripple.BE.user.dto.UserCompletedDTO;
 import com.ripple.BE.user.dto.UserGoalDTO;
@@ -18,14 +17,14 @@ import com.ripple.BE.user.dto.UserInfoDTO;
 import com.ripple.BE.user.dto.request.PatchUserProfileRequest;
 import com.ripple.BE.user.dto.request.UpdateUserProfileRequest;
 import com.ripple.BE.user.dto.request.UserGoalRequest;
-import com.ripple.BE.user.dto.response.ProgressResponse;
 import com.ripple.BE.user.dto.response.UserCommentListResponse;
 import com.ripple.BE.user.dto.response.UserCompletedResponse;
+import com.ripple.BE.user.dto.response.UserCompletionRateByLevelDTOResponse;
 import com.ripple.BE.user.dto.response.UserGoalResponse;
 import com.ripple.BE.user.dto.response.UserInfoResponse;
 import com.ripple.BE.user.service.MyPageService;
-import com.ripple.BE.user.service.UserProgressService;
 import com.ripple.BE.user.service.UserService;
+import com.ripple.BE.user.service.UserStatService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -44,7 +43,7 @@ public class UserController {
 
     private final UserService userService;
     private final MyPageService myPageService;
-    private final UserProgressService userProgressService;
+    private final UserStatService userStatService;
 
     @Operation(
             summary = "프로필 등록",
@@ -129,10 +128,10 @@ public class UserController {
     public ResponseEntity<ApiResponse<Object>> getUserLearningProgress(
             final @AuthenticationPrincipal CustomUserDetails currentUser) {
 
-        ProgressDTO progressDTO = userProgressService.getLearningSetCompletionRate(currentUser.getId());
+        UserCompletionRateByLevelDTOResponse dtoResponse =
+                userStatService.getLearningSetCompletionRate(currentUser.getId());
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(ProgressResponse.toProgressResponse(progressDTO)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(dtoResponse));
     }
 
     @Operation(summary = "내가 스크랩한 뉴스 조회", description = "로그인한 유저가 스크랩한 뉴스를 조회합니다.")
