@@ -2,29 +2,22 @@ package com.ripple.BE.post.persistence.jpa.entity;
 
 import com.ripple.BE.global.entity.BaseJpaEntity;
 import com.ripple.BE.post.domain.comment.Comment;
-import com.ripple.BE.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Table(name = "comments")
 @Getter
-@Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentJpaEntity extends BaseJpaEntity {
 
     @Id
@@ -37,25 +30,42 @@ public class CommentJpaEntity extends BaseJpaEntity {
     private String content;
 
     @Column(name = "like_count")
-    private long likeCount = 0L; // 좋아요 수
+    private long likeCount;
 
     @Column(name = "reply_count")
-    private long replyCount = 0L; // 답글 수
+    private long replyCount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private PostJpaEntity post; // 게시글
+    @Column(name = "post_id")
+    private Long postId; // 게시글 ID
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User commenter; // 댓글 작성자
+    @Column(name = "user_id")
+    private Long commenterId; // 댓글 작성자 ID
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
-    private CommentJpaEntity parent; // 상위 댓글
+    @Column(name = "parent_id")
+    private Long parentId; // 부모 댓글 ID
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false; // 삭제 여부
+    private boolean isDeleted;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    private CommentJpaEntity(
+            Long id,
+            String content,
+            long likeCount,
+            long replyCount,
+            Long postId,
+            Long commenterId,
+            Long parentId,
+            boolean isDeleted) {
+        this.id = id;
+        this.content = content;
+        this.likeCount = likeCount;
+        this.replyCount = replyCount;
+        this.postId = postId;
+        this.commenterId = commenterId;
+        this.parentId = parentId;
+        this.isDeleted = isDeleted;
+    }
 
     public static CommentJpaEntity from(Comment comment) {
         return CommentJpaEntity.builder()
@@ -63,18 +73,24 @@ public class CommentJpaEntity extends BaseJpaEntity {
                 .content(comment.getContent())
                 .likeCount(comment.getLikeCount())
                 .replyCount(comment.getReplyCount())
-                .post(PostJpaEntity.from(comment.getPost()))
-                .commenter(comment.getCommenter())
-                .parent(comment.getParent() == null ? null : CommentJpaEntity.from(comment.getParent()))
+                .postId(comment.getPostId())
+                .commenterId(comment.getCommenterId())
+                .parentId(comment.getParentCommentId())
                 .isDeleted(comment.isDeleted())
                 .build();
     }
 
-    public void updateLikeCount(final long count) {
-        this.likeCount = count;
-    }
-
-    public void updateReplyCount(final long count) {
-        this.replyCount = count;
+    public Comment toModel() {
+        return Comment.withId(
+                this.id,
+                this.content,
+                this.likeCount,
+                this.replyCount,
+                this.isDeleted,
+                this.commenterId,
+                this.postId,
+                this.parentId,
+                this.getCreatedDate(),
+                this.getModifiedDate());
     }
 }
