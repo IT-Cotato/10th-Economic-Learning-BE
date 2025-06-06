@@ -8,8 +8,6 @@ import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.PostRepository;
 import com.ripple.BE.post.persistence.PostScrapRepository;
 import com.ripple.BE.post.service.PostScrapUseCase;
-import com.ripple.BE.user.domain.User;
-import com.ripple.BE.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,23 +19,20 @@ public class PostScrapService implements PostScrapUseCase {
 
     private final PostRepository postRepository;
     private final PostScrapRepository postScrapRepository;
-    private final UserService userService;
 
     @Override
     public void addScrapToPost(final long postId, final long userId) {
 
         Post post = findPostByIdForUpdate(postId);
-        User user = userService.findUserById(userId);
 
         if (postScrapRepository.existsByPostIdAndUserId(postId, userId)) {
             throw new PostException(SCRAP_ALREADY_EXISTS);
         }
 
-        PostScrap postScrap = PostScrap.of(user, post);
+        PostScrap postScrap = PostScrap.withoutId(userId, post.getId());
         postScrapRepository.save(postScrap);
 
-        post.increaseScrapCount();
-        postRepository.updateScrapCount(post);
+        postRepository.save(post.increaseScrapCount());
     }
 
     @Override
@@ -51,8 +46,7 @@ public class PostScrapService implements PostScrapUseCase {
 
         postScrapRepository.delete(postScrap);
 
-        post.decreaseScrapCount();
-        postRepository.updateScrapCount(post);
+        postRepository.save(post.decreaseScrapCount());
     }
 
     private Post findPostByIdForUpdate(final long id) {

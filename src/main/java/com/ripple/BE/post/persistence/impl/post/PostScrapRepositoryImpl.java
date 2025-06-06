@@ -3,6 +3,7 @@ package com.ripple.BE.post.persistence.impl.post;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.post.PostScrap;
 import com.ripple.BE.post.persistence.PostScrapRepository;
+import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import com.ripple.BE.post.persistence.jpa.entity.PostScrapJpaEntity;
 import com.ripple.BE.post.persistence.jpa.repository.postscrap.PostScrapJpaRepository;
 import java.util.List;
@@ -23,7 +24,9 @@ public class PostScrapRepositoryImpl implements PostScrapRepository {
 
     @Override
     public Optional<PostScrap> findByPostIdAndUserId(final long postId, final long userId) {
-        return postScrapJpaRepository.findByPostIdAndUserId(postId, userId).map(PostScrap::from);
+        return postScrapJpaRepository
+                .findByPostIdAndUserId(postId, userId)
+                .map(PostScrapJpaEntity::toModel);
     }
 
     @Override
@@ -38,7 +41,9 @@ public class PostScrapRepositoryImpl implements PostScrapRepository {
 
     @Override
     public List<Post> findPostsScrappedByUser(final long userId) {
-        return postScrapJpaRepository.findPostsScrappedByUser(userId).stream().map(Post::from).toList();
+        return postScrapJpaRepository.findPostsScrappedByUser(userId).stream()
+                .map(PostJpaEntity::toModel)
+                .toList();
     }
 
     @Override
