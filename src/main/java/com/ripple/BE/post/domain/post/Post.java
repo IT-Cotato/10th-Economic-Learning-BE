@@ -1,87 +1,97 @@
 package com.ripple.BE.post.domain.post;
 
 import com.ripple.BE.post.domain.type.PostType;
-import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
-import com.ripple.BE.user.domain.User;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Post {
 
     private final Long id;
-    private String title;
-    private String content;
-    private final User author;
-    private PostType type;
+    private final String title;
+    private final String content;
+    private final Long authorId;
+    private final PostType type;
 
-    private long likeCount;
-    private long commentCount;
-    private long scrapCount;
-    private LocalDate usedDate; // 사용 날짜, 톡톡 게시물에만 사용
+    private final long likeCount;
+    private final long commentCount;
+    private final long scrapCount;
+    private final LocalDate usedDate; // 사용 날짜, 톡톡 게시물에만 사용
 
     private final LocalDateTime createdDate;
     private final LocalDateTime modifiedDate;
 
-    public static Post of(
-            String title, String content, User author, PostType type, LocalDate usedDate) {
-        return new Post(null, title, content, author, type, 0, 0, 0, usedDate, null, null);
-    }
-
-    public static Post from(PostJpaEntity postJpaEntity) {
-        return new Post(
-                postJpaEntity.getId(),
-                postJpaEntity.getTitle(),
-                postJpaEntity.getContent(),
-                postJpaEntity.getAuthor(),
-                postJpaEntity.getType(),
-                postJpaEntity.getLikeCount(),
-                postJpaEntity.getCommentCount(),
-                postJpaEntity.getScrapCount(),
-                postJpaEntity.getUsedDate(),
-                postJpaEntity.getCreatedDate(),
-                postJpaEntity.getModifiedDate());
-    }
-
-    public void update(String title, String content, PostType type) {
-        if (title != null) this.title = title;
-        if (content != null) this.content = content;
-        if (type != null) this.type = type;
-    }
-
-    public void updateUsedDate(LocalDate usedDate) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private Post(
+            Long id,
+            String title,
+            String content,
+            Long authorId,
+            PostType type,
+            long likeCount,
+            long commentCount,
+            long scrapCount,
+            LocalDate usedDate,
+            LocalDateTime createdDate,
+            LocalDateTime modifiedDate) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.authorId = authorId;
+        this.type = type;
+        this.likeCount = likeCount;
+        this.commentCount = commentCount;
+        this.scrapCount = scrapCount;
         this.usedDate = usedDate;
+        this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
     }
 
-    public boolean isOwnedBy(long userId) {
-        return author != null && author.getId().equals(userId);
+    public static Post withId(
+            Long id,
+            String title,
+            String content,
+            Long authorId,
+            PostType type,
+            long likeCount,
+            long commentCount,
+            long scrapCount,
+            LocalDate usedDate,
+            LocalDateTime createdDate,
+            LocalDateTime modifiedDate) {
+        return Post.builder()
+                .id(id)
+                .title(title)
+                .content(content)
+                .authorId(authorId)
+                .type(type)
+                .likeCount(likeCount)
+                .commentCount(commentCount)
+                .scrapCount(scrapCount)
+                .usedDate(usedDate)
+                .createdDate(createdDate)
+                .modifiedDate(modifiedDate)
+                .build();
     }
 
-    public void increaseLikeCount() {
-        this.likeCount++;
+    public static Post withoutId(
+            String title, String content, Long authorId, PostType type, LocalDate usedDate) {
+        return Post.builder()
+                .title(title)
+                .content(content)
+                .authorId(authorId)
+                .type(type)
+                .likeCount(0)
+                .commentCount(0)
+                .scrapCount(0)
+                .usedDate(usedDate)
+                .build();
     }
 
-    public void decreaseLikeCount() {
-        this.likeCount--;
-    }
-
-    public void increaseCommentCount() {
-        this.commentCount++;
-    }
-
-    public void decreaseCommentCount() {
-        this.commentCount--;
-    }
-
-    public void increaseScrapCount() {
-        this.scrapCount++;
-    }
-
-    public void decreaseScrapCount() {
-        this.scrapCount--;
+    public boolean isOwnedBy(Long userId) {
+        return this.authorId != null && this.authorId.equals(userId);
     }
 }
