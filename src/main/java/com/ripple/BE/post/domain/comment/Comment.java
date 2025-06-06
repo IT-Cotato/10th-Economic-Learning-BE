@@ -95,8 +95,8 @@ public class Comment {
         return replyCount == 0;
     }
 
-    public boolean isOwnedBy(Long userId) {
-        return this.commenterId != null && this.commenterId.equals(userId);
+    public boolean isNotOwnedBy(Long userId) {
+        return this.commenterId == null || !this.commenterId.equals(userId);
     }
 
     public void validateReplyable(Long postId) {
@@ -109,14 +109,104 @@ public class Comment {
     }
 
     public void validateUpdatableBy(Long userId, Long postId) {
-        if (!isOwnedBy(userId) || isDeleted || !Objects.equals(this.postId, postId)) {
+        if (isNotOwnedBy(userId) || isDeleted || !Objects.equals(this.postId, postId)) {
             throw new PostException(PostErrorCode.COMMENT_NOT_FOUND);
         }
     }
 
     public void validateDeletableBy(Long userId, Long postId) {
-        if (!isOwnedBy(userId) || isDeleted || !Objects.equals(this.postId, postId)) {
+        if (isNotOwnedBy(userId) || isDeleted || !Objects.equals(this.postId, postId)) {
             throw new PostException(PostErrorCode.COMMENT_NOT_FOUND);
         }
+    }
+
+    public Comment updateContent(String content) {
+        return Comment.builder()
+                .id(this.id)
+                .content(content)
+                .likeCount(this.likeCount)
+                .replyCount(this.replyCount)
+                .isDeleted(this.isDeleted)
+                .commenterId(this.commenterId)
+                .postId(this.postId)
+                .parentCommentId(this.parentCommentId)
+                .createdDate(this.createdDate)
+                .modifiedDate(LocalDateTime.now())
+                .build();
+    }
+
+    public Comment increaseLikeCount() {
+        return Comment.builder()
+                .id(this.id)
+                .content(this.content)
+                .likeCount(this.likeCount + 1)
+                .replyCount(this.replyCount)
+                .isDeleted(this.isDeleted)
+                .commenterId(this.commenterId)
+                .postId(this.postId)
+                .parentCommentId(this.parentCommentId)
+                .createdDate(this.createdDate)
+                .modifiedDate(LocalDateTime.now())
+                .build();
+    }
+
+    public Comment decreaseLikeCount() {
+        return Comment.builder()
+                .id(this.id)
+                .content(this.content)
+                .likeCount(Math.max(0, this.likeCount - 1))
+                .replyCount(this.replyCount)
+                .isDeleted(this.isDeleted)
+                .commenterId(this.commenterId)
+                .postId(this.postId)
+                .parentCommentId(this.parentCommentId)
+                .createdDate(this.createdDate)
+                .modifiedDate(LocalDateTime.now())
+                .build();
+    }
+
+    public Comment increaseReplyCount() {
+        return Comment.builder()
+                .id(this.id)
+                .content(this.content)
+                .likeCount(this.likeCount)
+                .replyCount(this.replyCount + 1)
+                .isDeleted(this.isDeleted)
+                .commenterId(this.commenterId)
+                .postId(this.postId)
+                .parentCommentId(this.parentCommentId)
+                .createdDate(this.createdDate)
+                .modifiedDate(LocalDateTime.now())
+                .build();
+    }
+
+    public Comment decreaseReplyCount() {
+        return Comment.builder()
+                .id(this.id)
+                .content(this.content)
+                .likeCount(this.likeCount)
+                .replyCount(Math.max(0, this.replyCount - 1))
+                .isDeleted(this.isDeleted)
+                .commenterId(this.commenterId)
+                .postId(this.postId)
+                .parentCommentId(this.parentCommentId)
+                .createdDate(this.createdDate)
+                .modifiedDate(LocalDateTime.now())
+                .build();
+    }
+
+    public Comment softDeleteAsRoot() {
+        return Comment.builder()
+                .id(this.id)
+                .content("[삭제된 댓글입니다.]")
+                .likeCount(this.likeCount)
+                .replyCount(this.replyCount)
+                .isDeleted(true)
+                .commenterId(this.commenterId)
+                .postId(this.postId)
+                .parentCommentId(this.parentCommentId)
+                .createdDate(this.createdDate)
+                .modifiedDate(LocalDateTime.now())
+                .build();
     }
 }
