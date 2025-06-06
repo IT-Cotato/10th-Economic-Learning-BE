@@ -1,6 +1,7 @@
 package com.ripple.BE.post.service.impl.post;
 
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
+import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
 import com.ripple.BE.global.config.cache.PostCacheKeyGenerator;
 import com.ripple.BE.image.dto.response.ImageResponse;
@@ -13,12 +14,13 @@ import com.ripple.BE.post.dto.response.PostPreviewListResponseDTO;
 import com.ripple.BE.post.dto.response.PostPreviewResponseDTO;
 import com.ripple.BE.post.dto.response.PostResponseDTO;
 import com.ripple.BE.post.exception.PostException;
-import com.ripple.BE.post.persistence.CommentLikeRepository;
-import com.ripple.BE.post.persistence.CommentRepository;
 import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostRepository;
 import com.ripple.BE.post.persistence.PostScrapRepository;
+import com.ripple.BE.post.service.CommentQueryUseCase;
 import com.ripple.BE.post.service.PostQueryUseCase;
+import com.ripple.BE.user.domain.User;
+import com.ripple.BE.user.repository.UserRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -35,11 +37,11 @@ public class PostQueryService implements PostQueryUseCase {
 
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
-    private final CommentLikeRepository commentLikeRepository;
-    private final CommentRepository commentRepository;
     private final PostScrapRepository postScrapRepository;
-
+    private final UserRepository userRepository;
     private final ImageRepository imageRepository;
+
+    private final CommentQueryUseCase commentQueryUseCase;
 
     private static final int PAGE_SIZE = 10;
 
@@ -90,6 +92,10 @@ public class PostQueryService implements PostQueryUseCase {
     public PostResponseDTO getPost(final long postId, final long userId) {
         Post post =
                 postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_FOUND));
+        User author =
+                userRepository
+                        .findById(post.getAuthorId())
+                        .orElseThrow(() -> new PostException(USER_NOT_FOUND));
 
         boolean isAuthor = post.isOwnedBy(userId);
         boolean isLiked = postLikeRepository.existsByPostIdAndUserId(postId, userId);
@@ -97,9 +103,10 @@ public class PostQueryService implements PostQueryUseCase {
 
         List<ImageResponse> imageResponses =
                 imageRepository.findByPostId(postId).stream().map(ImageResponse::from).toList();
-        List<CommentResponseDTO> commentDTOs = getCommentDTOs(post, userId);
+        List<CommentResponseDTO> commentDTOs = commentQueryUseCase.getComments(postId, userId);
 
-        return PostResponseDTO.of(post, imageResponses, commentDTOs, isScrapped, isLiked, isAuthor);
+        return PostResponseDTO.of(
+                post, author, imageResponses, commentDTOs, isScrapped, isLiked, isAuthor);
     }
 
     private PostPreviewResponseDTO toPreview(Post post, long userId) {
@@ -112,32 +119,5 @@ public class PostQueryService implements PostQueryUseCase {
         boolean isScraped = postScrapRepository.existsByPostIdAndUserId(post.getId(), userId);
 
         return PostPreviewResponseDTO.of(post, imageUrl, isScraped);
-    }
-
-    private List<CommentResponseDTO> getCommentDTOs(Post post, long userId) {
-        return commentRepository.findRootCommentsByPost(post.getId()).stream()
-                .map(
-                        root -> {
-                            // 자식 댓글 처리
-                            List<CommentResponseDTO> children =
-                                    commentRepository.findChildrenByParentId(root.getId()).stream()
-                                            .map(
-                                                    child -> {
-                                                        boolean childIsAuthor = child.getCommenter().getId().equals(userId);
-                                                        boolean childIsLiked =
-                                                                commentLikeRepository.existsByCommentIdAndUserId(
-                                                                        child.getId(), userId);
-                                                        return CommentResponseDTO.of(
-                                                                child, List.of(), childIsAuthor, childIsLiked);
-                                                    })
-                                            .toList();
-
-                            boolean rootIsAuthor = root.getCommenter().getId().equals(userId);
-                            boolean rootIsLiked =
-                                    commentLikeRepository.existsByCommentIdAndUserId(root.getId(), userId);
-
-                            return CommentResponseDTO.of(root, children, rootIsAuthor, rootIsLiked);
-                        })
-                .toList();
     }
 }
