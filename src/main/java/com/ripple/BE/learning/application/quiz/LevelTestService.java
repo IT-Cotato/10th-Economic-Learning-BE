@@ -2,9 +2,9 @@ package com.ripple.BE.learning.application.quiz;
 
 import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
+import com.ripple.BE.learning.application.quiz.command.SubmitLevelTestCommand;
 import com.ripple.BE.learning.domain.quiz.Quiz;
 import com.ripple.BE.learning.domain.type.Type;
-import com.ripple.BE.learning.dto.request.SubmitLevelTestRequest;
 import com.ripple.BE.learning.dto.response.leveltest.LevelTestAnswerResponseDTO;
 import com.ripple.BE.learning.dto.response.leveltest.LevelTestQuizAnswerDTO;
 import com.ripple.BE.learning.dto.response.leveltest.LevelTestQuizResponseDTO;
@@ -67,7 +67,9 @@ public class LevelTestService {
     /** 레벨 테스트 결과 제출 */
     @Transactional
     public LevelTestResultResponseDTO submitLevelTestResult(
-            final SubmitLevelTestRequest quizSubmitDTO, final String levelTestKey, final Long userId) {
+            final SubmitLevelTestCommand quizSubmitCommand,
+            final String levelTestKey,
+            final Long userId) {
 
         Map<Long, LevelTestQuizAnswerDTO> quizAnswerMap =
                 quizSessionCacheManager.getLevelTestQuizQuestions(levelTestKey);
@@ -80,7 +82,7 @@ public class LevelTestService {
         int correctCount = 0;
         List<LevelTestAnswerResponseDTO> answerResults = new ArrayList<>();
 
-        for (SubmitLevelTestRequest.Answer answer : quizSubmitDTO.answers()) {
+        for (SubmitLevelTestCommand.AnswerCommand answer : quizSubmitCommand.answers()) {
             LevelTestQuizAnswerDTO expected = quizAnswerMap.get(answer.quizId());
             if (expected == null) {
                 throw new LearningException(LearningErrorCode.LEVEL_TEST_QUIZ_NOT_FOUND);

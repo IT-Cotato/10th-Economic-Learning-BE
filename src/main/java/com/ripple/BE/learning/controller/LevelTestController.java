@@ -2,6 +2,7 @@ package com.ripple.BE.learning.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
 import com.ripple.BE.learning.application.quiz.LevelTestService;
+import com.ripple.BE.learning.application.quiz.command.SubmitLevelTestCommand;
 import com.ripple.BE.learning.dto.request.SubmitLevelTestRequest;
 import com.ripple.BE.learning.dto.response.leveltest.LevelTestQuizStartResponseDTO;
 import com.ripple.BE.learning.dto.response.leveltest.LevelTestResultResponseDTO;
@@ -54,9 +55,11 @@ public class LevelTestController {
             @RequestParam(required = true) String levelTestSessionKey,
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
+        SubmitLevelTestCommand submitLevelTestCommand = SubmitLevelTestCommand.from(request);
+
         LevelTestResultResponseDTO levelTestResultResponseDTO =
                 levelTestService.submitLevelTestResult(
-                        request, levelTestSessionKey, customUserDetails.getId());
+                        submitLevelTestCommand, levelTestSessionKey, customUserDetails.getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(levelTestResultResponseDTO));
     }
