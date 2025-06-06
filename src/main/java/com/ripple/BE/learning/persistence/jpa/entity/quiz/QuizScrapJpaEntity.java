@@ -30,7 +30,7 @@ public class QuizScrapJpaEntity {
     private Long quizId;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public QuizScrapJpaEntity(Long id, Long userId, Long quizId) {
+    private QuizScrapJpaEntity(Long id, Long userId, Long quizId) {
         this.id = id;
         this.userId = userId;
         this.quizId = quizId;

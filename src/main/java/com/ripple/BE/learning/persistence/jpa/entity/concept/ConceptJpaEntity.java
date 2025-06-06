@@ -46,7 +46,7 @@ public class ConceptJpaEntity extends BaseJpaEntity {
     private String learningSetName;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public ConceptJpaEntity(
+    private ConceptJpaEntity(
             Long id,
             Level level,
             String name,

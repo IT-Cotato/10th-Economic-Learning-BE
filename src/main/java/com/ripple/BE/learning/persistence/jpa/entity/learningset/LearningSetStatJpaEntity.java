@@ -30,7 +30,7 @@ public class LearningSetStatJpaEntity {
     private int conceptCount;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public LearningSetStatJpaEntity(Level level, int quizCount, int conceptCount) {
+    private LearningSetStatJpaEntity(Level level, int quizCount, int conceptCount) {
         this.level = level;
         this.quizCount = quizCount;
         this.conceptCount = conceptCount;

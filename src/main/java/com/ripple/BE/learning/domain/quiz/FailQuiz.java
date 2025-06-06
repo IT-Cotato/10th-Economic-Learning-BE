@@ -12,7 +12,7 @@ public class FailQuiz {
     private final Long quizId;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public FailQuiz(Long id, Long userId, Long quizId) {
+    private FailQuiz(Long id, Long userId, Long quizId) {
         this.id = id;
         this.userId = userId;
         this.quizId = quizId;

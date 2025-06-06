@@ -28,7 +28,7 @@ public class LearningSetJpaEntity extends BaseJpaEntity {
     private String name;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public LearningSetJpaEntity(Long id, String name) {
+    private LearningSetJpaEntity(Long id, String name) {
         this.id = id;
         this.name = name;
     }

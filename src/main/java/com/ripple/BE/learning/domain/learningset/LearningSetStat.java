@@ -15,7 +15,7 @@ public class LearningSetStat {
     private int conceptCount;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public LearningSetStat(Level level, int quizCount, int conceptCount) {
+    private LearningSetStat(Level level, int quizCount, int conceptCount) {
         if (quizCount < 0 || conceptCount < 0) {
             throw new LearningException(LearningErrorCode.LEARNING_SET_STAT_ILLEGAL_ARGUMENT);
         }

@@ -30,7 +30,7 @@ public class FailQuizJpaEntity {
     private Long quizId;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public FailQuizJpaEntity(Long id, Long userId, Long quizId) {
+    private FailQuizJpaEntity(Long id, Long userId, Long quizId) {
         this.id = id;
         this.userId = userId;
         this.quizId = quizId;

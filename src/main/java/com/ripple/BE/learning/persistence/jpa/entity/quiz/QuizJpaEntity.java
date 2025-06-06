@@ -71,7 +71,7 @@ public class QuizJpaEntity extends BaseJpaEntity {
     private List<ChoiceJpaEntity> choices;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public QuizJpaEntity(
+    private QuizJpaEntity(
             Long id,
             Level level,
             Type type,

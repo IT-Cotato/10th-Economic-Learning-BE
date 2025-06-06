@@ -18,7 +18,7 @@ public class UserLearningSet {
     private final boolean isQuizCompleted;
 
     @Builder(access = lombok.AccessLevel.PRIVATE)
-    public UserLearningSet(
+    private UserLearningSet(
             Long id,
             Long userId,
             Long learningSetId,

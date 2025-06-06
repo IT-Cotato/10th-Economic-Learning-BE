@@ -30,7 +30,7 @@ public class ConceptScrapJpaEntity {
     private Long conceptId;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public ConceptScrapJpaEntity(Long id, Long userId, Long conceptId) {
+    private ConceptScrapJpaEntity(Long id, Long userId, Long conceptId) {
         this.id = id;
         this.userId = userId;
         this.conceptId = conceptId;

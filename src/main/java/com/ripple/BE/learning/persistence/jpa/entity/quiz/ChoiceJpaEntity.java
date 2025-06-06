@@ -34,7 +34,7 @@ public class ChoiceJpaEntity {
     private QuizJpaEntity quizJpaEntity;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public ChoiceJpaEntity(Long id, String content, QuizJpaEntity quizJpaEntity) {
+    private ChoiceJpaEntity(Long id, String content, QuizJpaEntity quizJpaEntity) {
         this.id = id;
         this.content = content;
         this.quizJpaEntity = quizJpaEntity;

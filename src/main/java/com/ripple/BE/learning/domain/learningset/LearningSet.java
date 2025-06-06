@@ -11,7 +11,7 @@ public class LearningSet {
     private final String name;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public LearningSet(Long id, String name) {
+    private LearningSet(Long id, String name) {
         this.id = id;
         this.name = name;
     }

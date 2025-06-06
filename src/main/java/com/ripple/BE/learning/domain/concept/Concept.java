@@ -15,7 +15,7 @@ public class Concept {
     private final String learningSetName;
 
     @Builder(access = lombok.AccessLevel.PRIVATE)
-    public Concept(
+    private Concept(
             Long id,
             Level level,
             String name,

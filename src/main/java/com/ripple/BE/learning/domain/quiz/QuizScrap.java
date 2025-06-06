@@ -11,7 +11,7 @@ public class QuizScrap {
     private final Long quizId;
 
     @Builder(access = lombok.AccessLevel.PRIVATE)
-    public QuizScrap(Long id, Long userId, Long quizId) {
+    private QuizScrap(Long id, Long userId, Long quizId) {
         this.id = id;
         this.userId = userId;
         this.quizId = quizId;

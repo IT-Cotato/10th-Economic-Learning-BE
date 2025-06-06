@@ -11,7 +11,7 @@ public class ConceptScrap {
     private final Long conceptId;
 
     @Builder(access = lombok.AccessLevel.PRIVATE)
-    public ConceptScrap(Long id, Long userId, Long conceptId) {
+    private ConceptScrap(Long id, Long userId, Long conceptId) {
         this.id = id;
         this.userId = userId;
         this.conceptId = conceptId;

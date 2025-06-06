@@ -165,7 +165,7 @@ public class LearningAdminService {
                     LearningSetStat stat =
                             learningSetStatRepository
                                     .findByLevel(level)
-                                    .orElseGet(() -> new LearningSetStat(level, 0, 0));
+                                    .orElseGet(() -> LearningSetStat.withoutId(level, 0, 0));
                     stat.addConcepts(count.intValue());
                     learningSetStatRepository.save(stat);
                 });
@@ -181,7 +181,7 @@ public class LearningAdminService {
                     LearningSetStat stat =
                             learningSetStatRepository
                                     .findByLevel(level)
-                                    .orElseGet(() -> new LearningSetStat(level, 0, 0));
+                                    .orElseGet(() -> LearningSetStat.withoutId(level, 0, 0));
                     stat.addQuizzes(count.intValue());
                     learningSetStatRepository.save(stat);
                 });

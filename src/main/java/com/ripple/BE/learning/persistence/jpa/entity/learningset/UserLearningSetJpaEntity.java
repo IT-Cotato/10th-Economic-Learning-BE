@@ -50,7 +50,7 @@ public class UserLearningSetJpaEntity extends BaseJpaEntity { // 학습 세트 �
     private boolean isQuizCompleted = false;
 
     @Builder(access = AccessLevel.PRIVATE)
-    public UserLearningSetJpaEntity(
+    private UserLearningSetJpaEntity(
             Long id,
             Long userId,
             Long learningSetId,
