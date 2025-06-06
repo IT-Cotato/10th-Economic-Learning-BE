@@ -14,14 +14,6 @@ public interface PostRepository {
 
     void delete(final Post post);
 
-    void updateCommentCount(final Post post);
-
-    void updateLikeCount(final Post post);
-
-    void updateScrapCount(final Post post);
-
-    void update(final Post post);
-
     Optional<Post> findById(final long id);
 
     Optional<Post> findByIdForUpdate(final long id);

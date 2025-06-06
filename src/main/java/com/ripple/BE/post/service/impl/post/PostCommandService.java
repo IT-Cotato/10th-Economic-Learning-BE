@@ -14,12 +14,9 @@ import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostRepository;
 import com.ripple.BE.post.persistence.PostScrapRepository;
 import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
-import com.ripple.BE.post.persistence.jpa.repository.post.PostJpaRepository;
 import com.ripple.BE.post.service.PostCommandUseCase;
 import com.ripple.BE.post.service.command.CreatePostCommand;
 import com.ripple.BE.post.service.command.UpdatePostCommand;
-import com.ripple.BE.user.domain.User;
-import com.ripple.BE.user.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,17 +34,13 @@ public class PostCommandService implements PostCommandUseCase {
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
 
-    private final UserService userService;
-    private final PostJpaRepository postJpaRepository;
-
     @Override
     public void createPost(final CreatePostCommand createPostCommand) {
-        User user = userService.findUserById(createPostCommand.authorId());
         Post post =
-                Post.of(
+                Post.withoutId(
                         createPostCommand.title(),
                         createPostCommand.content(),
-                        user,
+                        createPostCommand.authorId(),
                         createPostCommand.type(),
                         null);
 
@@ -75,8 +68,12 @@ public class PostCommandService implements PostCommandUseCase {
         if (!post.isOwnedBy(updatePostCommand.authorId())) {
             throw new PostException(POST_NOT_AUTHORIZED);
         }
-        post.update(
-                updatePostCommand.newTitle(), updatePostCommand.newContent(), updatePostCommand.newType());
+
+        post =
+                post.update(
+                        updatePostCommand.newTitle(),
+                        updatePostCommand.newContent(),
+                        updatePostCommand.newType());
         List<Long> newImageIdList = updatePostCommand.newImageIds();
 
         if (newImageIdList != null && !newImageIdList.isEmpty()) {
@@ -90,7 +87,7 @@ public class PostCommandService implements PostCommandUseCase {
             }
         }
 
-        postRepository.update(post);
+        postRepository.save(post);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.ripple.BE.post.domain.post;
 
-import com.ripple.BE.user.domain.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,11 +18,11 @@ public class PostScrap {
         this.postId = postId;
     }
 
-    public static PostScrap withId(Long id, User user, Post post) {
-        return PostScrap.builder().id(id).userId(user.getId()).postId(post.getId()).build();
+    public static PostScrap withId(Long id, Long userId, Long postId) {
+        return PostScrap.builder().id(id).userId(userId).postId(postId).build();
     }
 
-    public static PostScrap withoutId(User user, Post post) {
-        return PostScrap.builder().userId(user.getId()).postId(post.getId()).build();
+    public static PostScrap withoutId(Long userId, Long postId) {
+        return PostScrap.builder().userId(userId).postId(postId).build();
     }
 }

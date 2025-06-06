@@ -94,4 +94,132 @@ public class Post {
     public boolean isOwnedBy(Long userId) {
         return this.authorId != null && this.authorId.equals(userId);
     }
+
+    public Post increaseLikeCount() {
+        return Post.builder()
+                .id(this.id)
+                .title(this.title)
+                .content(this.content)
+                .authorId(this.authorId)
+                .type(this.type)
+                .likeCount(this.likeCount + 1)
+                .commentCount(this.commentCount)
+                .scrapCount(this.scrapCount)
+                .usedDate(this.usedDate)
+                .createdDate(this.createdDate)
+                .modifiedDate(LocalDateTime.now())
+                .build();
+    }
+
+    public Post decreaseLikeCount() {
+        return Post.builder()
+                .id(this.id)
+                .title(this.title)
+                .content(this.content)
+                .authorId(this.authorId)
+                .type(this.type)
+                .likeCount(Math.max(0, this.likeCount - 1))
+                .commentCount(this.commentCount)
+                .scrapCount(this.scrapCount)
+                .usedDate(this.usedDate)
+                .createdDate(this.createdDate)
+                .modifiedDate(LocalDateTime.now())
+                .build();
+    }
+
+    public Post increaseCommentCount() {
+        return Post.builder()
+                .id(this.id)
+                .title(this.title)
+                .content(this.content)
+                .authorId(this.authorId)
+                .type(this.type)
+                .likeCount(this.likeCount)
+                .commentCount(this.commentCount + 1)
+                .scrapCount(this.scrapCount)
+                .usedDate(this.usedDate)
+                .createdDate(this.createdDate)
+                .modifiedDate(LocalDateTime.now())
+                .build();
+    }
+
+    public Post decreaseCommentCount() {
+        return Post.builder()
+                .id(this.id)
+                .title(this.title)
+                .content(this.content)
+                .authorId(this.authorId)
+                .type(this.type)
+                .likeCount(this.likeCount)
+                .commentCount(Math.max(0, this.commentCount - 1))
+                .scrapCount(this.scrapCount)
+                .usedDate(this.usedDate)
+                .createdDate(this.createdDate)
+                .modifiedDate(LocalDateTime.now())
+                .build();
+    }
+
+    public Post updateUsedDate(LocalDate usedDate) {
+        return Post.builder()
+                .id(this.id)
+                .title(this.title)
+                .content(this.content)
+                .authorId(this.authorId)
+                .type(this.type)
+                .likeCount(this.likeCount)
+                .commentCount(this.commentCount)
+                .scrapCount(this.scrapCount)
+                .usedDate(usedDate)
+                .createdDate(this.createdDate)
+                .modifiedDate(LocalDateTime.now())
+                .build();
+    }
+
+    public Post increaseScrapCount() {
+        return Post.builder()
+                .id(this.id)
+                .title(this.title)
+                .content(this.content)
+                .authorId(this.authorId)
+                .type(this.type)
+                .likeCount(this.likeCount)
+                .commentCount(this.commentCount)
+                .scrapCount(this.scrapCount + 1)
+                .usedDate(this.usedDate)
+                .createdDate(this.createdDate)
+                .modifiedDate(LocalDateTime.now())
+                .build();
+    }
+
+    public Post decreaseScrapCount() {
+        return Post.builder()
+                .id(this.id)
+                .title(this.title)
+                .content(this.content)
+                .authorId(this.authorId)
+                .type(this.type)
+                .likeCount(this.likeCount)
+                .commentCount(this.commentCount)
+                .scrapCount(Math.max(0, this.scrapCount - 1))
+                .usedDate(this.usedDate)
+                .createdDate(this.createdDate)
+                .modifiedDate(LocalDateTime.now())
+                .build();
+    }
+
+    public Post update(String newTitle, String newContent, PostType newType) {
+        return Post.builder()
+                .id(this.id)
+                .title(newTitle)
+                .content(newContent)
+                .authorId(this.authorId)
+                .type(newType)
+                .likeCount(this.likeCount)
+                .commentCount(this.commentCount)
+                .scrapCount(this.scrapCount)
+                .usedDate(this.usedDate)
+                .createdDate(this.createdDate)
+                .modifiedDate(LocalDateTime.now())
+                .build();
+    }
 }
