@@ -1,4 +1,4 @@
-package com.ripple.BE.post.service.command;
+package com.ripple.BE.post.application.command;
 
 import com.ripple.BE.post.domain.type.PostType;
 import java.util.List;

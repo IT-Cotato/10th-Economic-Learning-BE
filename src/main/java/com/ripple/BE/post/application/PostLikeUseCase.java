@@ -1,4 +1,4 @@
-package com.ripple.BE.post.service;
+package com.ripple.BE.post.application;
 
 public interface PostLikeUseCase {
     void addLikeToPost(final long postId, final long userId);

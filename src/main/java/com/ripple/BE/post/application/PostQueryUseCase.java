@@ -1,4 +1,4 @@
-package com.ripple.BE.post.service;
+package com.ripple.BE.post.application;
 
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.domain.type.PostType;

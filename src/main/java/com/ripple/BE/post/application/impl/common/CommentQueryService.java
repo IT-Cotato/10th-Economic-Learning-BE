@@ -1,11 +1,11 @@
-package com.ripple.BE.post.service.impl.common;
+package com.ripple.BE.post.application.impl.common;
 
+import com.ripple.BE.post.application.CommentQueryUseCase;
 import com.ripple.BE.post.domain.comment.CommentLike;
 import com.ripple.BE.post.dto.response.CommentResponseDTO;
 import com.ripple.BE.post.persistence.CommentLikeRepository;
 import com.ripple.BE.post.persistence.CommentRepository;
 import com.ripple.BE.post.persistence.dto.CommentWithUserDTO;
-import com.ripple.BE.post.service.CommentQueryUseCase;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

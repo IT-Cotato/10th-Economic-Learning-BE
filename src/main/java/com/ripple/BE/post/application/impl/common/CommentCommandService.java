@@ -1,15 +1,15 @@
-package com.ripple.BE.post.service.impl.common;
+package com.ripple.BE.post.application.impl.common;
 
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 
 import com.ripple.BE.notification.service.NotificationService;
+import com.ripple.BE.post.application.CommentCommandUseCase;
 import com.ripple.BE.post.domain.comment.Comment;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.CommentLikeRepository;
 import com.ripple.BE.post.persistence.CommentRepository;
 import com.ripple.BE.post.persistence.PostRepository;
-import com.ripple.BE.post.service.CommentCommandUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

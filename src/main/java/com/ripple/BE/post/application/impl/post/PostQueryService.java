@@ -1,4 +1,4 @@
-package com.ripple.BE.post.service.impl.post;
+package com.ripple.BE.post.application.impl.post;
 
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
@@ -6,6 +6,8 @@ import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 import com.ripple.BE.global.config.cache.PostCacheKeyGenerator;
 import com.ripple.BE.image.dto.response.ImageResponse;
 import com.ripple.BE.image.repository.ImageRepository;
+import com.ripple.BE.post.application.CommentQueryUseCase;
+import com.ripple.BE.post.application.PostQueryUseCase;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.domain.type.PostType;
@@ -17,8 +19,6 @@ import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostRepository;
 import com.ripple.BE.post.persistence.PostScrapRepository;
-import com.ripple.BE.post.service.CommentQueryUseCase;
-import com.ripple.BE.post.service.PostQueryUseCase;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.repository.UserRepository;
 import java.util.List;

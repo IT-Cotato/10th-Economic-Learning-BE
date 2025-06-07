@@ -1,4 +1,4 @@
-package com.ripple.BE.post.service.impl.post;
+package com.ripple.BE.post.application.impl.post;
 
 import static com.ripple.BE.image.exception.errorcode.ImageErrorCode.*;
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
@@ -6,6 +6,9 @@ import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 import com.ripple.BE.image.domain.Image;
 import com.ripple.BE.image.exception.ImageException;
 import com.ripple.BE.image.repository.ImageRepository;
+import com.ripple.BE.post.application.PostCommandUseCase;
+import com.ripple.BE.post.application.command.CreatePostCommand;
+import com.ripple.BE.post.application.command.UpdatePostCommand;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.CommentLikeRepository;
@@ -14,9 +17,6 @@ import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostRepository;
 import com.ripple.BE.post.persistence.PostScrapRepository;
 import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
-import com.ripple.BE.post.service.PostCommandUseCase;
-import com.ripple.BE.post.service.command.CreatePostCommand;
-import com.ripple.BE.post.service.command.UpdatePostCommand;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
