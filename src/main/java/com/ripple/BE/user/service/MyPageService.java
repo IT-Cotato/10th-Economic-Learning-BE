@@ -105,11 +105,9 @@ public class MyPageService {
     }
 
     public List<LikeCommentResponseDTO> getMyLikeComments(final long userId) {
-        List<Comment> commentsLikedByUser = commentLikeRepository.findCommentsLikedByUser(userId);
-
-        return commentsLikedByUser.stream()
+        return commentLikeRepository.findLikedCommentsByUserIdWithPost(userId).stream()
                 .map(LikeCommentResponseDTO::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public UserCommentListDTO getMyCommentPosts(final long userId) {
@@ -123,7 +121,7 @@ public class MyPageService {
                 comments.stream()
                         .map(
                                 comment -> {
-                                    Post post = postMap.get(comment.getPost().getId());
+                                    Post post = postMap.get(comment.getPostId());
                                     if (post == null) {
                                         throw new PostException(POST_NOT_FOUND);
                                     }
@@ -140,10 +138,7 @@ public class MyPageService {
     }
 
     private static List<Long> getPostIds(List<Comment> comments) {
-        return comments.stream()
-                .map(comment -> comment.getPost().getId())
-                .distinct()
-                .collect(Collectors.toList());
+        return comments.stream().map(Comment::getPostId).distinct().collect(Collectors.toList());
     }
 
     public FailQuizListDTO getMyFailQuizzes(final long userId, Level level) {

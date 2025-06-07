@@ -1,18 +1,16 @@
 package com.ripple.BE.post.persistence;
 
-import com.ripple.BE.post.domain.comment.Comment;
 import com.ripple.BE.post.domain.comment.CommentLike;
+import com.ripple.BE.post.persistence.dto.LikeCommentWithPostDTO;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface CommentLikeRepository {
 
     Optional<CommentLike> findByCommentIdAndUserId(final long commentId, final long userId);
 
     boolean existsByCommentIdAndUserId(final long commentId, final long userId);
-
-    // 댓글 좋아요를 누른 유저의 댓글 목록을 가져온다.
-    List<Comment> findCommentsLikedByUser(final long userId);
 
     void save(final CommentLike commentLike);
 
@@ -21,4 +19,8 @@ public interface CommentLikeRepository {
     void deleteAllByCommentId(final long commentId);
 
     void deleteAllByPostId(final long postId);
+
+    List<CommentLike> findByUserIdAndCommentIdIn(final long userId, final Set<Long> commentIds);
+
+    List<LikeCommentWithPostDTO> findLikedCommentsByUserIdWithPost(long userId);
 }
