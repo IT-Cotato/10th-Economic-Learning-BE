@@ -12,9 +12,9 @@ import com.ripple.BE.learning.dto.QuizListDTO;
 import com.ripple.BE.learning.repository.conceptScrap.ConceptScrapRepository;
 import com.ripple.BE.learning.repository.quiz.QuizRepository;
 import com.ripple.BE.learning.repository.quizScrap.QuizScrapRepository;
-import com.ripple.BE.news.domain.News;
-import com.ripple.BE.news.dto.NewsListDTO;
-import com.ripple.BE.news.persistence.newscrap.NewsScrapRepository;
+import com.ripple.BE.news.dto.response.NewsPreviewListResponseDTO;
+import com.ripple.BE.news.persistence.NewsScrapRepository;
+import com.ripple.BE.news.persistence.dto.NewsWithScrapDTO;
 import com.ripple.BE.post.domain.comment.Comment;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostType;
@@ -172,9 +172,9 @@ public class MyPageService {
         return TermListDTO.toTermListDTO(terms);
     }
 
-    public NewsListDTO getMyScrapNews(final long userId) {
-        List<News> news = newsScrapRepository.findNewsScrappedByUser(userId);
-        return NewsListDTO.toNewsListDTO(news);
+    public NewsPreviewListResponseDTO getMyScrapNews(final long userId) {
+        List<NewsWithScrapDTO> newsList = newsScrapRepository.findNewsScrappedByUser(userId);
+        return NewsPreviewListResponseDTO.from(newsList);
     }
 
     public UserCompletedDTO getCompletedConceptAndQuizCount(final long userId) {
