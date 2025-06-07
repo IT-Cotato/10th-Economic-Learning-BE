@@ -4,7 +4,6 @@ import com.ripple.BE.global.entity.BaseJpaEntity;
 import com.ripple.BE.image.domain.Image;
 import com.ripple.BE.learning.domain.learningset.UserLearningSet;
 import com.ripple.BE.learning.domain.quiz.FailQuiz;
-import com.ripple.BE.news.domain.NewsScrap;
 import com.ripple.BE.term.domain.TermScrap;
 import com.ripple.BE.user.domain.type.BusinessType;
 import com.ripple.BE.user.domain.type.Gender;
@@ -108,9 +107,6 @@ public class User extends BaseJpaEntity {
 
     @Column(name = "is_level_test_completed")
     private boolean isLevelTestCompleted = false; // 레벨 테스트 완료 여부
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<NewsScrap> newsScrapList = new ArrayList<>(); // 스크랩한 뉴스 목록
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TermScrap> termScrapList = new ArrayList<>(); // 스크랩한 용어 목록
