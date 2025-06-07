@@ -14,7 +14,7 @@ import com.ripple.BE.learning.repository.quiz.QuizRepository;
 import com.ripple.BE.learning.repository.quizScrap.QuizScrapRepository;
 import com.ripple.BE.news.domain.News;
 import com.ripple.BE.news.dto.NewsListDTO;
-import com.ripple.BE.news.repository.newscrap.NewsScrapRepository;
+import com.ripple.BE.news.persistence.newscrap.NewsScrapRepository;
 import com.ripple.BE.post.domain.comment.Comment;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostType;

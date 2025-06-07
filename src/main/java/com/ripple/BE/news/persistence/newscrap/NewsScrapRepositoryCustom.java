@@ -1,4 +1,4 @@
-package com.ripple.BE.news.repository.newscrap;
+package com.ripple.BE.news.persistence.newscrap;
 
 import com.ripple.BE.news.domain.News;
 import java.util.List;

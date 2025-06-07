@@ -2,7 +2,7 @@ package com.ripple.BE.search.service;
 
 import com.ripple.BE.news.domain.News;
 import com.ripple.BE.news.dto.NewsListDTO;
-import com.ripple.BE.news.repository.news.NewsRepository;
+import com.ripple.BE.news.persistence.news.NewsRepository;
 import com.ripple.BE.search.dto.SearchKeywordListDTO;
 import com.ripple.BE.term.domain.Term;
 import com.ripple.BE.term.dto.TermListDTO;

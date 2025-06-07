@@ -3,7 +3,7 @@ package com.ripple.BE.news.service;
 import com.ripple.BE.news.crawler.NewsCrawler;
 import com.ripple.BE.news.domain.News;
 import com.ripple.BE.news.dto.NewsDTO;
-import com.ripple.BE.news.repository.news.NewsJdbcRepository;
+import com.ripple.BE.news.persistence.news.NewsJdbcRepository;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;

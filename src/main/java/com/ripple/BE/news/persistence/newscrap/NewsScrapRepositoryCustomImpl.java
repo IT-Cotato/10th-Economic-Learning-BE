@@ -1,4 +1,4 @@
-package com.ripple.BE.news.repository.newscrap;
+package com.ripple.BE.news.persistence.newscrap;
 
 import static com.ripple.BE.news.domain.QNews.*;
 import static com.ripple.BE.news.domain.QNewsScrap.*;

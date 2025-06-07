@@ -1,4 +1,4 @@
-package com.ripple.BE.news.repository.news;
+package com.ripple.BE.news.persistence.news;
 
 import com.ripple.BE.news.domain.News;
 import com.ripple.BE.news.domain.type.NewsCategory;
