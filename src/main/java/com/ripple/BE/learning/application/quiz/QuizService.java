@@ -118,8 +118,14 @@ public class QuizService {
         // 사용자 퀴즈 세션에서 틀린 문제 목록과 퀴즈 개수 조회
         Set<Long> failSet = quizSessionCacheManager.getWrongAnswerSet(userId);
         Integer quizCount = quizSessionCacheManager.getQuizCount(userId);
-        RandomQuizResponseDTO quizResponseDTO =
-                quizSessionCacheManager.getQuizQuestions(userId).quizzes().get(0);
+        RandomQuizResponseListDTO quizListDTO = quizSessionCacheManager.getQuizQuestions(userId);
+
+        if (quizListDTO == null || quizListDTO.quizzes() == null || quizListDTO.quizzes().isEmpty()) {
+            throw new LearningException(QUIZ_PROGRESS_NOT_FOUND);
+        }
+
+        // 첫 번째 퀴즈 응답 DTO를 가져옴
+        RandomQuizResponseDTO quizResponseDTO = quizListDTO.quizzes().get(0);
 
         // 퀴즈 세션 캐시 삭제
         quizSessionCacheManager.clearAll(userId);
@@ -139,7 +145,8 @@ public class QuizService {
                 failSet.stream().map(id -> FailQuiz.withoutId(userId, id)).toList();
 
         // 사용자 상태 업데이트
-        userProgressManager.updateAfterQuiz(userId, quiz, failQuizList, quizCount);
+        userProgressManager.updateAfterQuiz(
+                userId, quiz.getLearningSetId(), quiz.getLevel(), failQuizList, quizCount);
     }
 
     /** 퀴즈 스크랩 */
