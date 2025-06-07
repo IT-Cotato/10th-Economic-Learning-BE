@@ -1,7 +1,7 @@
 package com.ripple.BE.image.domain;
 
 import com.ripple.BE.global.entity.BaseJpaEntity;
-import com.ripple.BE.news.domain.News;
+import com.ripple.BE.news.persistence.jpa.entity.NewsJpaEntity;
 import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,7 +42,7 @@ public class Image extends BaseJpaEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "news_id")
-    private News news;
+    private NewsJpaEntity newsJpaEntity;
 
     public static Image toImageEntity(final S3Info s3Info) {
         return Image.builder().s3Info(s3Info).build();

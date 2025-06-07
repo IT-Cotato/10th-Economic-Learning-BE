@@ -9,8 +9,7 @@ import com.ripple.BE.learning.dto.QuizListDTO;
 import com.ripple.BE.learning.dto.response.FailQuizListResponse;
 import com.ripple.BE.learning.dto.response.ScrapConceptListResponse;
 import com.ripple.BE.learning.dto.response.ScrapQuizListResponse;
-import com.ripple.BE.news.dto.NewsListDTO;
-import com.ripple.BE.news.dto.response.NewsListResponse;
+import com.ripple.BE.news.dto.response.NewsPreviewListResponseDTO;
 import com.ripple.BE.post.dto.response.LikeCommentResponseDTO;
 import com.ripple.BE.post.dto.response.PostPreviewResponseDTO;
 import com.ripple.BE.term.dto.TermListDTO;
@@ -197,10 +196,10 @@ public class UserController {
     public ResponseEntity<ApiResponse<Object>> getMyScrapNews(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        NewsListDTO newsListDTO = myPageService.getMyScrapNews(customUserDetails.getId());
+        NewsPreviewListResponseDTO newsListDTO =
+                myPageService.getMyScrapNews(customUserDetails.getId());
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(NewsListResponse.toNewsListResponse(newsListDTO)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(newsListDTO));
     }
 
     @Operation(

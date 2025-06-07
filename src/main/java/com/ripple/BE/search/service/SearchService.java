@@ -1,8 +1,8 @@
 package com.ripple.BE.search.service;
 
-import com.ripple.BE.news.domain.News;
-import com.ripple.BE.news.dto.NewsListDTO;
-import com.ripple.BE.news.persistence.news.NewsRepository;
+import com.ripple.BE.news.dto.response.NewsPreviewListResponseDTO;
+import com.ripple.BE.news.persistence.dto.NewsWithScrapDTO;
+import com.ripple.BE.news.persistence.jpa.repository.news.NewsJpaRepository;
 import com.ripple.BE.search.dto.SearchKeywordListDTO;
 import com.ripple.BE.term.domain.Term;
 import com.ripple.BE.term.dto.TermListDTO;
@@ -32,18 +32,19 @@ public class SearchService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    private final NewsRepository newsRepository;
+    private final NewsJpaRepository newsJpaRepository;
     private final TermRepository termRepository;
 
     @Cacheable(value = "newsSearch", key = "#keyword != null ? #keyword + #page : #page")
     @Transactional(readOnly = true)
-    public NewsListDTO searchNews(final String keyword, final int page, final long userId) {
+    public NewsPreviewListResponseDTO searchNews(
+            final String keyword, final int page, final long userId) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
-        Page<News> newsPage = newsRepository.searchNews(keyword, pageable, userId);
+        Page<NewsWithScrapDTO> newsPage = newsJpaRepository.searchNews(keyword, pageable, userId);
         addRecentSearch(userId, keyword);
 
-        return NewsListDTO.toNewsListDTO(newsPage);
+        return NewsPreviewListResponseDTO.from(newsPage);
     }
 
     @Cacheable(value = "termSearch", key = "#keyword != null ? #keyword + #page : #page")
