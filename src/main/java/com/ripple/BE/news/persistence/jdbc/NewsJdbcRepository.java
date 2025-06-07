@@ -1,6 +1,7 @@
-package com.ripple.BE.news.persistence.news;
+package com.ripple.BE.news.persistence.jdbc;
 
-import com.ripple.BE.news.domain.News;
+import com.ripple.BE.news.persistence.jpa.entity.NewsJpaEntity;
+import java.sql.Timestamp;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,15 +20,15 @@ public class NewsJdbcRepository {
     private static final int BATCH_SIZE = 1000;
 
     @Transactional
-    public void saveAllNewsByJdbcTemplate(List<News> newsList) {
+    public void saveAllNewsByJdbcTemplate(List<NewsJpaEntity> newsJpaEntityList) {
 
         String insertQuery =
-                "INSERT INTO news (title, content, publisher, url, category, views, created_date,  modified_date) "
-                        + "VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())";
+                "INSERT INTO news (title, content, publisher, url, category, views, pub_date, created_date, modified_date) "
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
         jdbcTemplate.batchUpdate(
                 insertQuery,
-                newsList,
+                newsJpaEntityList,
                 BATCH_SIZE,
                 (ps, news) -> {
                     ps.setString(1, news.getTitle());
@@ -36,6 +37,12 @@ public class NewsJdbcRepository {
                     ps.setString(4, news.getUrl());
                     ps.setString(5, news.getCategory().toString());
                     ps.setLong(6, 0L);
+
+                    if (news.getPubDate() != null) {
+                        ps.setTimestamp(7, Timestamp.valueOf(news.getPubDate().withNano(0)));
+                    } else {
+                        ps.setTimestamp(7, null);
+                    }
                 });
     }
 
