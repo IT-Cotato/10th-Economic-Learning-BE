@@ -2,11 +2,11 @@ package com.ripple.BE.user.service;
 
 import com.ripple.BE.learning.domain.learningset.UserLearningSet;
 import com.ripple.BE.learning.domain.quiz.FailQuiz;
-import com.ripple.BE.learning.domain.quiz.Quiz;
 import com.ripple.BE.learning.exception.LearningException;
 import com.ripple.BE.learning.exception.errorcode.LearningErrorCode;
 import com.ripple.BE.learning.persistence.FailQuizRepository;
 import com.ripple.BE.learning.persistence.UserLearningSetRepository;
+import com.ripple.BE.user.domain.type.Level;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,11 +25,15 @@ public class UserProgressManager {
     private final UserStatService userStatService;
 
     public void updateAfterQuiz(
-            final long userId, final Quiz quiz, final List<FailQuiz> failQuizList, final int total) {
+            final long userId,
+            final long learningSetId,
+            final Level level,
+            final List<FailQuiz> failQuizList,
+            final int total) {
 
         UserLearningSet userLearningSet =
                 userLearningSetRepository
-                        .findByUserIdAndLearningSetIdAndLevel(userId, quiz.getLearningSetId(), quiz.getLevel())
+                        .findByUserIdAndLearningSetIdAndLevel(userId, learningSetId, level)
                         .orElseThrow(() -> new LearningException(LearningErrorCode.LEARNING_SET_NOT_FOUND));
 
         // 이미 퀴즈를 완료한 경우, 중복 처리 방지
@@ -46,10 +50,10 @@ public class UserProgressManager {
         failQuizRepository.saveAll(failQuizList);
 
         // 사용자 통계 업데이트, 푼 문제 수, 정답 수
-        userStatService.updateQuizStats(userId, quiz.getLevel(), total, correct);
+        userStatService.updateQuizStats(userId, level, total, correct);
 
         // 사용자 레벨 업그레이드 시도
-        userStatService.tryUpgradeLevel(userId, quiz.getLevel());
+        userStatService.tryUpgradeLevel(userId, level);
 
         // 출석 퀘스트 완료
         if (isSameLevel(userId, userLearningSet)) {
