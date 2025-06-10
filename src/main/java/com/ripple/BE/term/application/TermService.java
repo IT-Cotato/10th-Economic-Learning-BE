@@ -1,16 +1,15 @@
-package com.ripple.BE.term.service;
+package com.ripple.BE.term.application;
 
 import static com.ripple.BE.term.exception.errorcode.TermErrorCode.*;
 
 import com.ripple.BE.term.domain.Term;
 import com.ripple.BE.term.domain.TermScrap;
-import com.ripple.BE.term.dto.TermDTO;
-import com.ripple.BE.term.dto.TermListDTO;
+import com.ripple.BE.term.dto.response.TermListResponseDTO;
+import com.ripple.BE.term.dto.response.TermResponseDTO;
 import com.ripple.BE.term.exception.TermException;
-import com.ripple.BE.term.repository.TermRepository;
-import com.ripple.BE.term.repository.TermScrapRepository;
-import com.ripple.BE.user.domain.User;
-import com.ripple.BE.user.service.UserService;
+import com.ripple.BE.term.persistence.TermRepository;
+import com.ripple.BE.term.persistence.TermScrapRepository;
+import com.ripple.BE.term.persistence.dto.TermWithScrapDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,48 +27,43 @@ public class TermService {
     private final TermRepository termRepository;
     private final TermScrapRepository termScrapRepository;
 
-    private final UserService userService;
-
     private static final int PAGE_SIZE = 10;
 
-    public TermListDTO getTermsByInitial(final int page, final String consonant, final long userId) {
-
+    public TermListResponseDTO getTermsByInitial(
+            final int page, final String consonant, final long userId) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
-        Page<Term> terms = termRepository.findByInitial(consonant, pageable, userId);
+        Page<TermWithScrapDTO> terms = termRepository.findByInitial(consonant, pageable, userId);
 
-        return TermListDTO.toTermListDTO(terms);
+        return TermListResponseDTO.from(terms);
     }
 
-    public TermListDTO getTermsByKeyword(final int page, final String keyword, final long userId) {
+    public TermListResponseDTO getTermsByKeyword(
+            final int page, final String keyword, final long userId) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
-        Page<Term> terms = termRepository.findByKeyword(keyword, pageable, userId);
+        Page<TermWithScrapDTO> terms = termRepository.findByKeyword(keyword, pageable, userId);
 
-        return TermListDTO.toTermListDTO(terms);
+        return TermListResponseDTO.from(terms);
     }
 
-    public TermDTO getTerm(final long termId) {
+    public TermResponseDTO getTerm(final long termId) {
         Term term =
                 termRepository.findById(termId).orElseThrow(() -> new TermException(TERM_NOT_FOUND));
 
-        return TermDTO.toTermDTO(term);
+        return TermResponseDTO.from(term);
     }
 
     @Transactional
     public void addScrapToTerm(final long termId, final long userId) {
-
-        Term term =
-                termRepository.findById(termId).orElseThrow(() -> new TermException(TERM_NOT_FOUND));
-        User user = userService.findUserById(userId);
+        termRepository.findById(termId).orElseThrow(() -> new TermException(TERM_NOT_FOUND));
 
         if (termScrapRepository.existsByTermIdAndUserId(termId, userId)) {
             throw new TermException(TERM_SCRAP_ALREADY_EXIST);
         }
 
-        TermScrap termScrap = TermScrap.toTermScrapEntity();
-        termScrap.setUser(user);
-        termScrap.setTerm(term);
+        TermScrap termScrap = TermScrap.withoutId(userId, termId);
+        termScrapRepository.save(termScrap);
     }
 
     @Transactional
