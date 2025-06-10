@@ -26,9 +26,9 @@ import com.ripple.BE.post.persistence.CommentRepository;
 import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostRepository;
 import com.ripple.BE.post.persistence.PostScrapRepository;
-import com.ripple.BE.term.domain.Term;
-import com.ripple.BE.term.dto.TermListDTO;
-import com.ripple.BE.term.repository.TermScrapRepository;
+import com.ripple.BE.term.dto.response.TermListResponseDTO;
+import com.ripple.BE.term.persistence.TermScrapRepository;
+import com.ripple.BE.term.persistence.dto.TermWithScrapDTO;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.dto.UserCommentDTO;
@@ -162,14 +162,16 @@ public class MyPageService {
         return ConceptListDTO.toScrapConceptListDTO(concepts);
     }
 
-    public TermListDTO getMyScrapTermsByInitial(final long userId, final String initial) {
-        List<Term> terms = termScrapRepository.findTermsScrappedByUserAndInitial(userId, initial);
-        return TermListDTO.toTermListDTO(terms);
+    public TermListResponseDTO getMyScrapTermsByInitial(final long userId, final String initial) {
+        List<TermWithScrapDTO> terms =
+                termScrapRepository.findTermsScrappedByUserAndInitial(userId, initial);
+        return TermListResponseDTO.from(terms);
     }
 
-    public TermListDTO getMyScrapTermsByKeyword(final long userId, final String keyword) {
-        List<Term> terms = termScrapRepository.findTermsScrappedByUserAndKeyword(userId, keyword);
-        return TermListDTO.toTermListDTO(terms);
+    public TermListResponseDTO getMyScrapTermsByKeyword(final long userId, final String keyword) {
+        List<TermWithScrapDTO> terms =
+                termScrapRepository.findTermsScrappedByUserAndKeyword(userId, keyword);
+        return TermListResponseDTO.from(terms);
     }
 
     public NewsPreviewListResponseDTO getMyScrapNews(final long userId) {
