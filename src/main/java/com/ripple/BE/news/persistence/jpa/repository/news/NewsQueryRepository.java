@@ -12,6 +12,4 @@ public interface NewsQueryRepository {
             NewsCategory category, NewsSort newsSort, Pageable pageable, long userId);
 
     Page<NewsWithScrapDTO> findAll(Pageable pageable, NewsSort newsSort, long userId);
-
-    Page<NewsWithScrapDTO> searchNews(String keyword, Pageable pageable, long userId);
 }

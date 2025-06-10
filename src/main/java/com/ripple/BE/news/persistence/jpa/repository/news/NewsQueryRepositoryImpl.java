@@ -38,23 +38,6 @@ public class NewsQueryRepositoryImpl implements NewsQueryRepository {
     }
 
     @Override
-    public Page<NewsWithScrapDTO> searchNews(String keyword, Pageable pageable, long userId) {
-        BooleanExpression predicate = null;
-
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            predicate = newsJpaEntity.title.contains(keyword).or(newsJpaEntity.content.contains(keyword));
-        }
-
-        List<NewsWithScrapDTO> results =
-                getNewsWithScrapByPageable(pageable, predicate, NewsSort.RECENT, userId);
-
-        JPAQuery<Long> countQuery =
-                queryFactory.select(newsJpaEntity.count()).from(newsJpaEntity).where(predicate);
-
-        return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchOne);
-    }
-
-    @Override
     public Page<NewsWithScrapDTO> findAll(Pageable pageable, NewsSort newsSort, long userId) {
         List<NewsWithScrapDTO> results = getNewsWithScrapByPageable(pageable, null, newsSort, userId);
 
