@@ -25,4 +25,6 @@ public interface NewsRepository {
     void saveAllNews(List<News> newsList); // 뉴스 목록 저장
 
     List<String> findExistingUrls(List<String> urls); // 이미 존재하는 뉴스 URL 조회
+
+    Page<NewsWithScrapDTO> searchNews(String keyword, Pageable pageable, long userId);
 }

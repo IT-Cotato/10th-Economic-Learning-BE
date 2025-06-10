@@ -62,4 +62,10 @@ public class NewsRepositoryImpl implements NewsRepository {
     public List<String> findExistingUrls(final List<String> urls) {
         return newsJdbcRepository.findExistingUrls(urls);
     }
+
+    @Override
+    public Page<NewsWithScrapDTO> searchNews(
+            final String keyword, final Pageable pageable, final long userId) {
+        return newsJdbcRepository.searchNews(keyword, pageable, userId);
+    }
 }

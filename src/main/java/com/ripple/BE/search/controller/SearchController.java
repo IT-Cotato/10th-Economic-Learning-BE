@@ -9,8 +9,7 @@ import com.ripple.BE.post.service.ToktokQueryUseCase;
 import com.ripple.BE.search.dto.SearchKeywordListDTO;
 import com.ripple.BE.search.dto.response.SearchKeywordListResponse;
 import com.ripple.BE.search.service.SearchService;
-import com.ripple.BE.term.dto.TermListDTO;
-import com.ripple.BE.term.dto.response.TermListResponse;
+import com.ripple.BE.term.dto.response.TermListResponseDTO;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -91,9 +90,8 @@ public class SearchController {
             final @RequestParam(value = "keyword", required = false) String keyword,
             final @RequestParam(value = "page", defaultValue = "0") @PositiveOrZero int page) {
 
-        TermListDTO termListDTO = searchService.searchTerms(keyword, page, currentUser.getId());
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(TermListResponse.toTermListResponse(termListDTO)));
+        TermListResponseDTO termListDTO = searchService.searchTerms(keyword, page, currentUser.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(termListDTO));
     }
 
     @Operation(
