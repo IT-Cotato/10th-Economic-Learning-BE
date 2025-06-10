@@ -1,57 +1,39 @@
 package com.ripple.BE.term.domain;
 
-import com.ripple.BE.global.entity.BaseJpaEntity;
-import com.ripple.BE.term.dto.TermDTO;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Table(
-        name = "terms",
-        indexes = {
-            @Index(name = "idx_title", columnList = "title"), // title 컬럼에 인덱스 추가
-            @Index(name = "idx_initial", columnList = "initial") // initial 컬럼에 인덱스 추가
-        })
 @Getter
-@Builder
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class Term extends BaseJpaEntity {
+public class Term {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
+    private final Long id;
+    private final String title;
+    private final String description;
+    private final String initial;
 
-    @Column(name = "title", nullable = false)
-    private String title;
+    @Builder(access = AccessLevel.PRIVATE)
+    private Term(Long id, String title, String description, String initial) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.initial = initial;
+    }
 
-    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
-    private String description;
+    public static Term withId(Long id, String title, String description, String initial) {
+        return Term.builder().id(id).title(title).description(description).initial(initial).build();
+    }
 
-    @Setter
-    @Column(name = "initial", nullable = false)
-    private String initial;
+    public static Term withoutId(String title, String description, String initial) {
+        return Term.builder().title(title).description(description).initial(initial).build();
+    }
 
-    @Setter @Transient private Boolean isScrapped;
-
-    public static Term toTermEntity(final TermDTO termDTO) {
+    public Term updateInitial(String initial) {
         return Term.builder()
-                .title(termDTO.title())
-                .description(termDTO.description())
-                .initial(termDTO.initial())
+                .id(this.id)
+                .title(this.title)
+                .description(this.description)
+                .initial(initial)
                 .build();
     }
 }
