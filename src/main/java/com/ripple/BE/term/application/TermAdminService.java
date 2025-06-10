@@ -1,13 +1,12 @@
-package com.ripple.BE.term.service;
+package com.ripple.BE.term.application;
 
 import static com.ripple.BE.term.exception.errorcode.TermErrorCode.*;
 
 import com.ripple.BE.global.excel.ExcelUtils;
 import com.ripple.BE.term.domain.Term;
-import com.ripple.BE.term.dto.TermDTO;
+import com.ripple.BE.term.dto.excel.TermExcelDTO;
 import com.ripple.BE.term.exception.TermException;
-import com.ripple.BE.term.repository.TermJdbcRepository;
-import com.ripple.BE.term.repository.TermRepository;
+import com.ripple.BE.term.persistence.TermRepository;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,10 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-@Transactional(readOnly = true)
 public class TermAdminService {
 
-    private final TermJdbcRepository termJdbcRepository;
     private final TermRepository termRepository;
 
     private static final char[] CHO_SUNG = {
@@ -41,18 +38,13 @@ public class TermAdminService {
             Set<String> existingTitles =
                     termRepository.findAll().stream().map(Term::getTitle).collect(Collectors.toSet());
 
-            List<Term> newTermList =
+            List<Term> newTerms =
                     termList.stream()
                             .filter(term -> !existingTitles.contains(term.getTitle()))
-                            .collect(Collectors.toList());
+                            .map(term -> term.updateInitial(getInitialSound(term.getTitle())))
+                            .toList();
 
-            newTermList.forEach(
-                    term -> {
-                        String initial = getInitialSound(term.getTitle());
-                        term.setInitial(initial);
-                    });
-
-            termJdbcRepository.saveAllTermsByJdbcTemplate(newTermList);
+            termRepository.saveAllTerms(newTerms);
 
         } catch (Exception e) {
             log.error("용어 엑셀 파일 저장 실패", e);
@@ -60,15 +52,16 @@ public class TermAdminService {
         }
     }
 
+    /** 엑셀 파일을 파싱하여 용어 리스트로 변환 */
     private List<Term> parseTermFromExcel() throws Exception {
-        return ExcelUtils.parseExcelFile(TermAdminService.FILE_PATH, TERM_SHEET_INDEX).stream()
-                .map(TermDTO::toTermDTO)
-                .map(Term::toTermEntity)
+        return ExcelUtils.parseExcelFile(FILE_PATH, TERM_SHEET_INDEX).stream()
+                .map(TermExcelDTO::from)
+                .map(dto -> Term.withoutId(dto.title(), dto.description(), "")) // 초기 초성은 빈 문자열
                 .collect(Collectors.toList());
     }
 
     /** 문자열에서 초성 전체 추출 */
-    public static String getInitialSound(String text) {
+    private static String getInitialSound(String text) {
         StringBuilder result = new StringBuilder();
         for (char ch : text.toCharArray()) {
             if (isHangul(ch)) {
