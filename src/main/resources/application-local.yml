@@ -18,6 +18,11 @@ spring:
       hibernate:
         format_sql: false
         default_batch_fetch_size: 100
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+
   data:
     redis:
       host: localhost

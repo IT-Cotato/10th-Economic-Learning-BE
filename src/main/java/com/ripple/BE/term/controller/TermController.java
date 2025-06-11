@@ -3,13 +3,11 @@ package com.ripple.BE.term.controller;
 import static com.ripple.BE.global.exception.errorcode.GlobalErrorCode.*;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
-import com.ripple.BE.term.dto.TermDTO;
-import com.ripple.BE.term.dto.TermListDTO;
-import com.ripple.BE.term.dto.response.TermListResponse;
-import com.ripple.BE.term.dto.response.TermResponse;
+import com.ripple.BE.term.application.TermAdminService;
+import com.ripple.BE.term.application.TermService;
+import com.ripple.BE.term.dto.response.TermListResponseDTO;
+import com.ripple.BE.term.dto.response.TermResponseDTO;
 import com.ripple.BE.term.exception.TermException;
-import com.ripple.BE.term.service.TermAdminService;
-import com.ripple.BE.term.service.TermService;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,10 +45,10 @@ public class TermController {
             throw new TermException(INVALID_PARAMETER);
         }
 
-        TermListDTO termListDTO = termService.getTermsByInitial(page, consonant, currentUser.getId());
+        TermListResponseDTO termListDTO =
+                termService.getTermsByInitial(page, consonant, currentUser.getId());
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(TermListResponse.toTermListResponse(termListDTO)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(termListDTO));
     }
 
     @Operation(summary = "키워드 별 용어 조회", description = "키워드 별 용어를 조회합니다.")
@@ -60,20 +58,19 @@ public class TermController {
             final @RequestParam(required = false, defaultValue = "0") @PositiveOrZero int page,
             @RequestParam(value = "keyword", required = false) final String keyword) {
 
-        TermListDTO termListDTO = termService.getTermsByKeyword(page, keyword, currentUser.getId());
+        TermListResponseDTO termListDTO =
+                termService.getTermsByKeyword(page, keyword, currentUser.getId());
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(TermListResponse.toTermListResponse(termListDTO)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(termListDTO));
     }
 
     @Operation(summary = "용어 상세 조회", description = "용어 상세를 조회합니다.")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Object>> getTerm(@PathVariable final Long id) {
 
-        TermDTO termDTO = termService.getTerm(id);
+        TermResponseDTO termDTO = termService.getTerm(id);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(TermResponse.toTermResponse(termDTO)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(termDTO));
     }
 
     @Operation(summary = "용어 스크랩", description = "용어를 스크랩합니다.")

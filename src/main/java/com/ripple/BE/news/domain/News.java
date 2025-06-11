@@ -1,78 +1,93 @@
 package com.ripple.BE.news.domain;
 
-import com.ripple.BE.global.entity.BaseJpaEntity;
-import com.ripple.BE.image.domain.Image;
 import com.ripple.BE.news.domain.type.NewsCategory;
-import com.ripple.BE.news.dto.NewsDTO;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Table(name = "news")
 @Getter
-@Builder
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class News extends BaseJpaEntity {
+public class News {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
+    private final Long id;
+    private final String title;
+    private final String content;
+    private final String publisher;
+    private final long views;
+    private final String url;
+    private final NewsCategory category;
+    private final LocalDateTime pubDate;
 
-    @Column(name = "title", nullable = false)
-    private String title;
+    @Builder(access = AccessLevel.PRIVATE)
+    private News(
+            Long id,
+            String title,
+            String content,
+            String publisher,
+            long views,
+            String url,
+            NewsCategory category,
+            LocalDateTime pubDate) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.publisher = publisher;
+        this.views = views;
+        this.url = url;
+        this.category = category;
+        this.pubDate = pubDate;
+    }
 
-    @Column(name = "content", nullable = false)
-    private String content;
-
-    @Column(name = "publisher")
-    private String publisher;
-
-    @Column(name = "views")
-    private long views = 0L;
-
-    @Column(name = "url")
-    private String url;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "category", nullable = false)
-    private NewsCategory category;
-
-    @OneToMany(mappedBy = "news", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> imageList = new ArrayList<>();
-
-    @Setter @Transient private Boolean isScrapped;
-
-    public static News toNewsEntity(NewsDTO newsDTO) {
+    public static News withId(
+            Long id,
+            String title,
+            String content,
+            String publisher,
+            long views,
+            String url,
+            NewsCategory category,
+            LocalDateTime publishedDate) {
         return News.builder()
-                .title(newsDTO.title())
-                .content(newsDTO.content())
-                .publisher(newsDTO.publisher())
-                .views(0L)
-                .url(newsDTO.url())
-                .category(newsDTO.category())
+                .id(id)
+                .title(title)
+                .content(content)
+                .publisher(publisher)
+                .views(views)
+                .url(url)
+                .category(category)
+                .pubDate(publishedDate)
                 .build();
     }
 
-    public void increaseViews() {
-        this.views++;
+    public static News withoutId(
+            String title,
+            String content,
+            String publisher,
+            long views,
+            String url,
+            NewsCategory category,
+            LocalDateTime publishedDate) {
+        return News.builder()
+                .title(title)
+                .content(content)
+                .publisher(publisher)
+                .views(views)
+                .url(url)
+                .category(category)
+                .pubDate(publishedDate)
+                .build();
+    }
+
+    public News incrementViews() {
+        return News.builder()
+                .id(this.id)
+                .title(this.title)
+                .content(this.content)
+                .publisher(this.publisher)
+                .views(this.views + 1)
+                .url(this.url)
+                .category(this.category)
+                .pubDate(this.pubDate)
+                .build();
     }
 }

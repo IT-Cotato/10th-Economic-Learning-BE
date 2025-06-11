@@ -1,18 +1,17 @@
 package com.ripple.BE.search.service;
 
-import com.ripple.BE.news.domain.News;
-import com.ripple.BE.news.dto.NewsListDTO;
-import com.ripple.BE.news.repository.news.NewsRepository;
+import com.ripple.BE.news.dto.response.NewsPreviewListResponseDTO;
+import com.ripple.BE.news.persistence.NewsRepository;
+import com.ripple.BE.news.persistence.dto.NewsWithScrapDTO;
 import com.ripple.BE.search.dto.SearchKeywordListDTO;
-import com.ripple.BE.term.domain.Term;
-import com.ripple.BE.term.dto.TermListDTO;
-import com.ripple.BE.term.repository.TermRepository;
+import com.ripple.BE.term.dto.response.TermListResponseDTO;
+import com.ripple.BE.term.persistence.TermRepository;
+import com.ripple.BE.term.persistence.dto.TermWithScrapDTO;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,26 +34,25 @@ public class SearchService {
     private final NewsRepository newsRepository;
     private final TermRepository termRepository;
 
-    @Cacheable(value = "newsSearch", key = "#keyword != null ? #keyword + #page : #page")
     @Transactional(readOnly = true)
-    public NewsListDTO searchNews(final String keyword, final int page, final long userId) {
+    public NewsPreviewListResponseDTO searchNews(
+            final String keyword, final int page, final long userId) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
-        Page<News> newsPage = newsRepository.searchNews(keyword, pageable, userId);
+        Page<NewsWithScrapDTO> newsPage = newsRepository.searchNews(keyword, pageable, userId);
         addRecentSearch(userId, keyword);
 
-        return NewsListDTO.toNewsListDTO(newsPage);
+        return NewsPreviewListResponseDTO.from(newsPage);
     }
 
-    @Cacheable(value = "termSearch", key = "#keyword != null ? #keyword + #page : #page")
     @Transactional(readOnly = true)
-    public TermListDTO searchTerms(final String keyword, final int page, final long userId) {
+    public TermListResponseDTO searchTerms(final String keyword, final int page, final long userId) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
-        Page<Term> termPage = termRepository.searchTerms(keyword, pageable, userId);
+        Page<TermWithScrapDTO> termPage = termRepository.searchTerms(keyword, pageable, userId);
         addRecentSearch(userId, keyword);
 
-        return TermListDTO.toTermListDTO(termPage);
+        return TermListResponseDTO.from(termPage);
     }
 
     public SearchKeywordListDTO getRecentSearches(final long userId) {

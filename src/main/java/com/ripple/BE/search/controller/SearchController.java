@@ -1,8 +1,7 @@
 package com.ripple.BE.search.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
-import com.ripple.BE.news.dto.NewsListDTO;
-import com.ripple.BE.news.dto.response.NewsListResponse;
+import com.ripple.BE.news.dto.response.NewsPreviewListResponseDTO;
 import com.ripple.BE.post.application.PostQueryUseCase;
 import com.ripple.BE.post.application.ToktokQueryUseCase;
 import com.ripple.BE.post.dto.response.PostPreviewListResponseDTO;
@@ -10,8 +9,7 @@ import com.ripple.BE.post.dto.response.ToktokPreviewListResponseDTO;
 import com.ripple.BE.search.dto.SearchKeywordListDTO;
 import com.ripple.BE.search.dto.response.SearchKeywordListResponse;
 import com.ripple.BE.search.service.SearchService;
-import com.ripple.BE.term.dto.TermListDTO;
-import com.ripple.BE.term.dto.response.TermListResponse;
+import com.ripple.BE.term.dto.response.TermListResponseDTO;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -78,9 +76,9 @@ public class SearchController {
             final @RequestParam(value = "keyword", required = false) String keyword,
             final @RequestParam(value = "page", defaultValue = "0") @PositiveOrZero int page) {
 
-        NewsListDTO newsListDTO = searchService.searchNews(keyword, page, currentUser.getId());
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(NewsListResponse.toNewsListResponse(newsListDTO)));
+        NewsPreviewListResponseDTO newsListDTO =
+                searchService.searchNews(keyword, page, currentUser.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(newsListDTO));
     }
 
     @Operation(
@@ -92,9 +90,8 @@ public class SearchController {
             final @RequestParam(value = "keyword", required = false) String keyword,
             final @RequestParam(value = "page", defaultValue = "0") @PositiveOrZero int page) {
 
-        TermListDTO termListDTO = searchService.searchTerms(keyword, page, currentUser.getId());
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(TermListResponse.toTermListResponse(termListDTO)));
+        TermListResponseDTO termListDTO = searchService.searchTerms(keyword, page, currentUser.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(termListDTO));
     }
 
     @Operation(

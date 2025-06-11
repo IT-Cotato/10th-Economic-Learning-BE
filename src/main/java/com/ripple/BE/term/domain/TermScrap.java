@@ -1,51 +1,28 @@
 package com.ripple.BE.term.domain;
 
-import com.ripple.BE.global.entity.BaseJpaEntity;
-import com.ripple.BE.user.domain.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Table(name = "term_scraps")
 @Getter
-@Builder
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class TermScrap extends BaseJpaEntity {
+public class TermScrap {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
+    private final Long id;
+    private final Long userId;
+    private final Long termId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "term_id")
-    private Term term;
-
-    public static TermScrap toTermScrapEntity() {
-        return TermScrap.builder().build();
+    @Builder(access = AccessLevel.PRIVATE)
+    private TermScrap(Long id, Long userId, Long termId) {
+        this.id = id;
+        this.userId = userId;
+        this.termId = termId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-        user.getTermScrapList().add(this);
+    public static TermScrap withId(Long id, Long userId, Long termId) {
+        return TermScrap.builder().id(id).userId(userId).termId(termId).build();
+    }
+
+    public static TermScrap withoutId(Long userId, Long termId) {
+        return TermScrap.builder().userId(userId).termId(termId).build();
     }
 }

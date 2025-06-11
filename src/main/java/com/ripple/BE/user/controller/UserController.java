@@ -3,11 +3,9 @@ package com.ripple.BE.user.controller;
 import static com.ripple.BE.global.exception.errorcode.GlobalErrorCode.*;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
-import com.ripple.BE.news.dto.NewsListDTO;
-import com.ripple.BE.news.dto.response.NewsListResponse;
+import com.ripple.BE.news.dto.response.NewsPreviewListResponseDTO;
 import com.ripple.BE.post.dto.response.PostPreviewResponseDTO;
-import com.ripple.BE.term.dto.TermListDTO;
-import com.ripple.BE.term.dto.response.TermListResponse;
+import com.ripple.BE.term.dto.response.TermListResponseDTO;
 import com.ripple.BE.term.exception.TermException;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import com.ripple.BE.user.dto.UserCommentListDTO;
@@ -139,10 +137,10 @@ public class UserController {
     public ResponseEntity<ApiResponse<Object>> getMyScrapNews(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        NewsListDTO newsListDTO = myPageService.getMyScrapNews(customUserDetails.getId());
+        NewsPreviewListResponseDTO newsListDTO =
+                myPageService.getMyScrapNews(customUserDetails.getId());
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(NewsListResponse.toNewsListResponse(newsListDTO)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(newsListDTO));
     }
 
     @Operation(
@@ -157,11 +155,10 @@ public class UserController {
             throw new TermException(INVALID_PARAMETER);
         }
 
-        TermListDTO termListDTO =
+        TermListResponseDTO termListDTO =
                 myPageService.getMyScrapTermsByInitial(customUserDetails.getId(), initial);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(TermListResponse.toTermListResponse(termListDTO)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(termListDTO));
     }
 
     @Operation(
@@ -172,11 +169,10 @@ public class UserController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestParam(value = "keyword", required = false) final String keyword) {
 
-        TermListDTO termListDTO =
+        TermListResponseDTO termListDTO =
                 myPageService.getMyScrapTermsByKeyword(customUserDetails.getId(), keyword);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(TermListResponse.toTermListResponse(termListDTO)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(termListDTO));
     }
 
     @Operation(

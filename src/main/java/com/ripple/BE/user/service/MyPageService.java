@@ -12,9 +12,9 @@ import com.ripple.BE.learning.dto.response.scrap.ScrapQuizResponseDTO;
 import com.ripple.BE.learning.persistence.ConceptScrapRepository;
 import com.ripple.BE.learning.persistence.QuizRepository;
 import com.ripple.BE.learning.persistence.QuizScrapRepository;
-import com.ripple.BE.news.domain.News;
-import com.ripple.BE.news.dto.NewsListDTO;
-import com.ripple.BE.news.repository.newscrap.NewsScrapRepository;
+import com.ripple.BE.news.dto.response.NewsPreviewListResponseDTO;
+import com.ripple.BE.news.persistence.NewsScrapRepository;
+import com.ripple.BE.news.persistence.dto.NewsWithScrapDTO;
 import com.ripple.BE.post.domain.comment.Comment;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostType;
@@ -26,9 +26,9 @@ import com.ripple.BE.post.persistence.CommentRepository;
 import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostRepository;
 import com.ripple.BE.post.persistence.PostScrapRepository;
-import com.ripple.BE.term.domain.Term;
-import com.ripple.BE.term.dto.TermListDTO;
-import com.ripple.BE.term.repository.TermScrapRepository;
+import com.ripple.BE.term.dto.response.TermListResponseDTO;
+import com.ripple.BE.term.persistence.TermScrapRepository;
+import com.ripple.BE.term.persistence.dto.TermWithScrapDTO;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.dto.UserCommentDTO;
@@ -163,19 +163,21 @@ public class MyPageService {
         return conceptList.stream().map(ScrapConceptResponseDTO::from).collect(Collectors.toList());
     }
 
-    public TermListDTO getMyScrapTermsByInitial(final long userId, final String initial) {
-        List<Term> terms = termScrapRepository.findTermsScrappedByUserAndInitial(userId, initial);
-        return TermListDTO.toTermListDTO(terms);
+    public TermListResponseDTO getMyScrapTermsByInitial(final long userId, final String initial) {
+        List<TermWithScrapDTO> terms =
+                termScrapRepository.findTermsScrappedByUserAndInitial(userId, initial);
+        return TermListResponseDTO.from(terms);
     }
 
-    public TermListDTO getMyScrapTermsByKeyword(final long userId, final String keyword) {
-        List<Term> terms = termScrapRepository.findTermsScrappedByUserAndKeyword(userId, keyword);
-        return TermListDTO.toTermListDTO(terms);
+    public TermListResponseDTO getMyScrapTermsByKeyword(final long userId, final String keyword) {
+        List<TermWithScrapDTO> terms =
+                termScrapRepository.findTermsScrappedByUserAndKeyword(userId, keyword);
+        return TermListResponseDTO.from(terms);
     }
 
-    public NewsListDTO getMyScrapNews(final long userId) {
-        List<News> news = newsScrapRepository.findNewsScrappedByUser(userId);
-        return NewsListDTO.toNewsListDTO(news);
+    public NewsPreviewListResponseDTO getMyScrapNews(final long userId) {
+        List<NewsWithScrapDTO> newsList = newsScrapRepository.findNewsScrappedByUser(userId);
+        return NewsPreviewListResponseDTO.from(newsList);
     }
 
     public UserCompletedDTO getCompletedConceptAndQuizCount(final long userId) {

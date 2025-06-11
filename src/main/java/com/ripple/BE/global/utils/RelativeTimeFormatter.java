@@ -3,6 +3,8 @@ package com.ripple.BE.global.utils;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RelativeTimeFormatter {
 
@@ -45,5 +47,27 @@ public class RelativeTimeFormatter {
         }
 
         return createdDate.format(FORMATTER);
+    }
+
+    // 상대 시간 문자열을 파싱하여 LocalDateTime 객체로 변환하는 메서드
+    public static LocalDateTime parseRelativeTime(String relativeTime) {
+        LocalDateTime now = LocalDateTime.now();
+
+        Pattern pattern = Pattern.compile("(\\d+)\\s*(분|시간|일) 전");
+        Matcher matcher = pattern.matcher(relativeTime.trim());
+
+        if (matcher.find()) {
+            int amount = Integer.parseInt(matcher.group(1));
+            String unit = matcher.group(2);
+
+            return switch (unit) {
+                case "분" -> now.minusMinutes(amount);
+                case "시간" -> now.minusHours(amount);
+                case "일" -> now.minusDays(amount);
+                default -> now;
+            };
+        }
+
+        return now; // fallback: 현재 시각 반환
     }
 }
