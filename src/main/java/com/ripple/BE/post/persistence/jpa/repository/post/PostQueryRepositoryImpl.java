@@ -58,7 +58,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
     @Override
     public List<PostJpaEntity> findUserNormalPosts(long userId) {
         BooleanExpression predicate =
-                postJpaEntity.author.id.eq(userId).and(postJpaEntity.type.ne(PostType.ECONOMY_TALK));
+                postJpaEntity.authorId.eq(userId).and(postJpaEntity.type.ne(PostType.ECONOMY_TALK));
 
         return queryFactory
                 .selectFrom(postJpaEntity)

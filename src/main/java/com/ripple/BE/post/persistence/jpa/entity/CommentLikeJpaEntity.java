@@ -1,48 +1,51 @@
 package com.ripple.BE.post.persistence.jpa.entity;
 
+import com.ripple.BE.global.entity.BaseJpaEntity;
 import com.ripple.BE.post.domain.comment.CommentLike;
-import com.ripple.BE.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Table(name = "comment_likes")
 @Getter
-@Builder
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class CommentLikeJpaEntity {
+public class CommentLikeJpaEntity extends BaseJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id")
-    private CommentJpaEntity comment;
+    @Column(name = "comment_id")
+    private Long commentId;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    private CommentLikeJpaEntity(Long id, Long userId, Long commentId) {
+        this.id = id;
+        this.userId = userId;
+        this.commentId = commentId;
+    }
 
     public static CommentLikeJpaEntity from(CommentLike commentLike) {
         return CommentLikeJpaEntity.builder()
                 .id(commentLike.getId())
-                .user(commentLike.getUser())
-                .comment(CommentJpaEntity.from(commentLike.getComment()))
+                .userId(commentLike.getUserId())
+                .commentId(commentLike.getCommentId())
                 .build();
+    }
+
+    public CommentLike toModel() {
+        return CommentLike.withId(id, userId, commentId);
     }
 }

@@ -8,7 +8,6 @@ import com.ripple.BE.global.exception.response.ErrorResponse.ValidationError;
 import com.ripple.BE.global.exception.response.ErrorResponse.ValidationErrors;
 import com.ripple.BE.image.exception.ImageException;
 import com.ripple.BE.learning.exception.LearningException;
-import com.ripple.BE.learning.exception.QuizException;
 import com.ripple.BE.news.exception.NewsException;
 import com.ripple.BE.notification.exception.NotificationException;
 import com.ripple.BE.post.exception.PostException;
@@ -88,11 +87,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UserException.class)
     public ResponseEntity<Object> handleUserException(final UserException e) {
-        return handleExceptionInternal(e.getErrorCode());
-    }
-
-    @ExceptionHandler(QuizException.class)
-    public ResponseEntity<Object> handleQuizException(final QuizException e) {
         return handleExceptionInternal(e.getErrorCode());
     }
 

@@ -19,8 +19,9 @@ public class PostLikeQueryRepositoryImpl implements PostLikeQueryRepository {
         return queryFactory
                 .select(postJpaEntity)
                 .from(postLikeJpaEntity)
-                .join(postLikeJpaEntity.post, postJpaEntity)
-                .where(postLikeJpaEntity.user.id.eq(userId))
+                .join(postJpaEntity)
+                .where(postLikeJpaEntity.userId.eq(userId))
+                .orderBy(postLikeJpaEntity.createdDate.desc())
                 .fetch();
     }
 }

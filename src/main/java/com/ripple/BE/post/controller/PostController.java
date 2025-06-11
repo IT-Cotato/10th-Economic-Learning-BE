@@ -1,6 +1,10 @@
 package com.ripple.BE.post.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
+import com.ripple.BE.post.application.PostCommandUseCase;
+import com.ripple.BE.post.application.PostQueryUseCase;
+import com.ripple.BE.post.application.command.CreatePostCommand;
+import com.ripple.BE.post.application.command.UpdatePostCommand;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.domain.type.PostType;
 import com.ripple.BE.post.dto.request.PostRequest;
@@ -8,10 +12,6 @@ import com.ripple.BE.post.dto.request.PostUpdateRequest;
 import com.ripple.BE.post.dto.response.PostPreviewListResponseDTO;
 import com.ripple.BE.post.dto.response.PostPreviewResponseDTO;
 import com.ripple.BE.post.dto.response.PostResponseDTO;
-import com.ripple.BE.post.service.PostCommandUseCase;
-import com.ripple.BE.post.service.PostQueryUseCase;
-import com.ripple.BE.post.service.command.CreatePostCommand;
-import com.ripple.BE.post.service.command.UpdatePostCommand;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

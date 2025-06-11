@@ -1,7 +1,7 @@
 package com.ripple.BE.post.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
-import com.ripple.BE.post.service.ToktokAdminUseCase;
+import com.ripple.BE.post.application.ToktokAdminUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

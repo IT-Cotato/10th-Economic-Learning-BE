@@ -1,10 +1,7 @@
 package com.ripple.BE.post.persistence.impl.toktok;
 
-import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
-
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
-import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.ToktokRepository;
 import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import com.ripple.BE.post.persistence.jpa.repository.comment.CommentJpaRepository;
@@ -29,7 +26,7 @@ public class ToktokRepositoryImpl implements ToktokRepository {
     @Override
     public Post save(final Post post) {
         PostJpaEntity postJpaEntity = toktokJpaRepository.save(PostJpaEntity.from(post));
-        return Post.from(postJpaEntity);
+        return postJpaEntity.toModel();
     }
 
     @Override
@@ -46,22 +43,22 @@ public class ToktokRepositoryImpl implements ToktokRepository {
 
     @Override
     public Optional<Post> findByUsedDate(final LocalDate usedDate) {
-        return toktokJpaRepository.findByUsedDate(usedDate).map(Post::from);
+        return toktokJpaRepository.findByUsedDate(usedDate).map(PostJpaEntity::toModel);
     }
 
     @Override
     public Optional<Post> findById(final long id) {
-        return toktokJpaRepository.findById(id).map(Post::from);
+        return toktokJpaRepository.findById(id).map(PostJpaEntity::toModel);
     }
 
     @Override
     public Page<Post> findUsedToktokPosts(final Pageable pageable, final PostSort postSort) {
-        return toktokJpaRepository.findUsedToktokPosts(pageable, postSort).map(Post::from);
+        return toktokJpaRepository.findUsedToktokPosts(pageable, postSort).map(PostJpaEntity::toModel);
     }
 
     @Override
     public List<Post> findNewToktokPosts() {
-        return toktokJpaRepository.findNewToktokPosts().stream().map(Post::from).toList();
+        return toktokJpaRepository.findNewToktokPosts().stream().map(PostJpaEntity::toModel).toList();
     }
 
     @Override
@@ -71,16 +68,6 @@ public class ToktokRepositoryImpl implements ToktokRepository {
 
     @Override
     public Page<Post> searchUsedToktokPosts(final String keyword, final Pageable pageable) {
-        return toktokJpaRepository.searchUsedToktokPosts(keyword, pageable).map(Post::from);
-    }
-
-    @Override
-    public void updateUsedDate(final Post post) {
-        PostJpaEntity postJpaEntity =
-                toktokJpaRepository
-                        .findById(post.getId())
-                        .orElseThrow(() -> new PostException(POST_NOT_FOUND));
-
-        postJpaEntity.updateUsedDate(post.getUsedDate());
+        return toktokJpaRepository.searchUsedToktokPosts(keyword, pageable).map(PostJpaEntity::toModel);
     }
 }

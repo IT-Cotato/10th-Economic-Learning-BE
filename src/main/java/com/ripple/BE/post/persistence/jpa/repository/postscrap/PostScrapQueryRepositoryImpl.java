@@ -18,8 +18,9 @@ public class PostScrapQueryRepositoryImpl implements PostScrapQueryRepository {
         return queryFactory
                 .select(postJpaEntity)
                 .from(postScrapJpaEntity)
-                .join(postScrapJpaEntity.post, postJpaEntity)
-                .where(postScrapJpaEntity.user.id.eq(userId))
+                .join(postJpaEntity)
+                .on(postScrapJpaEntity.postId.eq(postJpaEntity.id))
+                .where(postScrapJpaEntity.userId.eq(userId))
                 .orderBy(postScrapJpaEntity.createdDate.desc())
                 .fetch();
     }

@@ -1,39 +1,27 @@
 package com.ripple.BE.learning.domain.quiz;
 
-import com.ripple.BE.user.domain.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Table(name = "quiz_scraps")
 @Getter
-@Builder
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class QuizScrap {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
+    private final Long id;
+    private final Long userId;
+    private final Long quizId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Builder(access = lombok.AccessLevel.PRIVATE)
+    private QuizScrap(Long id, Long userId, Long quizId) {
+        this.id = id;
+        this.userId = userId;
+        this.quizId = quizId;
+    }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "quiz_id")
-    private Quiz quiz;
+    public static QuizScrap withoutId(Long userId, Long quizId) {
+        return QuizScrap.builder().userId(userId).quizId(quizId).build();
+    }
+
+    public static QuizScrap withId(Long id, Long userId, Long quizId) {
+        return QuizScrap.builder().id(id).userId(userId).quizId(quizId).build();
+    }
 }

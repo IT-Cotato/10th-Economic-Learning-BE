@@ -3,6 +3,7 @@ package com.ripple.BE.post.persistence.impl.post;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.post.PostLike;
 import com.ripple.BE.post.persistence.PostLikeRepository;
+import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import com.ripple.BE.post.persistence.jpa.entity.PostLikeJpaEntity;
 import com.ripple.BE.post.persistence.jpa.repository.postlike.PostLikeJpaRepository;
 import java.util.List;
@@ -23,12 +24,16 @@ public class PostLikeRepositoryImpl implements PostLikeRepository {
 
     @Override
     public Optional<PostLike> findByPostIdAndUserId(final long postId, final long userId) {
-        return postLikeJpaRepository.findByPostIdAndUserId(postId, userId).map(PostLike::from);
+        return postLikeJpaRepository
+                .findByPostIdAndUserId(postId, userId)
+                .map(PostLikeJpaEntity::toModel);
     }
 
     @Override
     public List<Post> findPostsLikedByUser(final long userId) {
-        return postLikeJpaRepository.findPostsLikedByUser(userId).stream().map(Post::from).toList();
+        return postLikeJpaRepository.findPostsLikedByUser(userId).stream()
+                .map(PostJpaEntity::toModel)
+                .toList();
     }
 
     @Override

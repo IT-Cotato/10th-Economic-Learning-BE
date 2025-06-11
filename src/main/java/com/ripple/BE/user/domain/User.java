@@ -2,8 +2,13 @@ package com.ripple.BE.user.domain;
 
 import com.ripple.BE.global.entity.BaseJpaEntity;
 import com.ripple.BE.image.domain.Image;
+
 import com.ripple.BE.learning.domain.learningset.UserLearningSet;
 import com.ripple.BE.learning.domain.quiz.FailQuiz;
+
+import com.ripple.BE.news.domain.NewsScrap;
+import com.ripple.BE.term.domain.TermScrap;
+
 import com.ripple.BE.user.domain.type.BusinessType;
 import com.ripple.BE.user.domain.type.Gender;
 import com.ripple.BE.user.domain.type.Job;
@@ -107,16 +112,10 @@ public class User extends BaseJpaEntity {
     @Column(name = "is_level_test_completed")
     private boolean isLevelTestCompleted = false; // 레벨 테스트 완료 여부
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserLearningSet> userLearningSetList = new ArrayList<>(); // 학습 완료 목록
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FailQuiz> failQuizList = new ArrayList<>(); // 틀린 퀴즈 목록
-
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Attendance attendance; // 출석 정보
 
-    @Column(length = 100, unique = true, nullable = true)
+    @Column(length = 100, unique = true)
     private String keyCode; // 카카오 로그인 시 발급되는 고유 코드
 
     @Column(name = "quiz_count", nullable = false, columnDefinition = "INT DEFAULT 0")
@@ -172,28 +171,12 @@ public class User extends BaseJpaEntity {
         this.isProfileCompleted = true;
     }
 
-    public void increaseQuizCount(int count) {
-        this.quizCount += count;
-    }
-
-    public void increaseCorrectCount(int count) {
-        this.correctCount += count;
-    }
-
     public long getCompletedCountByLevel(Level level) {
         return switch (level) {
             case BEGINNER -> beginnerCompletedCount;
             case INTERMEDIATE -> intermediateCompletedCount;
             case ADVANCED -> advancedCompletedCount;
         };
-    }
-
-    public void increaseCompletedCountByLevel(Level level) {
-        switch (level) {
-            case BEGINNER -> beginnerCompletedCount++;
-            case INTERMEDIATE -> intermediateCompletedCount++;
-            case ADVANCED -> advancedCompletedCount++;
-        }
     }
 
     public void updateLevel(Level level) {

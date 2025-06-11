@@ -1,10 +1,8 @@
 package com.ripple.BE.post.persistence.impl.post;
 
-import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
-
 import com.ripple.BE.post.domain.comment.Comment;
-import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.CommentRepository;
+import com.ripple.BE.post.persistence.dto.CommentWithUserDTO;
 import com.ripple.BE.post.persistence.jpa.entity.CommentJpaEntity;
 import com.ripple.BE.post.persistence.jpa.repository.comment.CommentJpaRepository;
 import java.util.List;
@@ -30,49 +28,23 @@ public class CommentRepositoryImpl implements CommentRepository {
 
     @Override
     public Optional<Comment> findByIdForUpdate(final long commentId) {
-        return commentJpaRepository.findByIdForUpdate(commentId).map(Comment::from);
-    }
-
-    @Override
-    public void updateReplyCount(final Comment comment) {
-        CommentJpaEntity commentJpaEntity =
-                commentJpaRepository
-                        .findById(comment.getId())
-                        .orElseThrow(() -> new PostException(COMMENT_NOT_FOUND));
-
-        commentJpaEntity.updateReplyCount(comment.getReplyCount());
-    }
-
-    @Override
-    public void updateLikeCount(final Comment comment) {
-        CommentJpaEntity commentJpaEntity =
-                commentJpaRepository
-                        .findById(comment.getId())
-                        .orElseThrow(() -> new PostException(COMMENT_NOT_FOUND));
-
-        commentJpaEntity.updateLikeCount(comment.getLikeCount());
-    }
-
-    @Override
-    public List<Comment> findRootCommentsByPost(final long postId) {
-
-        return commentJpaRepository.findRootCommentsByPost(postId).stream().map(Comment::from).toList();
-    }
-
-    @Override
-    public List<Comment> findChildrenByParentId(final long parentId) {
-        return commentJpaRepository.findChildrenByParentId(parentId).stream()
-                .map(Comment::from)
-                .toList();
+        return commentJpaRepository.findByIdForUpdate(commentId).map(CommentJpaEntity::toModel);
     }
 
     @Override
     public List<Comment> findAllByCommenterId(final long userId) {
-        return commentJpaRepository.findAllByCommenterId(userId).stream().map(Comment::from).toList();
+        return commentJpaRepository.findAllByCommenterId(userId).stream()
+                .map(CommentJpaEntity::toModel)
+                .toList();
     }
 
     @Override
     public void deleteAllByPostId(final long postId) {
         commentJpaRepository.deleteAllByPostId(postId);
+    }
+
+    @Override
+    public List<CommentWithUserDTO> findAllByPostIdWithUser(final long postId) {
+        return commentJpaRepository.findAllByPostIdWithUser(postId);
     }
 }
