@@ -1,11 +1,11 @@
 package com.ripple.BE.post.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
+import com.ripple.BE.post.application.ToktokQueryUseCase;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.dto.response.ToktokPreviewListResponseDTO;
 import com.ripple.BE.post.dto.response.ToktokPreviewResponseDTO;
 import com.ripple.BE.post.dto.response.ToktokResponseDTO;
-import com.ripple.BE.post.service.ToktokQueryUseCase;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

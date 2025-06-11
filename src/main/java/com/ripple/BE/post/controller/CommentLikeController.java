@@ -1,7 +1,7 @@
 package com.ripple.BE.post.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
-import com.ripple.BE.post.service.CommentLikeUseCase;
+import com.ripple.BE.post.application.CommentLikeUseCase;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

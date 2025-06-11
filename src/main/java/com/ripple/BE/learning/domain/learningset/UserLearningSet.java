@@ -1,72 +1,99 @@
 package com.ripple.BE.learning.domain.learningset;
 
-import com.ripple.BE.global.entity.BaseJpaEntity;
-import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.type.Level;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Table(name = "user_learning_sets")
 @Getter
-@Builder
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class UserLearningSet extends BaseJpaEntity { // 학습 세트 완료 여부
+public class UserLearningSet {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
+    private final Long id;
+    private final Long userId;
+    private final Long learningSetId;
+    private final String learningSetName;
+    private final Level level;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private final boolean isLearningSetCompleted;
+    private final boolean isConceptCompleted;
+    private final boolean isQuizCompleted;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "learning_set_id", nullable = false)
-    private LearningSet learningSet;
-
-    private Level level;
-
-    @Column(name = "is_learning_set_completed")
-    private boolean isLearningSetCompleted = false;
-
-    @Column(name = "is_concept_completed")
-    private boolean isConceptCompleted = false;
-
-    @Column(name = "is_quiz_completed")
-    private boolean isQuizCompleted = false;
-
-    public void setConceptCompleted() {
-        this.isConceptCompleted = true;
-
-        if (this.isQuizCompleted) {
-            this.isLearningSetCompleted = true;
-        }
+    @Builder(access = lombok.AccessLevel.PRIVATE)
+    private UserLearningSet(
+            Long id,
+            Long userId,
+            Long learningSetId,
+            Level level,
+            String learningSetName,
+            boolean isLearningSetCompleted,
+            boolean isConceptCompleted,
+            boolean isQuizCompleted) {
+        this.id = id;
+        this.userId = userId;
+        this.learningSetId = learningSetId;
+        this.learningSetName = learningSetName;
+        this.level = level;
+        this.isLearningSetCompleted = isLearningSetCompleted;
+        this.isConceptCompleted = isConceptCompleted;
+        this.isQuizCompleted = isQuizCompleted;
     }
 
-    public void setQuizCompleted() {
-        this.isQuizCompleted = true;
-
-        if (this.isConceptCompleted) {
-            this.isLearningSetCompleted = true;
-        }
+    public static UserLearningSet withoutId(
+            Long userId, Long learningSetId, String learningSetName, Level level) {
+        return UserLearningSet.builder()
+                .userId(userId)
+                .learningSetId(learningSetId)
+                .learningSetName(learningSetName)
+                .level(level)
+                .isLearningSetCompleted(false)
+                .isConceptCompleted(false)
+                .isQuizCompleted(false)
+                .build();
     }
 
-    public static UserLearningSet toUserLearningSet(User user, LearningSet learningSet, Level level) {
-        return UserLearningSet.builder().user(user).learningSet(learningSet).level(level).build();
+    public static UserLearningSet withId(
+            Long id,
+            Long userId,
+            Long learningSetId,
+            String learningSetName,
+            Level level,
+            boolean isLearningSetCompleted,
+            boolean isConceptCompleted,
+            boolean isQuizCompleted) {
+        return UserLearningSet.builder()
+                .id(id)
+                .userId(userId)
+                .learningSetId(learningSetId)
+                .learningSetName(learningSetName)
+                .level(level)
+                .isLearningSetCompleted(isLearningSetCompleted)
+                .isConceptCompleted(isConceptCompleted)
+                .isQuizCompleted(isQuizCompleted)
+                .build();
+    }
+
+    public UserLearningSet updateConceptCompleted() {
+        return UserLearningSet.builder()
+                .id(this.id)
+                .userId(this.userId)
+                .learningSetId(this.learningSetId)
+                .learningSetName(this.learningSetName)
+                .level(this.level)
+                .isConceptCompleted(true)
+                .isQuizCompleted(this.isQuizCompleted)
+                .isLearningSetCompleted(this.isQuizCompleted)
+                .build();
+    }
+
+    public UserLearningSet updateQuizCompleted() {
+        return UserLearningSet.builder()
+                .id(this.id)
+                .userId(this.userId)
+                .learningSetId(this.learningSetId)
+                .learningSetName(this.learningSetName)
+                .level(this.level)
+                .isConceptCompleted(this.isConceptCompleted)
+                .isQuizCompleted(true)
+                .isLearningSetCompleted(this.isConceptCompleted)
+                .build();
     }
 }
