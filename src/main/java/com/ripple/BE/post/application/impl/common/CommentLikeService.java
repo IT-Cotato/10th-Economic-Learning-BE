@@ -10,8 +10,6 @@ import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.CommentLikeRepository;
 import com.ripple.BE.post.persistence.CommentRepository;
 import com.ripple.BE.post.persistence.PostRepository;
-import com.ripple.BE.user.domain.User;
-import com.ripple.BE.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,26 +23,22 @@ public class CommentLikeService implements CommentLikeUseCase {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
 
-    private final UserService userService;
-
     @Override
     public void addLikeToComment(final long commentId, final long userId, final long postId) {
 
         Post post =
                 postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_FOUND));
         Comment comment = findCommentByIdForUpdate(commentId);
-        User user = userService.findUserById(userId);
 
         if (commentLikeRepository.existsByCommentIdAndUserId(commentId, userId)) {
             throw new PostException(LIKE_ALREADY_EXISTS);
         }
-        comment.validateUpdatableBy(user, post);
+        comment.validateUpdatableBy(userId, post.getId());
 
-        CommentLike commentLike = CommentLike.of(user, comment);
+        CommentLike commentLike = CommentLike.withoutId(userId, commentId);
         commentLikeRepository.save(commentLike);
 
-        comment.increaseLikeCount();
-        commentRepository.updateLikeCount(comment);
+        commentRepository.save(comment.increaseLikeCount());
     }
 
     @Override
@@ -53,18 +47,16 @@ public class CommentLikeService implements CommentLikeUseCase {
         Post post =
                 postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_FOUND));
         Comment comment = findCommentByIdForUpdate(commentId);
-        User user = userService.findUserById(userId);
 
         CommentLike commentLike =
                 commentLikeRepository
                         .findByCommentIdAndUserId(commentId, userId)
                         .orElseThrow(() -> new PostException(LIKE_NOT_FOUND));
 
-        comment.validateUpdatableBy(user, post);
+        comment.validateUpdatableBy(userId, post.getId());
         commentLikeRepository.delete(commentLike);
 
-        comment.decreaseLikeCount();
-        commentRepository.updateLikeCount(comment);
+        commentRepository.save(comment.decreaseLikeCount());
     }
 
     private Comment findCommentByIdForUpdate(final long id) {

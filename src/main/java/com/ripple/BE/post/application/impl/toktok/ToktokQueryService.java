@@ -5,6 +5,7 @@ import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 import com.ripple.BE.global.config.cache.PostCacheKeyGenerator;
 import com.ripple.BE.image.dto.response.ImageResponse;
 import com.ripple.BE.image.repository.ImageRepository;
+import com.ripple.BE.post.application.CommentQueryUseCase;
 import com.ripple.BE.post.application.ToktokQueryUseCase;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
@@ -13,8 +14,6 @@ import com.ripple.BE.post.dto.response.ToktokPreviewListResponseDTO;
 import com.ripple.BE.post.dto.response.ToktokPreviewResponseDTO;
 import com.ripple.BE.post.dto.response.ToktokResponseDTO;
 import com.ripple.BE.post.exception.PostException;
-import com.ripple.BE.post.persistence.CommentLikeRepository;
-import com.ripple.BE.post.persistence.CommentRepository;
 import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostScrapRepository;
 import com.ripple.BE.post.persistence.ToktokRepository;
@@ -38,12 +37,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ToktokQueryService implements ToktokQueryUseCase {
 
     private final ToktokRepository toktokRepository;
-    private final CommentRepository commentRepository;
     private final PostLikeRepository postLikeRepository;
     private final PostScrapRepository postScrapRepository;
-    private final CommentLikeRepository commentLikeRepository;
-
     private final ImageRepository imageRepository;
+
+    private final CommentQueryUseCase commentQueryUseCase;
 
     private static final int PAGE_SIZE = 10;
     private static final int RANDOM_USER_COUNT = 4;
@@ -75,7 +73,7 @@ public class ToktokQueryService implements ToktokQueryUseCase {
         List<ImageResponse> imageResponses =
                 imageRepository.findByPostId(id).stream().map(ImageResponse::from).toList();
 
-        List<CommentResponseDTO> commentDTOs = getCommentDTOs(toktok, userId);
+        List<CommentResponseDTO> commentDTOs = commentQueryUseCase.getComments(toktok.getId(), userId);
 
         return ToktokResponseDTO.of(toktok, imageResponses, commentDTOs, isScrapped, isLiked);
     }
@@ -129,33 +127,6 @@ public class ToktokQueryService implements ToktokQueryUseCase {
                 imageUrl,
                 isScraped,
                 UserRandomProfileListDTO.toUserRandomProfileListDTO(randomUsers));
-    }
-
-    private List<CommentResponseDTO> getCommentDTOs(Post toktokPost, long userId) {
-        return commentRepository.findRootCommentsByPost(toktokPost.getId()).stream()
-                .map(
-                        root -> {
-                            // 자식 댓글 처리
-                            List<CommentResponseDTO> children =
-                                    commentRepository.findChildrenByParentId(root.getId()).stream()
-                                            .map(
-                                                    child -> {
-                                                        boolean childIsAuthor = child.getCommenter().getId().equals(userId);
-                                                        boolean childIsLiked =
-                                                                commentLikeRepository.existsByCommentIdAndUserId(
-                                                                        child.getId(), userId);
-                                                        return CommentResponseDTO.of(
-                                                                child, List.of(), childIsAuthor, childIsLiked);
-                                                    })
-                                            .toList();
-
-                            boolean rootIsAuthor = root.getCommenter().getId().equals(userId);
-                            boolean rootIsLiked =
-                                    commentLikeRepository.existsByCommentIdAndUserId(root.getId(), userId);
-
-                            return CommentResponseDTO.of(root, children, rootIsAuthor, rootIsLiked);
-                        })
-                .toList();
     }
 
     private List<User> getRandomUsers(List<User> users) {

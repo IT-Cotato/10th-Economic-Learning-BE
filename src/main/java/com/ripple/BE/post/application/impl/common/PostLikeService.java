@@ -9,8 +9,6 @@ import com.ripple.BE.post.domain.post.PostLike;
 import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostRepository;
-import com.ripple.BE.user.domain.User;
-import com.ripple.BE.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,24 +23,21 @@ public class PostLikeService implements PostLikeUseCase {
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
 
-    private final UserService userService;
     private final NotificationService notificationService;
 
     @Override
     public void addLikeToPost(final long postId, final long userId) {
 
         Post post = findPostByIdForUpdate(postId);
-        User user = userService.findUserById(userId);
 
         if (postLikeRepository.existsByPostIdAndUserId(postId, userId)) {
             throw new PostException(LIKE_ALREADY_EXISTS);
         }
 
-        PostLike postLike = PostLike.of(user, post);
+        PostLike postLike = PostLike.withoutId(userId, post.getId());
         postLikeRepository.save(postLike);
 
-        post.increaseLikeCount();
-        postRepository.updateLikeCount(post);
+        postRepository.save(post.increaseLikeCount());
 
         if (post.getLikeCount() == POPULAR_POST_LIKE_COUNT) {
             // notificationService.createPopularNotification(post);
@@ -61,8 +56,7 @@ public class PostLikeService implements PostLikeUseCase {
                         .orElseThrow(() -> new PostException(LIKE_NOT_FOUND));
         postLikeRepository.delete(postLike);
 
-        post.decreaseLikeCount();
-        postRepository.updateLikeCount(post);
+        postRepository.save(post.decreaseLikeCount());
     }
 
     private Post findPostByIdForUpdate(final long id) {

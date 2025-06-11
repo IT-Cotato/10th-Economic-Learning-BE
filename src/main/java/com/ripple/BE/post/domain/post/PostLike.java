@@ -1,27 +1,28 @@
 package com.ripple.BE.post.domain.post;
 
-import com.ripple.BE.post.persistence.jpa.entity.PostLikeJpaEntity;
-import com.ripple.BE.user.domain.User;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PostLike {
 
     private final Long id;
-    private final User user;
-    private final Post post;
+    private final Long userId;
+    private final Long postId;
 
-    public static PostLike of(User user, Post post) {
-        return new PostLike(null, user, post); // id는 저장소에서 할당
+    @Builder(access = AccessLevel.PRIVATE)
+    private PostLike(Long id, Long userId, Long postId) {
+        this.id = id;
+        this.userId = userId;
+        this.postId = postId;
     }
 
-    public static PostLike from(PostLikeJpaEntity postLikeJpaEntity) {
-        return new PostLike(
-                postLikeJpaEntity.getId(),
-                postLikeJpaEntity.getUser(),
-                Post.from(postLikeJpaEntity.getPost()));
+    public static PostLike withId(Long id, Long userId, Long postId) {
+        return PostLike.builder().id(id).userId(userId).postId(postId).build();
+    }
+
+    public static PostLike withoutId(Long userId, Long postId) {
+        return PostLike.builder().userId(userId).postId(postId).build();
     }
 }

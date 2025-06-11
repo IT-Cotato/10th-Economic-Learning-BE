@@ -10,8 +10,6 @@ import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.CommentLikeRepository;
 import com.ripple.BE.post.persistence.CommentRepository;
 import com.ripple.BE.post.persistence.PostRepository;
-import com.ripple.BE.user.domain.User;
-import com.ripple.BE.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,20 +23,17 @@ public class CommentCommandService implements CommentCommandUseCase {
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
 
-    private final UserService userService;
     private final NotificationService notificationService;
 
     @Override
     public void addCommentToPost(final long userId, final long postId, final String content) {
 
         Post post = findPostByIdForUpdate(postId);
-        User user = userService.findUserById(userId);
 
-        Comment comment = Comment.of(content, user, post);
+        Comment comment = Comment.withoutId(content, userId, postId, null);
         commentRepository.save(comment);
 
-        post.increaseCommentCount();
-        postRepository.updateCommentCount(post);
+        postRepository.save(post.increaseCommentCount());
 
         // notificationService.createCommentNotification(post, commentJpaEntity);
         // 알람 서비스 로직 수정 후 주석 해제
@@ -49,19 +44,15 @@ public class CommentCommandService implements CommentCommandUseCase {
             final long userId, final long postId, final long commentId, final String content) {
 
         Post post = findPostByIdForUpdate(postId);
-        User user = userService.findUserById(userId);
         Comment parentComment = findCommentByIdForUpdate(commentId);
 
-        parentComment.validateReplyable(post);
+        parentComment.validateReplyable(post.getId());
 
-        Comment comment = Comment.of(content, user, post, parentComment);
+        Comment comment = Comment.withoutId(content, userId, post.getId(), parentComment.getId());
         commentRepository.save(comment);
+        commentRepository.save(parentComment.increaseReplyCount());
 
-        parentComment.increaseReplyCount();
-        commentRepository.updateReplyCount(parentComment);
-
-        post.increaseCommentCount();
-        postRepository.updateCommentCount(post);
+        postRepository.save(post.increaseCommentCount());
 
         // notificationService.createReplyNotification(post, commentJpaEntity);
     }
@@ -70,17 +61,15 @@ public class CommentCommandService implements CommentCommandUseCase {
     public void removeCommentFromPost(final long userId, final long postId, final long commentId) {
         Post post = findPostByIdForUpdate(postId);
         Comment comment = findCommentByIdForUpdate(commentId);
-        User user = userService.findUserById(userId);
 
-        comment.validateDeletableBy(user, post);
+        comment.validateDeletableBy(userId, post.getId());
 
-        post.decreaseCommentCount();
-        postRepository.updateCommentCount(post);
+        postRepository.save(post.decreaseCommentCount());
 
         if (comment.isRoot()) {
             handleRootComment(comment);
         } else {
-            handleChildComment(comment, comment.getParent());
+            handleChildComment(comment, comment.getParentCommentId());
         }
     }
 
@@ -89,17 +78,20 @@ public class CommentCommandService implements CommentCommandUseCase {
             commentLikeRepository.deleteAllByCommentId(comment.getId());
             commentRepository.delete(comment);
         } else {
-            comment.softDeleteAsRoot();
-            commentRepository.save(comment);
+            commentRepository.save(comment.softDeleteAsRoot());
         }
     }
 
-    private void handleChildComment(Comment comment, Comment parent) {
+    private void handleChildComment(Comment comment, Long parentCommentId) {
+        Comment parent =
+                commentRepository
+                        .findByIdForUpdate(parentCommentId)
+                        .orElseThrow(() -> new PostException(COMMENT_NOT_FOUND));
+
         commentLikeRepository.deleteAllByCommentId(comment.getId());
         commentRepository.delete(comment);
 
-        parent.decreaseReplyCount();
-        commentRepository.updateReplyCount(parent);
+        commentRepository.save(parent.decreaseReplyCount());
 
         if (parent.isDeleted() && parent.hasNoChildren()) {
             commentLikeRepository.deleteAllByCommentId(parent.getId());
@@ -112,12 +104,10 @@ public class CommentCommandService implements CommentCommandUseCase {
             final long userId, final long postId, final long commentId, final String content) {
         Post post = findPostByIdForUpdate(postId);
         Comment comment = findCommentByIdForUpdate(commentId);
-        User user = userService.findUserById(userId);
 
-        comment.validateUpdatableBy(user, post);
-        comment.updateContent(content);
+        comment.validateUpdatableBy(userId, post.getId());
 
-        commentRepository.save(comment);
+        commentRepository.save(comment.updateContent(content));
     }
 
     private Post findPostByIdForUpdate(final long id) {

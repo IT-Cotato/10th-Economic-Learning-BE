@@ -1,5 +1,6 @@
 package com.ripple.BE.post.application.impl.toktok;
 
+import static com.ripple.BE.post.domain.type.PostType.*;
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
@@ -76,7 +77,7 @@ public class ToktokAdminService implements ToktokAdminUseCase {
             return null; // 기존 게시물은 건너뛰기
         }
 
-        Post toktokPost = Post.of(title, content, null, null, null);
+        Post toktokPost = Post.withoutId(title, content, null, ECONOMY_TALK, null);
 
         if (imageUrl != null && !imageUrl.isEmpty()) {
             addImageToPost(toktokPost, imageUrl);
@@ -128,7 +129,6 @@ public class ToktokAdminService implements ToktokAdminUseCase {
 
         Post selectedPost = unusedPosts.get(random.nextInt(unusedPosts.size()));
 
-        selectedPost.updateUsedDate(LocalDate.now());
-        toktokRepository.updateUsedDate(selectedPost);
+        toktokRepository.save(selectedPost.updateUsedDate(LocalDate.now()));
     }
 }

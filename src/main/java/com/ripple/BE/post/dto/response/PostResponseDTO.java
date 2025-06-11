@@ -4,6 +4,7 @@ import com.ripple.BE.global.utils.RelativeTimeFormatter;
 import com.ripple.BE.image.dto.response.ImageResponse;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostType;
+import com.ripple.BE.user.domain.User;
 import java.util.List;
 
 public record PostResponseDTO(
@@ -25,6 +26,7 @@ public record PostResponseDTO(
 
     public static PostResponseDTO of(
             Post post,
+            User author,
             List<ImageResponse> imageList,
             List<CommentResponseDTO> commentList,
             boolean isScraped,
@@ -32,11 +34,9 @@ public record PostResponseDTO(
             boolean isAuthor) {
         return new PostResponseDTO(
                 post.getTitle(),
-                post.getAuthor().getNickname(),
-                post.getAuthor().getId(),
-                post.getAuthor().getProfileImage() == null
-                        ? null
-                        : post.getAuthor().getProfileImage().getS3Info().getUrl(),
+                author.getNickname(),
+                post.getAuthorId(),
+                author.getProfileImage() == null ? null : author.getProfileImage().getS3Info().getUrl(),
                 post.getContent(),
                 post.getType(),
                 post.getLikeCount(),

@@ -1,17 +1,18 @@
 package com.ripple.BE.post.dto.response;
 
-import com.ripple.BE.post.domain.comment.Comment;
+import com.ripple.BE.global.utils.RelativeTimeFormatter;
 import com.ripple.BE.post.domain.type.PostType;
+import com.ripple.BE.post.persistence.dto.LikeCommentWithPostDTO;
 
 public record LikeCommentResponseDTO(
         Long id, String content, String postName, PostType type, String createdDate) {
 
-    public static LikeCommentResponseDTO from(Comment comment) {
+    public static LikeCommentResponseDTO from(LikeCommentWithPostDTO dto) {
         return new LikeCommentResponseDTO(
-                comment.getId(),
-                comment.getContent(),
-                comment.getPost().getTitle(),
-                comment.getPost().getType(),
-                comment.getCreatedDate().toString());
+                dto.commentId(),
+                dto.commentContent(),
+                dto.postTitle(),
+                dto.postType(),
+                RelativeTimeFormatter.formatRelativeTime(dto.createdDate()));
     }
 }

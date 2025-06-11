@@ -1,27 +1,28 @@
 package com.ripple.BE.post.domain.comment;
 
-import com.ripple.BE.post.persistence.jpa.entity.CommentLikeJpaEntity;
-import com.ripple.BE.user.domain.User;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentLike {
 
     private final Long id;
-    private final User user;
-    private final Comment comment;
+    private final Long userId;
+    private final Long commentId;
 
-    public static CommentLike of(User user, Comment comment) {
-        return new CommentLike(null, user, comment);
+    @Builder(access = AccessLevel.PRIVATE)
+    private CommentLike(Long id, Long userId, Long commentId) {
+        this.id = id;
+        this.userId = userId;
+        this.commentId = commentId;
     }
 
-    public static CommentLike from(CommentLikeJpaEntity commentLikeJpaEntity) {
-        return new CommentLike(
-                commentLikeJpaEntity.getId(),
-                commentLikeJpaEntity.getUser(),
-                Comment.from(commentLikeJpaEntity.getComment()));
+    public static CommentLike withId(Long id, Long userId, Long commentId) {
+        return CommentLike.builder().id(id).userId(userId).commentId(commentId).build();
+    }
+
+    public static CommentLike withoutId(Long userId, Long commentId) {
+        return CommentLike.builder().userId(userId).commentId(commentId).build();
     }
 }
