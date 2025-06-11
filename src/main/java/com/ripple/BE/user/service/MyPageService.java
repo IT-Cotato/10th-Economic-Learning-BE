@@ -6,12 +6,12 @@ import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 import com.ripple.BE.image.repository.ImageRepository;
 import com.ripple.BE.learning.domain.concept.Concept;
 import com.ripple.BE.learning.domain.quiz.Quiz;
-import com.ripple.BE.learning.dto.ConceptListDTO;
-import com.ripple.BE.learning.dto.FailQuizListDTO;
-import com.ripple.BE.learning.dto.QuizListDTO;
-import com.ripple.BE.learning.repository.conceptScrap.ConceptScrapRepository;
-import com.ripple.BE.learning.repository.quiz.QuizRepository;
-import com.ripple.BE.learning.repository.quizScrap.QuizScrapRepository;
+import com.ripple.BE.learning.dto.response.quiz.FailQuizResponseDTO;
+import com.ripple.BE.learning.dto.response.scrap.ScrapConceptResponseDTO;
+import com.ripple.BE.learning.dto.response.scrap.ScrapQuizResponseDTO;
+import com.ripple.BE.learning.persistence.ConceptScrapRepository;
+import com.ripple.BE.learning.persistence.QuizRepository;
+import com.ripple.BE.learning.persistence.QuizScrapRepository;
 import com.ripple.BE.news.domain.News;
 import com.ripple.BE.news.dto.NewsListDTO;
 import com.ripple.BE.news.repository.newscrap.NewsScrapRepository;
@@ -55,12 +55,13 @@ public class MyPageService {
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
 
-    private final QuizRepository quizRepository;
-    private final QuizScrapRepository quizScrapRepository;
-    private final ConceptScrapRepository conceptScrapRepository;
     private final TermScrapRepository termScrapRepository;
     private final NewsScrapRepository newsScrapRepository;
     private final UserRepository userRepository;
+
+    private final QuizRepository quizRepository;
+    private final QuizScrapRepository quizScrapRepository;
+    private final ConceptScrapRepository conceptScrapRepository;
 
     private final ImageRepository imageRepository;
 
@@ -141,20 +142,25 @@ public class MyPageService {
         return comments.stream().map(Comment::getPostId).distinct().collect(Collectors.toList());
     }
 
-    public FailQuizListDTO getMyFailQuizzes(final long userId, Level level) {
+    public List<FailQuizResponseDTO> getMyFailQuizzes(final long userId, Level level) {
         List<Quiz> failedQuizzes = quizRepository.findFailedQuizzesByUserAndLevel(userId, level);
-        return FailQuizListDTO.toFailQuizListDTO(failedQuizzes);
+
+        return failedQuizzes.stream().map(FailQuizResponseDTO::from).collect(Collectors.toList());
     }
 
-    public QuizListDTO getMyScrapQuizzes(final long userId, final Level level) {
-        List<Quiz> quizzes = quizScrapRepository.findQuizScrappedByUserAndLevel(userId, level);
-        return QuizListDTO.toQuizScrapListDTO(quizzes);
+    /** 사용자가 스크랩한 퀴즈를 레벨별로 조회 */
+    public List<ScrapQuizResponseDTO> getMyScrapQuizzes(final long userId, final Level level) {
+        List<Quiz> quizList = quizScrapRepository.findQuizScrappedByUserIdAndLevel(userId, level);
+
+        return quizList.stream().map(ScrapQuizResponseDTO::from).collect(Collectors.toList());
     }
 
-    public ConceptListDTO getMyConcepts(final long userId, final Level level) {
-        List<Concept> concepts =
+    /** 사용자가 스크랩한 개념을 레벨별로 조회 */
+    public List<ScrapConceptResponseDTO> getMyConcepts(final long userId, final Level level) {
+        List<Concept> conceptList =
                 conceptScrapRepository.findConceptsScrappedByUserAndLevel(userId, level);
-        return ConceptListDTO.toScrapConceptListDTO(concepts);
+
+        return conceptList.stream().map(ScrapConceptResponseDTO::from).collect(Collectors.toList());
     }
 
     public TermListDTO getMyScrapTermsByInitial(final long userId, final String initial) {

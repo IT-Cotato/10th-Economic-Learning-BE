@@ -1,15 +1,14 @@
 package com.ripple.BE.learning.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
-import com.ripple.BE.learning.dto.ConceptDTO;
-import com.ripple.BE.learning.dto.ConceptListDTO;
-import com.ripple.BE.learning.dto.response.ConceptDetailResponse;
-import com.ripple.BE.learning.dto.response.ConceptListResponse;
-import com.ripple.BE.learning.service.concept.ConceptService;
+import com.ripple.BE.learning.application.concept.ConceptService;
+import com.ripple.BE.learning.dto.response.concept.ConceptDetailResponseDTO;
+import com.ripple.BE.learning.dto.response.concept.ConceptResponseDTO;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import com.ripple.BE.user.domain.type.Level;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,10 +37,10 @@ public class ConceptController {
             final @PathVariable("learningSetId") long learningSetId,
             final @RequestParam(defaultValue = "BEGINNER") Level level) {
 
-        ConceptListDTO conceptListDTO = conceptService.getConcepts(learningSetId, level);
+        List<ConceptResponseDTO> conceptResponseDTOList =
+                conceptService.getConcepts(learningSetId, level);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(ConceptListResponse.toConceptListResponse(conceptListDTO)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(conceptResponseDTOList));
     }
 
     @Operation(
@@ -85,9 +84,8 @@ public class ConceptController {
     public ResponseEntity<ApiResponse<Object>> getConcept(
             final @PathVariable("conceptId") long conceptId) {
 
-        ConceptDTO concept = conceptService.getConcept(conceptId);
+        ConceptDetailResponseDTO concept = conceptService.getConcept(conceptId);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(ConceptDetailResponse.toConceptDetailResponse(concept)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(concept));
     }
 }

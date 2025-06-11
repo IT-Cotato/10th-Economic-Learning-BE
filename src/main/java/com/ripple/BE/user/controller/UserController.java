@@ -3,22 +3,13 @@ package com.ripple.BE.user.controller;
 import static com.ripple.BE.global.exception.errorcode.GlobalErrorCode.*;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
-import com.ripple.BE.learning.dto.ConceptListDTO;
-import com.ripple.BE.learning.dto.FailQuizListDTO;
-import com.ripple.BE.learning.dto.QuizListDTO;
-import com.ripple.BE.learning.dto.response.FailQuizListResponse;
-import com.ripple.BE.learning.dto.response.ScrapConceptListResponse;
-import com.ripple.BE.learning.dto.response.ScrapQuizListResponse;
 import com.ripple.BE.news.dto.NewsListDTO;
 import com.ripple.BE.news.dto.response.NewsListResponse;
-import com.ripple.BE.post.dto.response.LikeCommentResponseDTO;
 import com.ripple.BE.post.dto.response.PostPreviewResponseDTO;
 import com.ripple.BE.term.dto.TermListDTO;
 import com.ripple.BE.term.dto.response.TermListResponse;
 import com.ripple.BE.term.exception.TermException;
 import com.ripple.BE.user.domain.CustomUserDetails;
-import com.ripple.BE.user.domain.type.Level;
-import com.ripple.BE.user.dto.ProgressDTO;
 import com.ripple.BE.user.dto.UserCommentListDTO;
 import com.ripple.BE.user.dto.UserCompletedDTO;
 import com.ripple.BE.user.dto.UserGoalDTO;
@@ -26,14 +17,14 @@ import com.ripple.BE.user.dto.UserInfoDTO;
 import com.ripple.BE.user.dto.request.PatchUserProfileRequest;
 import com.ripple.BE.user.dto.request.UpdateUserProfileRequest;
 import com.ripple.BE.user.dto.request.UserGoalRequest;
-import com.ripple.BE.user.dto.response.ProgressResponse;
 import com.ripple.BE.user.dto.response.UserCommentListResponse;
 import com.ripple.BE.user.dto.response.UserCompletedResponse;
+import com.ripple.BE.user.dto.response.UserCompletionRateByLevelDTOResponse;
 import com.ripple.BE.user.dto.response.UserGoalResponse;
 import com.ripple.BE.user.dto.response.UserInfoResponse;
 import com.ripple.BE.user.service.MyPageService;
-import com.ripple.BE.user.service.UserProgressService;
 import com.ripple.BE.user.service.UserService;
+import com.ripple.BE.user.service.UserStatService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -52,7 +43,7 @@ public class UserController {
 
     private final UserService userService;
     private final MyPageService myPageService;
-    private final UserProgressService userProgressService;
+    private final UserStatService userStatService;
 
     @Operation(
             summary = "프로필 등록",
@@ -137,59 +128,10 @@ public class UserController {
     public ResponseEntity<ApiResponse<Object>> getUserLearningProgress(
             final @AuthenticationPrincipal CustomUserDetails currentUser) {
 
-        ProgressDTO progressDTO = userProgressService.getLearningSetCompletionRate(currentUser.getId());
+        UserCompletionRateByLevelDTOResponse dtoResponse =
+                userStatService.getLearningSetCompletionRate(currentUser.getId());
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(ProgressResponse.toProgressResponse(progressDTO)));
-    }
-
-    @Operation(summary = "틀린 문제 조회", description = "로그인 한 유저가 틀렸던 문제를 조회합니다.")
-    @GetMapping("/wrong-quizzes")
-    public ResponseEntity<ApiResponse<Object>> getWrongQuizzes(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            final @RequestParam(defaultValue = "BEGINNER") Level level) {
-
-        FailQuizListDTO failQuizListDTO =
-                myPageService.getMyFailQuizzes(customUserDetails.getId(), level);
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(FailQuizListResponse.toFailQuizListResponse(failQuizListDTO)));
-    }
-
-    @Operation(summary = "내가 좋아요한 댓글 조회", description = "로그인한 유저가 좋아요한 댓글을 조회합니다.")
-    @GetMapping("/like-comments")
-    public ResponseEntity<ApiResponse<Object>> getMyLikeComments(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-
-        List<LikeCommentResponseDTO> myLikeComments =
-                myPageService.getMyLikeComments(customUserDetails.getId());
-
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(myLikeComments));
-    }
-
-    @Operation(summary = "내가 스크랩한 퀴즈 조회", description = "로그인한 유저가 스크랩한 퀴즈를 조회합니다.")
-    @GetMapping("/scrap-quizzes")
-    public ResponseEntity<ApiResponse<Object>> getMyScrapQuizzes(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestParam(defaultValue = "BEGINNER") Level level) {
-
-        QuizListDTO myScrapQuizzes = myPageService.getMyScrapQuizzes(customUserDetails.getId(), level);
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(ScrapQuizListResponse.toScrapQuizListResponse(myScrapQuizzes)));
-    }
-
-    @Operation(summary = "내가 스크랩한 개념 학습 조회", description = "로그인한 유저가 스크랩한 학습을 조회합니다.")
-    @GetMapping("/scrap-concepts")
-    public ResponseEntity<ApiResponse<Object>> getMyScrapConcepts(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestParam(defaultValue = "BEGINNER") Level level) {
-
-        ConceptListDTO conceptListDTO = myPageService.getMyConcepts(customUserDetails.getId(), level);
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(
-                        ApiResponse.from(ScrapConceptListResponse.toScrapConceptListResponse(conceptListDTO)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(dtoResponse));
     }
 
     @Operation(summary = "내가 스크랩한 뉴스 조회", description = "로그인한 유저가 스크랩한 뉴스를 조회합니다.")

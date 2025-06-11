@@ -1,19 +1,17 @@
 package com.ripple.BE.learning.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
-import com.ripple.BE.learning.dto.QuizDTO;
-import com.ripple.BE.learning.dto.QuizListDTO;
-import com.ripple.BE.learning.dto.QuizResultDTO;
-import com.ripple.BE.learning.dto.response.QuizListResponse;
-import com.ripple.BE.learning.dto.response.QuizResponse;
-import com.ripple.BE.learning.dto.response.QuizResultResponse;
-import com.ripple.BE.learning.service.quiz.QuizService;
+import com.ripple.BE.learning.application.quiz.QuizService;
+import com.ripple.BE.learning.dto.response.quiz.QuizResponseDTO;
+import com.ripple.BE.learning.dto.response.quiz.QuizResultResponseDTO;
+import com.ripple.BE.learning.dto.response.quiz.RandomQuizResponseDTO;
 import com.ripple.BE.user.domain.CustomUserDetails;
 import com.ripple.BE.user.domain.type.Level;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,16 +36,16 @@ public class QuizController {
     @Operation(
             summary = "퀴즈 시작",
             description = "퀴즈를 시작하기 전 호출해주세요. (틀린 문제 보기, 스크랩한 퀴즈 조회)에서는 호출하지 않습니다.")
-    @PostMapping("/{learningSetId}/quizzes")
+    @PostMapping("/quizzes")
     public ResponseEntity<ApiResponse<Object>> startQuiz(
             final @AuthenticationPrincipal CustomUserDetails currentUser,
-            final @PathVariable("learningSetId") long learningSetId,
+            final @RequestParam("learningSetId") long learningSetId,
             final @RequestParam(defaultValue = "BEGINNER") Level level) {
 
-        QuizListDTO quizListDTO = quizService.startQuiz(currentUser.getId(), learningSetId, level);
+        List<RandomQuizResponseDTO> randomQuizResponseDTOList =
+                quizService.startQuiz(currentUser.getId(), learningSetId, level);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(QuizListResponse.toQuizListResponse(quizListDTO)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(randomQuizResponseDTOList));
     }
 
     @Validated
@@ -60,24 +58,21 @@ public class QuizController {
             final @PathVariable("quizId") long quizId,
             @RequestParam @Min(0) @Max(3) Integer answerIndex) {
 
-        QuizResultDTO quizResultDTO =
+        QuizResultResponseDTO quizResultResponseDTO =
                 quizService.submitAnswer(currentUser.getId(), quizId, answerIndex);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(QuizResultResponse.toQuizResultResponse(quizResultDTO)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(quizResultResponseDTO));
     }
 
     @Operation(
             summary = "퀴즈 완료",
             description =
                     "퀴즈를 종료한 후 호출합니다. (틀린 문제 보기, 스크랩한 퀴즈 조회)에서는 호출하지 않습니다. 퀴즈를 시작한 후에 30 분이 지나면 퀴즈 정답률에 대한 사용자 통계를 저장할 수 없습니다.")
-    @PostMapping("/{learningSetId}/quizzes/end")
+    @PostMapping("/quizzes/end")
     public ResponseEntity<ApiResponse<Object>> finishQuiz(
-            final @AuthenticationPrincipal CustomUserDetails currentUser,
-            final @PathVariable("learningSetId") long learningSetId,
-            final @RequestParam(defaultValue = "BEGINNER") Level level) {
+            final @AuthenticationPrincipal CustomUserDetails currentUser) {
 
-        quizService.finishQuiz(currentUser.getId(), learningSetId, level);
+        quizService.finishQuiz(currentUser.getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
@@ -110,9 +105,19 @@ public class QuizController {
     public ResponseEntity<ApiResponse<Object>> getSingleQuiz(
             final @PathVariable("quizId") long quizId) {
 
-        QuizDTO quizDTO = quizService.getSingleQuiz(quizId);
+        QuizResponseDTO quizResponseDTO = quizService.getSingleQuiz(quizId);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(QuizResponse.toQuizResponse(quizDTO)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(quizResponseDTO));
+    }
+
+    @Operation(
+            summary = "저장한 퀴즈 다시 풀기",
+            description = "저장한 퀴즈를 다시 풀기 위한 API입니다. 퀴즈 id와 답안 인덱스를 받아 정답 여부와 퀴즈 정보를 반환합니다.")
+    @PostMapping("/quiz/{quizId}/retry")
+    public ResponseEntity<ApiResponse<Object>> retryScrapQuiz(
+            final @PathVariable("quizId") long quizId,
+            @RequestParam @Min(0) @Max(3) Integer answerIndex) {
+        QuizResultResponseDTO quizResultResponseDTO = quizService.retryScrapQuiz(quizId, answerIndex);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(quizResultResponseDTO));
     }
 }
