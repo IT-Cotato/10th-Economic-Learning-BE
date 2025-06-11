@@ -1,14 +1,9 @@
 package com.ripple.BE.search.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
-
 import com.ripple.BE.news.dto.response.NewsPreviewListResponseDTO;
-
-import com.ripple.BE.news.dto.NewsListDTO;
-import com.ripple.BE.news.dto.response.NewsListResponse;
 import com.ripple.BE.post.application.PostQueryUseCase;
 import com.ripple.BE.post.application.ToktokQueryUseCase;
-
 import com.ripple.BE.post.dto.response.PostPreviewListResponseDTO;
 import com.ripple.BE.post.dto.response.ToktokPreviewListResponseDTO;
 import com.ripple.BE.search.dto.SearchKeywordListDTO;

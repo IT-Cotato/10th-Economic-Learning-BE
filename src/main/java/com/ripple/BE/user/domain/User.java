@@ -2,13 +2,6 @@ package com.ripple.BE.user.domain;
 
 import com.ripple.BE.global.entity.BaseJpaEntity;
 import com.ripple.BE.image.domain.Image;
-
-import com.ripple.BE.learning.domain.learningset.UserLearningSet;
-import com.ripple.BE.learning.domain.quiz.FailQuiz;
-
-import com.ripple.BE.news.domain.NewsScrap;
-import com.ripple.BE.term.domain.TermScrap;
-
 import com.ripple.BE.user.domain.type.BusinessType;
 import com.ripple.BE.user.domain.type.Gender;
 import com.ripple.BE.user.domain.type.Job;
@@ -26,13 +19,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -3,19 +3,7 @@ package com.ripple.BE.user.controller;
 import static com.ripple.BE.global.exception.errorcode.GlobalErrorCode.*;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
-
-import com.ripple.BE.learning.dto.ConceptListDTO;
-import com.ripple.BE.learning.dto.FailQuizListDTO;
-import com.ripple.BE.learning.dto.QuizListDTO;
-import com.ripple.BE.learning.dto.response.FailQuizListResponse;
-import com.ripple.BE.learning.dto.response.ScrapConceptListResponse;
-import com.ripple.BE.learning.dto.response.ScrapQuizListResponse;
 import com.ripple.BE.news.dto.response.NewsPreviewListResponseDTO;
-import com.ripple.BE.post.dto.response.LikeCommentResponseDTO;
-
-import com.ripple.BE.news.dto.NewsListDTO;
-import com.ripple.BE.news.dto.response.NewsListResponse;
-
 import com.ripple.BE.post.dto.response.PostPreviewResponseDTO;
 import com.ripple.BE.term.dto.response.TermListResponseDTO;
 import com.ripple.BE.term.exception.TermException;

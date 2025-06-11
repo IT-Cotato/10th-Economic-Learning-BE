@@ -6,27 +6,15 @@ import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 import com.ripple.BE.image.repository.ImageRepository;
 import com.ripple.BE.learning.domain.concept.Concept;
 import com.ripple.BE.learning.domain.quiz.Quiz;
-
-import com.ripple.BE.learning.dto.ConceptListDTO;
-import com.ripple.BE.learning.dto.FailQuizListDTO;
-import com.ripple.BE.learning.dto.QuizListDTO;
-import com.ripple.BE.learning.repository.conceptScrap.ConceptScrapRepository;
-import com.ripple.BE.learning.repository.quiz.QuizRepository;
-import com.ripple.BE.learning.repository.quizScrap.QuizScrapRepository;
-import com.ripple.BE.news.dto.response.NewsPreviewListResponseDTO;
-import com.ripple.BE.news.persistence.NewsScrapRepository;
-import com.ripple.BE.news.persistence.dto.NewsWithScrapDTO;
-
 import com.ripple.BE.learning.dto.response.quiz.FailQuizResponseDTO;
 import com.ripple.BE.learning.dto.response.scrap.ScrapConceptResponseDTO;
 import com.ripple.BE.learning.dto.response.scrap.ScrapQuizResponseDTO;
 import com.ripple.BE.learning.persistence.ConceptScrapRepository;
 import com.ripple.BE.learning.persistence.QuizRepository;
 import com.ripple.BE.learning.persistence.QuizScrapRepository;
-import com.ripple.BE.news.domain.News;
-import com.ripple.BE.news.dto.NewsListDTO;
-import com.ripple.BE.news.repository.newscrap.NewsScrapRepository;
-
+import com.ripple.BE.news.dto.response.NewsPreviewListResponseDTO;
+import com.ripple.BE.news.persistence.NewsScrapRepository;
+import com.ripple.BE.news.persistence.dto.NewsWithScrapDTO;
 import com.ripple.BE.post.domain.comment.Comment;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostType;
