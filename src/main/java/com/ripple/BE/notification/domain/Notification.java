@@ -1,75 +1,87 @@
 package com.ripple.BE.notification.domain;
 
-import com.ripple.BE.global.entity.BaseJpaEntity;
-import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
-import com.ripple.BE.user.domain.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Table(name = "notification")
 @Getter
-@Builder
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class Notification extends BaseJpaEntity {
+public class Notification {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
+    private final Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User receiver;
+    private final Long receiverId; // 수신자 ID
+    private final Long postId; // 게시글 ID (알림이 게시글과 관련된 경우)
+    private final String title; // 알림 제목
+    private final String content; // 알림 내용
+    private final NotificationType type; // 알림 유형 (예: 댓글, 대댓글, 좋아요 등)
+    private final boolean isRead; // 알림 읽음 여부
+    private final LocalDateTime createdDate; // 알림 생성 날짜
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private PostJpaEntity post;
+    @Builder(access = AccessLevel.PRIVATE)
+    private Notification(
+            Long id,
+            Long receiverId,
+            Long postId,
+            String title,
+            String content,
+            NotificationType type,
+            LocalDateTime createdDate,
+            boolean isRead) {
+        this.id = id;
+        this.receiverId = receiverId;
+        this.postId = postId;
+        this.title = title;
+        this.content = content;
+        this.type = type;
+        this.isRead = isRead;
+        this.createdDate = createdDate;
+    }
 
-    @Column(name = "title", nullable = false)
-    private String title;
-
-    @Column(name = "content", nullable = false)
-    private String content;
-
-    // 알림 유형 (예: 댓글, 대댓글, 좋아요 등)
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
-    private NotificationType type;
-
-    @Setter
-    @Column(name = "is_read", nullable = false)
-    private boolean isRead = false;
-
-    public static Notification toNotificationEntity(
-            final User receiver,
-            final String content,
-            final String title,
-            final NotificationType type,
-            final PostJpaEntity post) {
-
+    public static Notification withId(
+            Long id,
+            Long receiverId,
+            Long postId,
+            String title,
+            String content,
+            NotificationType type,
+            LocalDateTime createdDate,
+            boolean isRead) {
         return Notification.builder()
-                .receiver(receiver)
-                .content(content)
+                .id(id)
+                .receiverId(receiverId)
+                .postId(postId)
                 .title(title)
-                .post(post)
+                .content(content)
                 .type(type)
+                .createdDate(createdDate)
+                .isRead(isRead)
+                .build();
+    }
+
+    public static Notification withoutId(
+            Long receiverId, Long postId, String title, String content, NotificationType type) {
+        return Notification.builder()
+                .receiverId(receiverId)
+                .postId(postId)
+                .title(title)
+                .content(content)
+                .type(type)
+                .createdDate(LocalDateTime.now())
+                .isRead(false)
+                .build();
+    }
+
+    public Notification updateIsRead(boolean isRead) {
+        return Notification.builder()
+                .id(this.id)
+                .receiverId(this.receiverId)
+                .postId(this.postId)
+                .title(this.title)
+                .content(this.content)
+                .type(this.type)
+                .createdDate(this.createdDate)
+                .isRead(isRead)
                 .build();
     }
 }
