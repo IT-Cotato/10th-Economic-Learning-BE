@@ -53,3 +53,16 @@ CREATE TABLE IF NOT EXISTS news_scraps (
     news_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL
 );
+
+--- Notification 테이블 생성 ---
+CREATE TABLE IF NOT EXISTS notification (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    created_date DATETIME(6) NOT NULL,
+    modified_date DATETIME(6) NOT NULL,
+    content VARCHAR(255) NOT NULL,
+    is_read BIT NOT NULL,
+    post_id BIGINT NULL,
+    user_id BIGINT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    type ENUM('COMMENT', 'POPULAR', 'REPLY') NOT NULL
+);
