@@ -26,8 +26,7 @@ public class ToktokQueryRepositoryImpl implements ToktokQueryRepository {
 
     @Override
     public Set<String> findAllTitles() {
-        BooleanExpression predicate =
-                postJpaEntity.type.eq(PostType.ECONOMY_TALK).and(postJpaEntity.usedDate.isNotNull());
+        BooleanExpression predicate = postJpaEntity.type.eq(PostType.ECONOMY_TALK);
 
         return new HashSet<>(
                 jpaQueryFactory.select(postJpaEntity.title).from(postJpaEntity).where(predicate).fetch());
