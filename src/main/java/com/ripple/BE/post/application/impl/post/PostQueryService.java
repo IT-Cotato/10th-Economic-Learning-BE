@@ -53,6 +53,10 @@ public class PostQueryService implements PostQueryUseCase {
             final int page, final PostSort sort, final PostType type, final long userId) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
+        if (type == PostType.ECONOMY_TALK) {
+            throw new PostException(POST_TYPE_NOT_SUPPORTED);
+        }
+
         Page<Post> postPage =
                 (type == null)
                         ? postRepository.findPosts(pageable, sort)

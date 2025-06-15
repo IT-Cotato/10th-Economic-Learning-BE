@@ -15,6 +15,7 @@ public enum PostErrorCode implements ErrorCode {
     SCRAP_NOT_FOUND(HttpStatus.NOT_FOUND, "Scrap not found"),
     TOKTOK_NOT_FOUND(HttpStatus.NOT_FOUND, "TodayToktok not found"),
     TOKTOK_SAVE_EXCEL_FILE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Toktok save excel file failed"),
+    POST_TYPE_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "Post type not supported"),
 
     LIKE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Like already exists"),
     SCRAP_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Scrap already exists"),
