@@ -2,7 +2,7 @@ package com.ripple.BE.post.application.impl.common;
 
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 
-import com.ripple.BE.notification.service.NotificationService;
+import com.ripple.BE.notification.application.event.SelectedPopularPostEvent;
 import com.ripple.BE.post.application.PostLikeUseCase;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.post.PostLike;
@@ -10,6 +10,7 @@ import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +24,7 @@ public class PostLikeService implements PostLikeUseCase {
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
 
-    private final NotificationService notificationService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public void addLikeToPost(final long postId, final long userId) {
@@ -37,11 +38,10 @@ public class PostLikeService implements PostLikeUseCase {
         PostLike postLike = PostLike.withoutId(userId, post.getId());
         postLikeRepository.save(postLike);
 
-        postRepository.save(post.increaseLikeCount());
+        post = postRepository.save(post.increaseLikeCount());
 
         if (post.getLikeCount() == POPULAR_POST_LIKE_COUNT) {
-            // notificationService.createPopularNotification(post);
-            // 알람 로직 수정 후 주석 해제
+            eventPublisher.publishEvent(new SelectedPopularPostEvent(post));
         }
     }
 

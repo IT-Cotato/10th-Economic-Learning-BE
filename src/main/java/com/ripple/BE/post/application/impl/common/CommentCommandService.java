@@ -2,7 +2,8 @@ package com.ripple.BE.post.application.impl.common;
 
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 
-import com.ripple.BE.notification.service.NotificationService;
+import com.ripple.BE.notification.application.event.CommentCreatedEvent;
+import com.ripple.BE.notification.application.event.ReplyCommentCreatedEvent;
 import com.ripple.BE.post.application.CommentCommandUseCase;
 import com.ripple.BE.post.domain.comment.Comment;
 import com.ripple.BE.post.domain.post.Post;
@@ -11,21 +12,25 @@ import com.ripple.BE.post.persistence.CommentLikeRepository;
 import com.ripple.BE.post.persistence.CommentRepository;
 import com.ripple.BE.post.persistence.PostRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class CommentCommandService implements CommentCommandUseCase {
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
 
-    private final NotificationService notificationService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
+    @Transactional
     public void addCommentToPost(final long userId, final long postId, final String content) {
 
         Post post = findPostByIdForUpdate(postId);
@@ -35,8 +40,7 @@ public class CommentCommandService implements CommentCommandUseCase {
 
         postRepository.save(post.increaseCommentCount());
 
-        // notificationService.createCommentNotification(post, commentJpaEntity);
-        // 알람 서비스 로직 수정 후 주석 해제
+        eventPublisher.publishEvent(new CommentCreatedEvent(post, comment));
     }
 
     @Override
@@ -54,7 +58,7 @@ public class CommentCommandService implements CommentCommandUseCase {
 
         postRepository.save(post.increaseCommentCount());
 
-        // notificationService.createReplyNotification(post, commentJpaEntity);
+        eventPublisher.publishEvent(new ReplyCommentCreatedEvent(post, comment, parentComment));
     }
 
     @Override
