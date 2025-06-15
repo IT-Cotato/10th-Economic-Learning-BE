@@ -12,14 +12,23 @@ spring:
     password:
     driver-class-name: org.h2.Driver
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 100
+
+  sql:
+    init:
+      mode: never
 
   h2:
     console:
@@ -50,7 +59,11 @@ cloud:
 
 logging:
   level:
-    root: INFO
+    org.springframework.transaction: DEBUG
+    # org.hibernate.SQL: DEBUG  # SQL 로그도 보고 싶다면
+    org.hibernate.resource.transaction: DEBUG
+    org.springframework.transaction.interceptor: DEBUG
+    org.springframework.orm.jpa.JpaTransactionManager: DEBUG
 
 swagger:
   server:
