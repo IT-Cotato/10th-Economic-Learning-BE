@@ -30,7 +30,6 @@ public class CommentCommandService implements CommentCommandUseCase {
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
-    @Transactional
     public void addCommentToPost(final long userId, final long postId, final String content) {
 
         Post post = findPostByIdForUpdate(postId);
