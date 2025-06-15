@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LearningAdminService {
 
-    private static final String FILE_PATH = "static/excel/example.xlsx";
+    private static final String FILE_PATH = "static/excel/learningset.xlsx";
     private static final int LEARNING_SET_SHEET_INDEX = 0;
     private static final int CONCEPT_SHEET_INDEX = 1;
     private static final int QUIZ_SHEET_INDEX = 2;

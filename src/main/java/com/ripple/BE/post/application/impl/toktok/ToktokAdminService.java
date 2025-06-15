@@ -79,11 +79,13 @@ public class ToktokAdminService implements ToktokAdminUseCase {
 
         Post toktokPost = Post.withoutId(title, content, null, ECONOMY_TALK, null);
 
+        toktokPost = toktokRepository.save(toktokPost);
+
         if (imageUrl != null && !imageUrl.isEmpty()) {
             addImageToPost(toktokPost, imageUrl);
         }
 
-        return toktokRepository.save(toktokPost);
+        return toktokPost;
     }
 
     /** 이미지 추가 로직 */
