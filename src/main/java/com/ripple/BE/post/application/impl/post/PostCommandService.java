@@ -5,7 +5,7 @@ import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 
 import com.ripple.BE.image.domain.Image;
 import com.ripple.BE.image.exception.ImageException;
-import com.ripple.BE.image.repository.ImageRepository;
+import com.ripple.BE.image.persistence.ImageRepository;
 import com.ripple.BE.post.application.PostCommandUseCase;
 import com.ripple.BE.post.application.command.CreatePostCommand;
 import com.ripple.BE.post.application.command.UpdatePostCommand;
@@ -16,7 +16,7 @@ import com.ripple.BE.post.persistence.CommentRepository;
 import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostRepository;
 import com.ripple.BE.post.persistence.PostScrapRepository;
-import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,15 +46,18 @@ public class PostCommandService implements PostCommandUseCase {
 
         Post saved = postRepository.save(post);
 
-        if (createPostCommand.imageIds() != null) {
+        if (createPostCommand.imageIds() != null && !createPostCommand.imageIds().isEmpty()) {
+            List<Image> imagesToUpdate = new ArrayList<>();
+
             for (long imageId : createPostCommand.imageIds()) {
                 Image image =
                         imageRepository
                                 .findById(imageId)
                                 .orElseThrow(() -> new ImageException(IMAGE_NOT_FOUND));
-                image.setPost(PostJpaEntity.from(saved)); // 추후 Post로 변경
-                imageRepository.save(image);
+                imagesToUpdate.add(image.updatePostId(saved.getId()));
             }
+
+            imageRepository.saveAll(imagesToUpdate);
         }
     }
 
@@ -74,17 +77,21 @@ public class PostCommandService implements PostCommandUseCase {
                         updatePostCommand.newTitle(),
                         updatePostCommand.newContent(),
                         updatePostCommand.newType());
+
         List<Long> newImageIdList = updatePostCommand.newImageIds();
 
         if (newImageIdList != null && !newImageIdList.isEmpty()) {
+            List<Image> updatedImages = new ArrayList<>();
+
             for (long imageId : newImageIdList) {
                 Image image =
                         imageRepository
                                 .findById(imageId)
                                 .orElseThrow(() -> new ImageException(IMAGE_NOT_FOUND));
-                image.setPost(PostJpaEntity.from(post)); // 추후 Post로 변경
-                imageRepository.save(image);
+                updatedImages.add(image.updatePostId(post.getId()));
             }
+
+            imageRepository.saveAll(updatedImages);
         }
 
         postRepository.save(post);
