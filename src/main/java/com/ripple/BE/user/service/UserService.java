@@ -5,7 +5,8 @@ import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
 import com.ripple.BE.auth.dto.kakao.KakaoUserInfoResponse;
 import com.ripple.BE.image.domain.Image;
-import com.ripple.BE.image.repository.ImageRepository;
+import com.ripple.BE.image.persistence.ImageRepository;
+import com.ripple.BE.image.persistence.jpa.entity.ImageJpaEntity;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.UserGoal;
 import com.ripple.BE.user.domain.type.LoginType;
@@ -70,7 +71,10 @@ public class UserService {
                             .orElseThrow(() -> new UserException(IMAGE_NOT_FOUND));
         }
 
-        user.updateProfile(request, image);
+        if (image != null) {
+            user.updateProfileImage(ImageJpaEntity.from(image)); // 추후 수정 필요
+        }
+        user.updateProfile(request);
         attendanceService.createAttendance(user);
     }
 
@@ -210,7 +214,7 @@ public class UserService {
                             .findById(updateUserProfileRequest.imageId())
                             .orElseThrow(() -> new UserException(IMAGE_NOT_FOUND));
 
-            user.updateProfileImage(image);
+            user.updateProfileImage(ImageJpaEntity.from(image)); // 추후 수정 필요
         }
     }
 }

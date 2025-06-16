@@ -100,6 +100,6 @@ public class S3Uploader {
     }
 
     private S3Info buildS3Info(String folderName, File file, String uploadUrl) {
-        return S3Info.builder().folderName(folderName).fileName(file.getName()).url(uploadUrl).build();
+        return S3Info.of(folderName, file.getName(), uploadUrl);
     }
 }
