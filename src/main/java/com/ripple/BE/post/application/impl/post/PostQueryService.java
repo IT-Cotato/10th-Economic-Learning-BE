@@ -3,9 +3,8 @@ package com.ripple.BE.post.application.impl.post;
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
-import com.ripple.BE.global.config.cache.PostCacheKeyGenerator;
 import com.ripple.BE.image.dto.response.ImageResponse;
-import com.ripple.BE.image.repository.ImageRepository;
+import com.ripple.BE.image.persistence.ImageRepository;
 import com.ripple.BE.post.application.CommentQueryUseCase;
 import com.ripple.BE.post.application.PostQueryUseCase;
 import com.ripple.BE.post.domain.post.Post;
@@ -19,11 +18,12 @@ import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostRepository;
 import com.ripple.BE.post.persistence.PostScrapRepository;
+import com.ripple.BE.post.persistence.dto.PostWithScrapAndImageDTO;
+import com.ripple.BE.search.service.SearchService;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.repository.UserRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,13 +42,11 @@ public class PostQueryService implements PostQueryUseCase {
     private final ImageRepository imageRepository;
 
     private final CommentQueryUseCase commentQueryUseCase;
+    private final SearchService searchService;
 
     private static final int PAGE_SIZE = 10;
 
     @Override
-    @Cacheable(
-            value = PostCacheKeyGenerator.CACHE_NAME_POSTS,
-            keyGenerator = PostCacheKeyGenerator.POST_CACHE_KEY_GENERATOR)
     public PostPreviewListResponseDTO getPosts(
             final int page, final PostSort sort, final PostType type, final long userId) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
@@ -57,39 +55,22 @@ public class PostQueryService implements PostQueryUseCase {
             throw new PostException(POST_TYPE_NOT_SUPPORTED);
         }
 
-        Page<Post> postPage =
+        Page<PostWithScrapAndImageDTO> postPage =
                 (type == null)
-                        ? postRepository.findPosts(pageable, sort)
-                        : postRepository.findByType(type, sort, pageable);
+                        ? postRepository.findPosts(pageable, sort, userId)
+                        : postRepository.findByType(type, sort, pageable, userId);
 
         List<PostPreviewResponseDTO> previews =
-                postPage.getContent().stream().map(post -> toPreview(post, userId)).toList();
+                postPage.getContent().stream().map(PostPreviewResponseDTO::from).toList();
 
         return PostPreviewListResponseDTO.of(previews, postPage.getTotalPages(), postPage.getNumber());
     }
 
     @Override
-    @Cacheable(
-            value = PostCacheKeyGenerator.CACHE_NAME_POPULAR_POSTS,
-            keyGenerator = PostCacheKeyGenerator.POST_CACHE_KEY_GENERATOR)
     public List<PostPreviewResponseDTO> getPopularPosts(final long userId) {
-        return postRepository.findPopularPosts().stream().map(post -> toPreview(post, userId)).toList();
-    }
-
-    @Override
-    @Cacheable(
-            value = PostCacheKeyGenerator.CACHE_NAME_POST_SEARCH,
-            keyGenerator = PostCacheKeyGenerator.POST_CACHE_KEY_GENERATOR)
-    public PostPreviewListResponseDTO searchPosts(
-            final String keyword, final int page, final long userId) {
-        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
-
-        Page<Post> postPage = postRepository.searchNormalPosts(keyword, pageable);
-        List<PostPreviewResponseDTO> previews =
-                postPage.getContent().stream().map(post -> toPreview(post, userId)).toList();
-
-        /** 추후 검색어에 대한 최근 검색어 저장 로직 추가 */
-        return PostPreviewListResponseDTO.of(previews, postPage.getTotalPages(), postPage.getNumber());
+        return postRepository.findPopularPosts(userId).stream()
+                .map(PostPreviewResponseDTO::from)
+                .toList();
     }
 
     @Override
@@ -113,15 +94,17 @@ public class PostQueryService implements PostQueryUseCase {
                 post, author, imageResponses, commentDTOs, isScrapped, isLiked, isAuthor);
     }
 
-    private PostPreviewResponseDTO toPreview(Post post, long userId) {
-        String imageUrl =
-                imageRepository.findByPostId(post.getId()).stream()
-                        .findFirst()
-                        .map(image -> image.getS3Info().getUrl())
-                        .orElse(null);
+    public PostPreviewListResponseDTO searchPosts(
+            final String keyword, final int page, final long userId) {
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        Page<PostWithScrapAndImageDTO> postPage =
+                postRepository.searchNormalPosts(keyword, pageable, userId);
 
-        boolean isScraped = postScrapRepository.existsByPostIdAndUserId(post.getId(), userId);
+        List<PostPreviewResponseDTO> previews =
+                postPage.getContent().stream().map(PostPreviewResponseDTO::from).toList();
 
-        return PostPreviewResponseDTO.of(post, imageUrl, isScraped);
+        searchService.addRecentSearch(userId, keyword);
+
+        return PostPreviewListResponseDTO.of(previews, postPage.getTotalPages(), postPage.getNumber());
     }
 }

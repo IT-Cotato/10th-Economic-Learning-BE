@@ -1,13 +1,19 @@
 package com.ripple.BE.post.persistence.jpa.repository.post;
 
+import static com.ripple.BE.image.persistence.jpa.entity.QImageJpaEntity.*;
 import static com.ripple.BE.post.persistence.jpa.entity.QPostJpaEntity.*;
+import static com.ripple.BE.post.persistence.jpa.entity.QPostScrapJpaEntity.*;
 
+import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.domain.type.PostType;
+import com.ripple.BE.post.persistence.dto.ToktokWithScrapAndImageDTO;
 import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -33,8 +39,8 @@ public class ToktokQueryRepositoryImpl implements ToktokQueryRepository {
     }
 
     @Override
-    public Page<PostJpaEntity> searchUsedToktokPosts(String keyword, Pageable pageable) {
-
+    public Page<ToktokWithScrapAndImageDTO> searchUsedToktokPosts(
+            String keyword, Pageable pageable, long userId) {
         BooleanExpression predicate =
                 postJpaEntity.type.eq(PostType.ECONOMY_TALK).and(postJpaEntity.usedDate.isNotNull());
 
@@ -44,12 +50,20 @@ public class ToktokQueryRepositoryImpl implements ToktokQueryRepository {
                             postJpaEntity.title.contains(keyword).or(postJpaEntity.content.contains(keyword)));
         }
 
-        List<PostJpaEntity> posts = getPostsByPageable(pageable, predicate, PostSort.RECENT);
+        List<ToktokWithScrapAndImageDTO> content =
+                jpaQueryFactory
+                        .select(toktokPreviewProjection(userId))
+                        .from(postJpaEntity)
+                        .where(predicate)
+                        .orderBy(postJpaEntity.usedDate.desc())
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
+                        .fetch();
 
         JPAQuery<Long> countQuery =
                 jpaQueryFactory.select(postJpaEntity.count()).from(postJpaEntity).where(predicate);
 
-        return PageableExecutionUtils.getPage(posts, pageable, countQuery::fetchOne);
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
     @Override
@@ -61,47 +75,75 @@ public class ToktokQueryRepositoryImpl implements ToktokQueryRepository {
     }
 
     @Override
-    public Page<PostJpaEntity> findUsedToktokPosts(Pageable pageable, PostSort postSort) {
+    public Page<ToktokWithScrapAndImageDTO> findUsedToktokPosts(
+            Pageable pageable, PostSort postSort, long userId) {
         BooleanExpression predicate =
                 postJpaEntity.type.eq(PostType.ECONOMY_TALK).and(postJpaEntity.usedDate.isNotNull());
 
-        List<PostJpaEntity> posts = getPostsByPageable(pageable, predicate, postSort);
+        List<ToktokWithScrapAndImageDTO> content =
+                jpaQueryFactory
+                        .select(toktokPreviewProjection(userId))
+                        .from(postJpaEntity)
+                        .where(predicate)
+                        .orderBy(getOrderSpecifiers(postSort))
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
+                        .fetch();
 
         JPAQuery<Long> countQuery =
                 jpaQueryFactory.select(postJpaEntity.count()).from(postJpaEntity).where(predicate);
 
-        return PageableExecutionUtils.getPage(posts, pageable, countQuery::fetchOne);
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchOne);
     }
 
     @Override
-    public Optional<PostJpaEntity> findByUsedDate(LocalDate usedDate) {
+    public Optional<ToktokWithScrapAndImageDTO> findByUsedDate(LocalDate usedDate, long userId) {
         BooleanExpression predicate =
                 postJpaEntity.type.eq(PostType.ECONOMY_TALK).and(postJpaEntity.usedDate.eq(usedDate));
 
-        PostJpaEntity result = jpaQueryFactory.selectFrom(postJpaEntity).where(predicate).fetchOne();
+        ToktokWithScrapAndImageDTO dto =
+                jpaQueryFactory
+                        .select(toktokPreviewProjection(userId))
+                        .from(postJpaEntity)
+                        .where(predicate)
+                        .fetchOne();
 
-        return Optional.ofNullable(result);
+        return Optional.ofNullable(dto);
     }
 
-    private List<PostJpaEntity> getPostsByPageable(
-            Pageable pageable, BooleanExpression predicate, PostSort postSort) {
-        OrderSpecifier<?>[] orderBy =
-                (postSort == PostSort.POPULAR)
-                        ? new OrderSpecifier[] {
-                            postJpaEntity.likeCount.desc(), postJpaEntity.createdDate.desc()
-                        }
-                        : new OrderSpecifier[] {
-                            postJpaEntity.usedDate != null
-                                    ? postJpaEntity.usedDate.desc()
-                                    : postJpaEntity.createdDate.desc()
-                        };
+    private ConstructorExpression<ToktokWithScrapAndImageDTO> toktokPreviewProjection(long userId) {
+        return Projections.constructor(
+                ToktokWithScrapAndImageDTO.class,
+                postJpaEntity.id,
+                postJpaEntity.title,
+                postJpaEntity.content,
+                postJpaEntity.type,
+                postJpaEntity.likeCount,
+                postJpaEntity.commentCount,
+                postJpaEntity.scrapCount,
+                JPAExpressions.select(imageJpaEntity.s3Info.url)
+                        .from(imageJpaEntity)
+                        .where(imageJpaEntity.postId.eq(postJpaEntity.id))
+                        .orderBy(imageJpaEntity.id.asc())
+                        .limit(1),
+                JPAExpressions.select(postScrapJpaEntity.count())
+                        .from(postScrapJpaEntity)
+                        .where(
+                                postScrapJpaEntity
+                                        .postId
+                                        .eq(postJpaEntity.id)
+                                        .and(postScrapJpaEntity.userId.eq(userId)))
+                        .gt(0L),
+                postJpaEntity.usedDate);
+    }
 
-        return jpaQueryFactory
-                .selectFrom(postJpaEntity)
-                .where(predicate)
-                .orderBy(orderBy)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+    private OrderSpecifier<?>[] getOrderSpecifiers(PostSort postSort) {
+        return (postSort == PostSort.POPULAR)
+                ? new OrderSpecifier[] {postJpaEntity.likeCount.desc(), postJpaEntity.usedDate.desc()}
+                : new OrderSpecifier[] {
+                    postJpaEntity.usedDate != null
+                            ? postJpaEntity.usedDate.desc()
+                            : postJpaEntity.createdDate.desc()
+                };
     }
 }

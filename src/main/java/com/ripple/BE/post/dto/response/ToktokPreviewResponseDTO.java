@@ -1,9 +1,9 @@
 package com.ripple.BE.post.dto.response;
 
 import com.ripple.BE.global.utils.RelativeTimeFormatter;
-import com.ripple.BE.post.domain.post.Post;
-import com.ripple.BE.user.dto.UserRandomProfileListDTO;
-import com.ripple.BE.user.dto.response.UserRandomProfileListResponse;
+import com.ripple.BE.post.persistence.dto.ToktokWithScrapAndImageDTO;
+import com.ripple.BE.user.domain.User;
+import java.util.List;
 
 public record ToktokPreviewResponseDTO(
         Long id,
@@ -14,25 +14,26 @@ public record ToktokPreviewResponseDTO(
         String imageUrl,
         Boolean isScraped,
         String createdDate,
-        UserRandomProfileListResponse userRandomProfileListResponse) {
+        List<UserRandomProfileDTO> userProfiles // 중첩 DTO
+        ) {
+    public record UserRandomProfileDTO(String nickname, String profileImageUrl) {
+        public static UserRandomProfileDTO from(User user) {
+            return new UserRandomProfileDTO(
+                    user.getNickname(),
+                    user.getProfileImage() == null ? null : user.getProfileImage().getS3Info().getUrl());
+        }
+    }
 
-    public static ToktokPreviewResponseDTO of(
-            Post toktokPost,
-            String imageUrl,
-            boolean isScraped,
-            UserRandomProfileListDTO userRandomProfileListDTO) {
+    public static ToktokPreviewResponseDTO of(ToktokWithScrapAndImageDTO dto, List<User> users) {
         return new ToktokPreviewResponseDTO(
-                toktokPost.getId(),
-                toktokPost.getTitle(),
-                toktokPost.getCommentCount(),
-                toktokPost.getLikeCount(),
-                toktokPost.getScrapCount(),
-                imageUrl,
-                isScraped,
-                RelativeTimeFormatter.formatRelativeTime(toktokPost.getCreatedDate()),
-                userRandomProfileListDTO == null
-                        ? null
-                        : UserRandomProfileListResponse.toUserRandomProfileListResponse(
-                                userRandomProfileListDTO));
+                dto.id(),
+                dto.title(),
+                dto.commentCount(),
+                dto.likeCount(),
+                dto.scrapCount(),
+                dto.imageUrl(),
+                dto.isScraped(),
+                RelativeTimeFormatter.formatRelativeTime(dto.usedDate().atStartOfDay()),
+                users.stream().map(UserRandomProfileDTO::from).toList());
     }
 }
