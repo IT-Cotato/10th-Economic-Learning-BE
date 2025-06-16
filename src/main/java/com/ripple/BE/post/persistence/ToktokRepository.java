@@ -2,9 +2,11 @@ package com.ripple.BE.post.persistence;
 
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
+import com.ripple.BE.post.persistence.dto.ToktokWithScrapAndImageDTO;
 import com.ripple.BE.user.domain.User;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.data.domain.Page;
@@ -19,15 +21,19 @@ public interface ToktokRepository {
     // 게시글에 댓글을 단 사용자 목록을 조회한다.
     List<User> findUsersByToktokPostId(final long postId);
 
-    Optional<Post> findByUsedDate(final LocalDate usedDate);
+    Optional<ToktokWithScrapAndImageDTO> findByUsedDate(final LocalDate usedDate, final long userId);
 
     Optional<Post> findById(final long id);
 
-    Page<Post> findUsedToktokPosts(final Pageable pageable, final PostSort postSort);
+    Page<ToktokWithScrapAndImageDTO> findUsedToktokPosts(
+            final Pageable pageable, final PostSort postSort, final long userId);
 
     List<Post> findNewToktokPosts();
 
     Set<String> findAllTitles();
 
-    Page<Post> searchUsedToktokPosts(final String keyword, final Pageable pageable);
+    Page<ToktokWithScrapAndImageDTO> searchUsedToktokPosts(
+            final String keyword, final Pageable pageable, final long userId);
+
+    Map<Long, List<User>> findUsersByToktokPostIds(List<Long> postIds);
 }
