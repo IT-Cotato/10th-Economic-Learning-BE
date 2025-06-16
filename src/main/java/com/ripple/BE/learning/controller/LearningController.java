@@ -1,7 +1,6 @@
 package com.ripple.BE.learning.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
-import com.ripple.BE.learning.application.learningset.LearningAdminService;
 import com.ripple.BE.learning.application.learningset.LearningSetService;
 import com.ripple.BE.learning.dto.response.learningset.UserLearningSetPreviewResponseDTO;
 import com.ripple.BE.user.domain.CustomUserDetails;
@@ -13,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,14 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class LearningController {
 
     private final LearningSetService learningSetService;
-    private final LearningAdminService learningAdminService;
-
-    @Operation(summary = "학습 세트 생성 (관리자 전용)", description = "엑셀 파일로부터 학습 세트를 생성합니다. (관리자 전용)")
-    @PostMapping("/admin/excel")
-    public ResponseEntity<ApiResponse<?>> saveLearningSetsByExcel() {
-        learningAdminService.createLearningSetByExcel();
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
-    }
 
     @Operation(
             summary = "레벨별 학습 세트 조회",

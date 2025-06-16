@@ -1,9 +1,9 @@
 package com.ripple.BE.image.controller;
 
 import com.ripple.BE.global.dto.response.ApiResponse;
+import com.ripple.BE.image.application.ImageService;
 import com.ripple.BE.image.dto.response.ImageIdResponse;
 import com.ripple.BE.image.dto.response.ImageUrlResponse;
-import com.ripple.BE.image.service.ImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

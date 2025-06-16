@@ -1,8 +1,8 @@
 package com.ripple.BE.post.dto.response;
 
 import com.ripple.BE.global.utils.RelativeTimeFormatter;
-import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostType;
+import com.ripple.BE.post.persistence.dto.PostWithScrapAndImageDTO;
 
 public record PostPreviewResponseDTO(
         Long id,
@@ -15,16 +15,16 @@ public record PostPreviewResponseDTO(
         boolean isScraped,
         String createdDate) {
 
-    public static PostPreviewResponseDTO of(Post post, String imageUrl, boolean isScraped) {
+    public static PostPreviewResponseDTO from(PostWithScrapAndImageDTO postWithScrapAndImageDTO) {
         return new PostPreviewResponseDTO(
-                post.getId(),
-                post.getTitle(),
-                post.getContent(),
-                post.getType(),
-                post.getLikeCount(),
-                post.getCommentCount(),
-                imageUrl,
-                isScraped,
-                RelativeTimeFormatter.formatRelativeTime(post.getCreatedDate()));
+                postWithScrapAndImageDTO.id(),
+                postWithScrapAndImageDTO.title(),
+                postWithScrapAndImageDTO.content(),
+                postWithScrapAndImageDTO.type(),
+                postWithScrapAndImageDTO.likeCount(),
+                postWithScrapAndImageDTO.commentCount(),
+                postWithScrapAndImageDTO.imageUrl(),
+                postWithScrapAndImageDTO.isScraped(),
+                RelativeTimeFormatter.formatRelativeTime(postWithScrapAndImageDTO.createdDate()));
     }
 }

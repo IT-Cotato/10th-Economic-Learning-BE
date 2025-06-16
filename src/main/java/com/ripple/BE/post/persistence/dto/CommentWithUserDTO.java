@@ -1,6 +1,6 @@
 package com.ripple.BE.post.persistence.dto;
 
-import com.ripple.BE.image.domain.Image;
+import com.ripple.BE.image.persistence.jpa.entity.ImageJpaEntity;
 import java.time.LocalDateTime;
 
 public record CommentWithUserDTO(
@@ -12,5 +12,5 @@ public record CommentWithUserDTO(
         boolean isDeleted,
         Long commenterId,
         String commenterName,
-        Image profileImage,
+        ImageJpaEntity profileImage,
         LocalDateTime createdDate) {}

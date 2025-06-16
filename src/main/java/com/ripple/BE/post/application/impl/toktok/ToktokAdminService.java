@@ -8,17 +8,15 @@ import com.ripple.BE.global.excel.ExcelUtils;
 import com.ripple.BE.image.domain.Image;
 import com.ripple.BE.image.domain.S3Info;
 import com.ripple.BE.image.exception.ImageException;
-import com.ripple.BE.image.repository.ImageRepository;
+import com.ripple.BE.image.persistence.ImageRepository;
 import com.ripple.BE.image.s3.S3Uploader;
 import com.ripple.BE.post.application.ToktokAdminUseCase;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.ToktokRepository;
-import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -49,17 +47,17 @@ public class ToktokAdminService implements ToktokAdminUseCase {
     /** 엑셀을 기반으로 Toktok 게시글을 생성 */
     public void createToktokByExcel() {
         try {
+            // 1. 엑셀 파일 파싱
             List<Map<String, String>> excelDataList =
                     ExcelUtils.parseExcelFile(FILE_PATH, TOKTOK_SHEET_INDEX);
+
+            // 2. 이미 존재하는 제목 조회
             Set<String> existingTitles = toktokRepository.findAllTitles();
 
-            List<Post> newToktokList =
-                    excelDataList.stream()
-                            .map(excelData -> createToktok(excelData, existingTitles))
-                            .filter(Objects::nonNull)
-                            .toList();
-
-            log.info("새로운 경제 톡톡 게시물 개수: {}", newToktokList.size());
+            // 3. 각 엑셀 행 데이터를 기반으로 게시글 생성
+            for (Map<String, String> excelRow : excelDataList) {
+                createToktok(excelRow, existingTitles);
+            }
 
         } catch (Exception e) {
             log.error("경제 톡톡 엑셀 파일 저장 실패", e);
@@ -68,13 +66,13 @@ public class ToktokAdminService implements ToktokAdminUseCase {
     }
 
     /** 개별 Toktok 게시글을 생성하여 저장 */
-    private Post createToktok(Map<String, String> excelData, Set<String> existingTitles) {
+    private void createToktok(Map<String, String> excelData, Set<String> existingTitles) {
         String title = excelData.get(TITLE_COLUMN);
         String content = excelData.get(CONTENT_COLUMN);
         String imageUrl = excelData.get(IMAGE_COLUMN);
 
         if (existingTitles.contains(title)) {
-            return null; // 기존 게시물은 건너뛰기
+            return; // 기존 게시물은 건너뛰기
         }
 
         Post toktokPost = Post.withoutId(title, content, null, ECONOMY_TALK, null);
@@ -84,14 +82,12 @@ public class ToktokAdminService implements ToktokAdminUseCase {
         if (imageUrl != null && !imageUrl.isEmpty()) {
             addImageToPost(toktokPost, imageUrl);
         }
-
-        return toktokPost;
     }
 
     /** 이미지 추가 로직 */
     private void addImageToPost(Post post, String imageUrl) {
         Image image = findOrCreateImage(imageUrl);
-        image.setPost(PostJpaEntity.from(post)); // 추후 Post로 변경
+        image = image.updatePostId(post.getId());
         imageRepository.save(image);
     }
 
@@ -109,10 +105,9 @@ public class ToktokAdminService implements ToktokAdminUseCase {
 
         String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
 
-        S3Info s3Info =
-                S3Info.builder().folderName(TOKTOK_FOLDER_NAME).fileName(fileName).url(imageUrl).build();
+        S3Info s3Info = S3Info.of(TOKTOK_FOLDER_NAME, fileName, imageUrl);
 
-        return Image.toImageEntity(s3Info);
+        return Image.withoutId(s3Info, null, null);
     }
 
     @Override

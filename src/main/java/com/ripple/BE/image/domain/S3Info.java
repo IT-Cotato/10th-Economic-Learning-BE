@@ -1,19 +1,23 @@
 package com.ripple.BE.image.domain;
 
-import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Embeddable
-@Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Getter
 public class S3Info {
-    private String folderName;
-    private String fileName;
-    private String url;
+    private final String folderName;
+    private final String fileName;
+    private final String url;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    public S3Info(String folderName, String fileName, String url) {
+        this.folderName = folderName;
+        this.fileName = fileName;
+        this.url = url;
+    }
+
+    public static S3Info of(String folderName, String fileName, String url) {
+        return S3Info.builder().folderName(folderName).fileName(fileName).url(url).build();
+    }
 }

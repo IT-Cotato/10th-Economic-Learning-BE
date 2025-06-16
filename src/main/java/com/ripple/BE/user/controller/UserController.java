@@ -8,14 +8,13 @@ import com.ripple.BE.post.dto.response.PostPreviewResponseDTO;
 import com.ripple.BE.term.dto.response.TermListResponseDTO;
 import com.ripple.BE.term.exception.TermException;
 import com.ripple.BE.user.domain.CustomUserDetails;
-import com.ripple.BE.user.dto.UserCommentListDTO;
 import com.ripple.BE.user.dto.UserCompletedDTO;
 import com.ripple.BE.user.dto.UserGoalDTO;
 import com.ripple.BE.user.dto.UserInfoDTO;
 import com.ripple.BE.user.dto.request.PatchUserProfileRequest;
 import com.ripple.BE.user.dto.request.UpdateUserProfileRequest;
 import com.ripple.BE.user.dto.request.UserGoalRequest;
-import com.ripple.BE.user.dto.response.UserCommentListResponse;
+import com.ripple.BE.user.dto.response.UserCommentResponseDTO;
 import com.ripple.BE.user.dto.response.UserCompletedResponse;
 import com.ripple.BE.user.dto.response.UserCompletionRateByLevelDTOResponse;
 import com.ripple.BE.user.dto.response.UserGoalResponse;
@@ -102,10 +101,9 @@ public class UserController {
             @RequestParam(required = false) Long userId) {
 
         Long targetUserId = (userId == null) ? customUserDetails.getId() : userId;
-        UserCommentListDTO myCommentPosts = myPageService.getMyCommentPosts(targetUserId);
+        List<UserCommentResponseDTO> myCommentPosts = myPageService.getMyCommentPosts(targetUserId);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.from(UserCommentListResponse.toUserCommentListResponse(myCommentPosts)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(myCommentPosts));
     }
 
     @Operation(summary = "내가 스크랩한 게시물 조회", description = "로그인한 유저가 스크랩한 게시물을 조회합니다.")

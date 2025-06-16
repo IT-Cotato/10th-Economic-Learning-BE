@@ -3,12 +3,14 @@ package com.ripple.BE.post.persistence.impl.toktok;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.persistence.ToktokRepository;
+import com.ripple.BE.post.persistence.dto.ToktokWithScrapAndImageDTO;
 import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import com.ripple.BE.post.persistence.jpa.repository.comment.CommentJpaRepository;
 import com.ripple.BE.post.persistence.jpa.repository.post.PostJpaRepository;
 import com.ripple.BE.user.domain.User;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -42,8 +44,9 @@ public class ToktokRepositoryImpl implements ToktokRepository {
     }
 
     @Override
-    public Optional<Post> findByUsedDate(final LocalDate usedDate) {
-        return toktokJpaRepository.findByUsedDate(usedDate).map(PostJpaEntity::toModel);
+    public Optional<ToktokWithScrapAndImageDTO> findByUsedDate(
+            final LocalDate usedDate, final long userId) {
+        return toktokJpaRepository.findByUsedDate(usedDate, userId);
     }
 
     @Override
@@ -52,8 +55,9 @@ public class ToktokRepositoryImpl implements ToktokRepository {
     }
 
     @Override
-    public Page<Post> findUsedToktokPosts(final Pageable pageable, final PostSort postSort) {
-        return toktokJpaRepository.findUsedToktokPosts(pageable, postSort).map(PostJpaEntity::toModel);
+    public Page<ToktokWithScrapAndImageDTO> findUsedToktokPosts(
+            final Pageable pageable, final PostSort postSort, final long userId) {
+        return toktokJpaRepository.findUsedToktokPosts(pageable, postSort, userId);
     }
 
     @Override
@@ -67,7 +71,13 @@ public class ToktokRepositoryImpl implements ToktokRepository {
     }
 
     @Override
-    public Page<Post> searchUsedToktokPosts(final String keyword, final Pageable pageable) {
-        return toktokJpaRepository.searchUsedToktokPosts(keyword, pageable).map(PostJpaEntity::toModel);
+    public Page<ToktokWithScrapAndImageDTO> searchUsedToktokPosts(
+            final String keyword, final Pageable pageable, final long userId) {
+        return toktokJpaRepository.searchUsedToktokPosts(keyword, pageable, userId);
+    }
+
+    @Override
+    public Map<Long, List<User>> findUsersByToktokPostIds(final List<Long> postIds) {
+        return commentJpaRepository.findUsersByToktokPostIds(postIds);
     }
 }

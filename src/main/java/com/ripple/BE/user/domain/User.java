@@ -1,7 +1,7 @@
 package com.ripple.BE.user.domain;
 
 import com.ripple.BE.global.entity.BaseJpaEntity;
-import com.ripple.BE.image.domain.Image;
+import com.ripple.BE.image.persistence.jpa.entity.ImageJpaEntity;
 import com.ripple.BE.user.domain.type.BusinessType;
 import com.ripple.BE.user.domain.type.Gender;
 import com.ripple.BE.user.domain.type.Job;
@@ -75,7 +75,7 @@ public class User extends BaseJpaEntity {
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "profile_image_id")
-    private Image profileImage; // 프로필 사진
+    private ImageJpaEntity profileImage; // 프로필 사진
 
     @Enumerated(EnumType.STRING)
     @Column(name = "login_type", nullable = false)
@@ -148,7 +148,7 @@ public class User extends BaseJpaEntity {
         this.isLevelTestCompleted = false;
     }
 
-    public void updateProfile(UpdateUserProfileRequest request, Image image) {
+    public void updateProfile(UpdateUserProfileRequest request) {
         this.nickname = request.nickname();
         this.businessType = BusinessType.from(request.businessType());
         this.job = Job.from(request.job());
@@ -157,7 +157,6 @@ public class User extends BaseJpaEntity {
         this.profileIntro = request.profileIntro();
         this.isLearningAlarmAllowed = request.isLearningAlarmAllowed();
         this.isCoummunityAlarmAllowed = request.isCommunityAlarmAllowed();
-        this.profileImage = image;
         this.isProfileCompleted = true;
     }
 
@@ -197,7 +196,7 @@ public class User extends BaseJpaEntity {
         this.profileIntro = profileIntro;
     }
 
-    public void updateProfileImage(Image image) {
+    public void updateProfileImage(ImageJpaEntity image) {
         this.profileImage = image;
     }
 

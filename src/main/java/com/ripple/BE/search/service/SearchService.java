@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 @Slf4j
+@Transactional(readOnly = true)
 public class SearchService {
 
     private final int PAGE_SIZE = 10;
@@ -34,7 +35,6 @@ public class SearchService {
     private final NewsRepository newsRepository;
     private final TermRepository termRepository;
 
-    @Transactional(readOnly = true)
     public NewsPreviewListResponseDTO searchNews(
             final String keyword, final int page, final long userId) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
@@ -45,7 +45,6 @@ public class SearchService {
         return NewsPreviewListResponseDTO.from(newsPage);
     }
 
-    @Transactional(readOnly = true)
     public TermListResponseDTO searchTerms(final String keyword, final int page, final long userId) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
 
@@ -63,7 +62,7 @@ public class SearchService {
         return SearchKeywordListDTO.toSearchKeywordListDTO(searchKeywords);
     }
 
-    private void addRecentSearch(final long userId, final String keyword) {
+    public void addRecentSearch(final long userId, final String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
             return;
         }

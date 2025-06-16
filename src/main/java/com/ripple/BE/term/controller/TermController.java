@@ -92,11 +92,4 @@ public class TermController {
         termService.removeScrapFromTerm(id, currentUser.getId());
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
     }
-
-    @Operation(summary = "용어 생성 (관리자)", description = "용어를 생성합니다.")
-    @PostMapping("/excel")
-    public ResponseEntity<ApiResponse<?>> saveTermsByExcel() {
-        termAdminService.createTermByExcel();
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
-    }
 }

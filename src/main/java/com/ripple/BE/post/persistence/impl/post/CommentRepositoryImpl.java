@@ -2,6 +2,7 @@ package com.ripple.BE.post.persistence.impl.post;
 
 import com.ripple.BE.post.domain.comment.Comment;
 import com.ripple.BE.post.persistence.CommentRepository;
+import com.ripple.BE.post.persistence.dto.CommentWithPostDTO;
 import com.ripple.BE.post.persistence.dto.CommentWithUserDTO;
 import com.ripple.BE.post.persistence.jpa.entity.CommentJpaEntity;
 import com.ripple.BE.post.persistence.jpa.repository.comment.CommentJpaRepository;
@@ -46,5 +47,10 @@ public class CommentRepositoryImpl implements CommentRepository {
     @Override
     public List<CommentWithUserDTO> findAllByPostIdWithUser(final long postId) {
         return commentJpaRepository.findAllByPostIdWithUser(postId);
+    }
+
+    @Override
+    public List<CommentWithPostDTO> findUserCommentsWithPost(final long userId) {
+        return commentJpaRepository.findUserCommentsWithPost(userId);
     }
 }
