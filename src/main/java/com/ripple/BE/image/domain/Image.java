@@ -1,50 +1,39 @@
 package com.ripple.BE.image.domain;
 
-import com.ripple.BE.global.entity.BaseJpaEntity;
-import com.ripple.BE.news.persistence.jpa.entity.NewsJpaEntity;
-import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Table(name = "images")
 @Getter
-@Builder
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class Image extends BaseJpaEntity {
+public class Image {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+    private final Long id;
+    private final S3Info s3Info;
+    private final Long postId;
+    private final Long newsId;
 
-    @Column(name = "s3_info")
-    private S3Info s3Info;
+    @Builder(access = AccessLevel.PRIVATE)
+    public Image(Long id, S3Info s3Info, Long postId, Long newsId) {
+        this.id = id;
+        this.s3Info = s3Info;
+        this.postId = postId;
+        this.newsId = newsId;
+    }
 
-    @Setter
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private PostJpaEntity post;
+    public static Image withoutId(S3Info s3Info, Long postId, Long newsId) {
+        return Image.builder().s3Info(s3Info).postId(postId).newsId(newsId).build();
+    }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "news_id")
-    private NewsJpaEntity newsJpaEntity;
+    public static Image withId(Long id, S3Info s3Info, Long postId, Long newsId) {
+        return Image.builder().id(id).s3Info(s3Info).postId(postId).newsId(newsId).build();
+    }
 
-    public static Image toImageEntity(final S3Info s3Info) {
-        return Image.builder().s3Info(s3Info).build();
+    public Image updatePostId(Long postId) {
+        return Image.builder()
+                .id(this.id)
+                .s3Info(this.s3Info)
+                .postId(postId)
+                .newsId(this.newsId)
+                .build();
     }
 }
