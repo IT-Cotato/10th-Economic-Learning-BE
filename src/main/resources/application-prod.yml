@@ -1,4 +1,4 @@
-# 로컬 환경에서 사용할 설정 파일
+# 배포 환경에서 사용할 설정 파일
 spring:
   config:
     activate:
@@ -45,6 +45,8 @@ cloud:
 logging:
   level:
     root: INFO
+  discord-error:
+    webhook-url: ${DISCORD_ERROR_WEBHOOK_URL}
 
 Swagger:
   server:
