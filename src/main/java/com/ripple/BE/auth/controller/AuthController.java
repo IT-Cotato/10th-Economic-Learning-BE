@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/auth")
 @Tag(name = "Auth", description = "인증 API")
+@Slf4j
 public class AuthController {
 
     private final AuthService authService;
@@ -47,5 +49,17 @@ public class AuthController {
         String token = authService.BasicLogin(request);
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(token));
+    }
+
+    @GetMapping("/log/error-test")
+    public String generateErrorLog() {
+        try {
+            int result = 10 / 0; // 고의적인 예외 발생
+        } catch (ArithmeticException e) {
+            log.error("🚨 운영 환경 에러 로그 테스트 발생", e);
+            throw new RuntimeException("테스트용 RuntimeException 발생", e);
+        }
+
+        return "이 메시지는 도달하지 않습니다.";
     }
 }

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <!-- 공통 로그 패턴 -->
+    <property name="LOG_PATTERN"
+              value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %-5level [%logger{36}] - %msg%n"/>
+
+    <!-- 로컬 환경 설정 -->
+    <springProfile name="local">
+        <property name="LOG_PATH" value="./logs" />
+    </springProfile>
+
+    <!-- 운영 환경 설정 -->
+    <springProfile name="prod">
+        <property name="LOG_PATH" value="/app/logs" />
+        <springProperty name="DISCORD_ERROR_WEBHOOK_URL"
+                        source="logging.discord-error.webhook-url"/>
+    </springProfile>
+
+    <!-- 콘솔 출력 공통 Appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ✅ 운영 환경 전용: 에러 로그 파일 Appender -->
+    <springProfile name="prod">
+        <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_PATH}/error.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/error.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>ERROR</level>
+            </filter>
+        </appender>
+    </springProfile>
+
+    <!-- ✅ 운영 환경 전용: Discord Webhook Appender -->
+    <springProfile name="prod">
+        <appender name="DISCORD" class="com.github.napstr.logback.DiscordAppender">
+            <webhookUri>${DISCORD_ERROR_WEBHOOK_URL}</webhookUri>
+            <layout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>
+                    \n[🚨 ERROR LOG] ========================================
+                    \n%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%logger{2}.%M:%L] - %ex{short}%n
+                </pattern>
+            </layout>
+            <username>🚨 Ripple 서버 에러 알림</username>
+            <tts>false</tts>
+        </appender>
+
+        <appender name="ASYNC_DISCORD" class="ch.qos.logback.classic.AsyncAppender">
+            <appender-ref ref="DISCORD" />
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>ERROR</level>
+            </filter>
+        </appender>
+    </springProfile>
+
+    <!-- com.ripple 로그 설정: 운영 환경일 경우만 파일/디스코드 추가 -->
+    <logger name="com.ripple" level="ERROR" additivity="false">
+        <springProfile name="prod">
+            <appender-ref ref="ERROR_FILE" />
+            <appender-ref ref="ASYNC_DISCORD" />
+        </springProfile>
+    </logger>
+
+    <!-- 전체 로그 콘솔 출력 (공통) -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+</configuration>

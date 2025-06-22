@@ -23,6 +23,7 @@ configurations {
 repositories {
     mavenCentral()
     maven { url 'https://repo.spring.io/milestone' } // Spring AI 저장소 추가
+    maven { url 'https://jitpack.io' } // JitPack 저장소 추가
 }
 
 dependencies {
@@ -99,6 +100,8 @@ dependencies {
     // SSE
     implementation 'org.springframework.boot:spring-boot-starter-web-services'
 
+    // discord
+    implementation 'com.github.napstr:logback-discord-appender:1.0.0'
 }
 
 clean {	delete file('src/main/generated')}
