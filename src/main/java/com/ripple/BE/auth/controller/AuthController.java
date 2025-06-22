@@ -50,16 +50,4 @@ public class AuthController {
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(token));
     }
-
-    @GetMapping("/log/error-test")
-    public String generateErrorLog() {
-        try {
-            int result = 10 / 0; // 고의적인 예외 발생
-        } catch (ArithmeticException e) {
-            log.error("🚨 운영 환경 에러 로그 테스트 발생", e);
-            throw new RuntimeException("테스트용 RuntimeException 발생", e);
-        }
-
-        return "이 메시지는 도달하지 않습니다.";
-    }
 }
