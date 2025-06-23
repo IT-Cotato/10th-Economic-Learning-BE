@@ -120,4 +120,17 @@ public class QuizController {
         QuizResultResponseDTO quizResultResponseDTO = quizService.retryScrapQuiz(quizId, answerIndex);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(quizResultResponseDTO));
     }
+
+    @GetMapping("/{learningSetId}/quizzes")
+    @Operation(
+            summary = "학습 세트 별 완료한 퀴즈 조회",
+            description = "학습 세트 별로 완료한 퀴즈를 조회합니다. 학습 세트 ID를 통해 해당 세트에 속한 퀴즈 목록을 가져옵니다.")
+    public ResponseEntity<ApiResponse<?>> getCompleteQuizzesByLearningSet(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @PathVariable("learningSetId") long learningSetId) {
+
+        // QuizResponseDTO quizResponseDTO =
+        // quizService.getCompleteQuizzesByLearningSet(currentUser.getId(), learningSetId);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(ApiResponse.EMPTY_RESPONSE));
+    }
 }
