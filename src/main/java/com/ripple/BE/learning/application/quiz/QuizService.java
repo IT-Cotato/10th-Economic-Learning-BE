@@ -2,9 +2,12 @@ package com.ripple.BE.learning.application.quiz;
 
 import static com.ripple.BE.learning.exception.errorcode.LearningErrorCode.*;
 
+import com.ripple.BE.learning.application.learningset.LearningSetService;
+import com.ripple.BE.learning.domain.learningset.UserLearningSet;
 import com.ripple.BE.learning.domain.quiz.FailQuiz;
 import com.ripple.BE.learning.domain.quiz.Quiz;
 import com.ripple.BE.learning.domain.quiz.QuizScrap;
+import com.ripple.BE.learning.dto.response.quiz.QuizCompletionDTO;
 import com.ripple.BE.learning.dto.response.quiz.QuizResponseDTO;
 import com.ripple.BE.learning.dto.response.quiz.QuizResultResponseDTO;
 import com.ripple.BE.learning.dto.response.quiz.RandomQuizResponseDTO;
@@ -13,6 +16,7 @@ import com.ripple.BE.learning.exception.LearningException;
 import com.ripple.BE.learning.exception.errorcode.LearningErrorCode;
 import com.ripple.BE.learning.persistence.QuizRepository;
 import com.ripple.BE.learning.persistence.QuizScrapRepository;
+import com.ripple.BE.learning.persistence.UserLearningSetRepository;
 import com.ripple.BE.user.domain.type.Level;
 import com.ripple.BE.user.service.UserProgressManager;
 import java.util.List;
@@ -30,9 +34,12 @@ public class QuizService {
 
     private final QuizRepository quizRepository;
     private final QuizScrapRepository quizScrapRepository;
+    private final UserLearningSetRepository userLearningSetRepository;
 
     private final UserProgressManager userProgressManager;
     private final QuizSessionCacheManager quizSessionCacheManager;
+
+    private final LearningSetService learningSetService;
 
     /**
      * 퀴즈 시작
@@ -183,5 +190,24 @@ public class QuizService {
                         .orElseThrow(() -> new LearningException(LearningErrorCode.QUIZ_NOT_FOUND));
 
         return QuizResponseDTO.from(quiz);
+    }
+
+    public QuizCompletionDTO getCompleteQuizzesByLearningSet(
+            final long userId, final long learningSetId) {
+
+        boolean beginnerCompleted =
+                getUserLearningSet(userId, learningSetId, Level.BEGINNER).isQuizCompleted();
+        boolean intermediateCompleted =
+                getUserLearningSet(userId, learningSetId, Level.INTERMEDIATE).isQuizCompleted();
+        boolean advancedCompleted =
+                getUserLearningSet(userId, learningSetId, Level.ADVANCED).isQuizCompleted();
+
+        return QuizCompletionDTO.of(beginnerCompleted, intermediateCompleted, advancedCompleted);
+    }
+
+    private UserLearningSet getUserLearningSet(long userId, long learningSetId, Level level) {
+        return userLearningSetRepository
+                .findByUserIdAndLearningSetIdAndLevel(userId, learningSetId, level)
+                .orElseThrow(() -> new LearningException(LEARNING_SET_NOT_FOUND));
     }
 }
