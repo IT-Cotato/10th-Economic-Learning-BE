@@ -22,6 +22,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -117,6 +118,12 @@ public class User extends BaseJpaEntity {
     @Column(name = "beginner_completed_count", nullable = false, columnDefinition = "INT DEFAULT 0")
     private int beginnerCompletedCount;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @Column(
             name = "intermediate_completed_count",
             nullable = false,
@@ -210,5 +217,10 @@ public class User extends BaseJpaEntity {
 
     public void updateLevelTestCompleted(boolean isLevelTestCompleted) {
         this.isLevelTestCompleted = isLevelTestCompleted;
+    }
+
+    public void softDelete() {
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
     }
 }

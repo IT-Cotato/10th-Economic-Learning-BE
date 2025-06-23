@@ -217,4 +217,13 @@ public class UserService {
             user.updateProfileImage(ImageJpaEntity.from(image)); // 추후 수정 필요
         }
     }
+
+    public void softDeleteUser(final long userId) {
+        User user = findUserById(userId);
+        if (user.isDeleted()) {
+            throw new UserException(USER_ALREADY_DELETED);
+        }
+        user.softDelete();
+        userRepository.save(user);
+    }
 }

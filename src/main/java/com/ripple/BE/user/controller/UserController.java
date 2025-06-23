@@ -250,4 +250,19 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(myToktok));
     }
+
+    @Operation(
+            summary = "유저 탈퇴",
+            description =
+                """
+                - 로그인한 유저를 탈퇴시킵니다.
+                - 탈퇴 시 30일 간 유저의 정보가 유지되며, 이후에는 복구가 불가능합니다.
+                
+                """
+    )
+    @DeleteMapping()
+    public ResponseEntity<ApiResponse<?>> deleteUser(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        userService.softDeleteUser(customUserDetails.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
+    }
 }

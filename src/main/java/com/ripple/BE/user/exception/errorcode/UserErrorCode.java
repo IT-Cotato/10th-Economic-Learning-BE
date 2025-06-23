@@ -17,7 +17,8 @@ public enum UserErrorCode implements ErrorCode {
     USER_GOAL_NOT_FOUND(HttpStatus.NOT_FOUND, "User Goal not found"),
     DUPLICATED_NICKNAME(
             HttpStatus.BAD_REQUEST, "Duplicated Nickname is already exist. Please use another nickname"),
-    ATTENDANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "Attendance not found");
+    ATTENDANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "Attendance not found"),
+    USER_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "User already deleted");
 
     private final HttpStatus httpStatus;
     private final String message;
