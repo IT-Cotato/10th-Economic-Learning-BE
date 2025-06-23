@@ -130,7 +130,7 @@ public class QuizService {
         // 퀴즈 세션 캐시 삭제
         quizSessionCacheManager.clearAll(userId);
 
-        if (quizResponseDTO == null || failSet.isEmpty() || quizCount == null) {
+        if (quizResponseDTO == null) {
             throw new LearningException(LearningErrorCode.QUIZ_PROGRESS_NOT_FOUND);
         }
 
