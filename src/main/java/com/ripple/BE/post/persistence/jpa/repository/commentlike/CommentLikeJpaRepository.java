@@ -32,7 +32,7 @@ public interface CommentLikeJpaRepository
 
 	List<CommentLikeJpaEntity> findByUserIdAndCommentIdIn(long userId, Set<Long> commentIds);
 
-	void deleteAllByPostIdIn(List<Long> postIds);
+	void deleteAllByCommentIdIn(List<Long> commentIds);
 
 	void deleteAllByUserId(long userId);
 }

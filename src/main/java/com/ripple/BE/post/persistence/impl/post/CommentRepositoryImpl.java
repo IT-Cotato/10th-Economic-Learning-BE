@@ -58,4 +58,11 @@ public class CommentRepositoryImpl implements CommentRepository {
     public void deleteAllByPostIdIn(final List<Long> postIds) {
         commentJpaRepository.deleteAllByPostIdIn(postIds);
     }
+
+    @Override
+    public List<Comment> findAllByPostIdIn(final List<Long> postIds) {
+        return commentJpaRepository.findAllByPostIdIn(postIds).stream()
+                .map(CommentJpaEntity::toModel)
+                .toList();
+    }
 }

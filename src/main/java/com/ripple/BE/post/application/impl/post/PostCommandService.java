@@ -9,6 +9,7 @@ import com.ripple.BE.image.persistence.ImageRepository;
 import com.ripple.BE.post.application.PostCommandUseCase;
 import com.ripple.BE.post.application.command.CreatePostCommand;
 import com.ripple.BE.post.application.command.UpdatePostCommand;
+import com.ripple.BE.post.domain.comment.Comment;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.CommentLikeRepository;
@@ -126,11 +127,14 @@ public class PostCommandService implements PostCommandUseCase {
             return;
         }
         List<Long> postIds = posts.stream().map(Post::getId).toList();
+        List<Long> commentIds =
+                commentRepository.findAllByPostIdIn(postIds).stream().map(Comment::getId).toList();
 
         imageRepository.deleteAllByPostIdIn(postIds);
         postScrapRepository.deleteAllByPostIdIn(postIds);
         postLikeRepository.deleteAllByPostIdIn(postIds);
-        commentLikeRepository.deleteAllByPostIdIn(postIds);
+
+        commentLikeRepository.deleteAllByCommentIdIn(commentIds);
         commentRepository.deleteAllByPostIdIn(postIds);
 
         postRepository.deleteAllByAuthorId(userId);

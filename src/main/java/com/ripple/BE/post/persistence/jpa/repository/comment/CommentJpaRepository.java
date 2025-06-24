@@ -20,4 +20,6 @@ public interface CommentJpaRepository
     void deleteAllByPostId(Long postId);
 
     void deleteAllByPostIdIn(List<Long> postIds);
+
+    List<CommentJpaEntity> findAllByPostIdIn(List<Long> postIds);
 }
