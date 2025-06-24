@@ -51,4 +51,9 @@ public class ImageRepositoryImpl implements ImageRepository {
         List<ImageJpaEntity> imageEntities = images.stream().map(ImageJpaEntity::from).toList();
         imageJpaRepository.deleteAll(imageEntities);
     }
+
+    @Override
+    public void deleteById(Long id) {
+        imageJpaRepository.deleteById(id);
+    }
 }

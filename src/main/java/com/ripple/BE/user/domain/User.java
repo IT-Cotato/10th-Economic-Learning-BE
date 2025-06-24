@@ -118,9 +118,6 @@ public class User extends BaseJpaEntity {
     @Column(name = "beginner_completed_count", nullable = false, columnDefinition = "INT DEFAULT 0")
     private int beginnerCompletedCount;
 
-    @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
-
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
@@ -217,10 +214,5 @@ public class User extends BaseJpaEntity {
 
     public void updateLevelTestCompleted(boolean isLevelTestCompleted) {
         this.isLevelTestCompleted = isLevelTestCompleted;
-    }
-
-    public void softDelete() {
-        this.isDeleted = true;
-        this.deletedAt = LocalDateTime.now();
     }
 }

@@ -16,6 +16,9 @@ import com.ripple.BE.user.dto.request.PatchUserProfileRequest;
 import com.ripple.BE.user.dto.request.UpdateUserProfileRequest;
 import com.ripple.BE.user.dto.request.UserGoalRequest;
 import com.ripple.BE.user.exception.UserException;
+import com.ripple.BE.user.repository.AttendanceLogRepository;
+import com.ripple.BE.user.repository.AttendanceRepository;
+import com.ripple.BE.user.repository.QuestRepository;
 import com.ripple.BE.user.repository.UserGoalRepository;
 import com.ripple.BE.user.repository.UserRepository;
 import java.util.Date;
@@ -34,9 +37,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
+    private final UserGoalRepository userGoalRepository;
+    private final AttendanceLogRepository attendanceLogRepository;
+    private final AttendanceRepository attendanceRepository;
+    private final QuestRepository questRepository;
+
     private final AttendanceService attendanceService;
 
-    private final UserGoalRepository userGoalRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -218,12 +225,19 @@ public class UserService {
         }
     }
 
-    public void softDeleteUser(final long userId) {
+    public void deleteUser(final long userId) {
         User user = findUserById(userId);
-        if (user.isDeleted()) {
-            throw new UserException(USER_ALREADY_DELETED);
+
+        // 유저 관련 데이터 삭제
+        questRepository.deleteByUserId(userId);
+        attendanceLogRepository.deleteByUserId(userId);
+        attendanceRepository.deleteByUserId(userId);
+        userGoalRepository.deleteByUserId(userId);
+        if (user.getProfileImage() != null) {
+            imageRepository.deleteById(user.getProfileImage().getId());
         }
-        user.softDelete();
-        userRepository.save(user);
+
+        // 유저 삭제
+        userRepository.delete(user);
     }
 }

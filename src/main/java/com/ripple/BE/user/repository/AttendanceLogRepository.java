@@ -13,4 +13,6 @@ public interface AttendanceLogRepository extends JpaRepository<AttendanceLog, Lo
     Optional<AttendanceLog> findByAttendanceIdAndDate(Long attendanceId, LocalDate date);
 
     List<AttendanceLog> findByAttendanceId(Long attendanceId);
+
+    void deleteByUserId(Long userId);
 }
