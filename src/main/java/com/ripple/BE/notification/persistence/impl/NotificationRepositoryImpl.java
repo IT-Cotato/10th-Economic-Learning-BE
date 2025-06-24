@@ -41,4 +41,9 @@ public class NotificationRepositoryImpl implements NotificationRepository {
     public void delete(Notification notification) {
         notificationJpaRepository.delete(NotificationJpaEntity.from(notification));
     }
+
+    @Override
+    public void deleteAllByUserId(Long userId) {
+        notificationJpaRepository.deleteAllByUserId(userId);
+    }
 }

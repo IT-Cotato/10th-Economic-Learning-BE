@@ -12,6 +12,9 @@ import com.ripple.BE.learning.persistence.ConceptScrapRepository;
 import com.ripple.BE.learning.persistence.FailQuizRepository;
 import com.ripple.BE.learning.persistence.QuizScrapRepository;
 import com.ripple.BE.learning.persistence.UserLearningSetRepository;
+import com.ripple.BE.news.persistence.NewsScrapRepository;
+import com.ripple.BE.notification.persistence.NotificationRepository;
+import com.ripple.BE.term.persistence.TermScrapRepository;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.UserGoal;
 import com.ripple.BE.user.domain.type.LoginType;
@@ -47,6 +50,9 @@ public class UserService {
     private final AttendanceRepository attendanceRepository;
     private final QuestRepository questRepository;
     private final ChatbotRepository chatbotRepository;
+    private final NotificationRepository notificationRepository;
+    private final NewsScrapRepository newsScrapRepository;
+    private final TermScrapRepository termScrapRepository;
 
     private final ConceptScrapRepository conceptScrapRepository;
     private final UserLearningSetRepository userLearningSetRepository;
@@ -241,11 +247,13 @@ public class UserService {
 
         chatbotRepository.deleteAllByUserId(userId);
 
-        // 학습 데이터 관련 삭제
+        // 학습 관련 데이터 삭제
         conceptScrapRepository.deleteAllByUserId(userId);
         userLearningSetRepository.deleteAllByUserId(userId);
         quizScrapRepository.deleteAllByUserId(userId);
         failQuizRepository.deleteAllByUserId(userId);
+        newsScrapRepository.deleteAllByUserId(userId);
+        termScrapRepository.deleteAllByUserId(userId);
 
         // 출석 관련 데이터 삭제
         attendanceLogRepository.deleteAllByUserId(userId);
@@ -254,6 +262,7 @@ public class UserService {
         // 유저 관련 데이터 삭제
         userGoalRepository.deleteAllByUserId(userId);
         questRepository.deleteAllByUserId(userId);
+        notificationRepository.deleteAllByUserId(userId);
         if (user.getProfileImage() != null) {
             imageRepository.deleteById(user.getProfileImage().getId());
         }

@@ -4,4 +4,6 @@ import com.ripple.BE.notification.persistence.jpa.entity.NotificationJpaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NotificationJpaRepository
-        extends JpaRepository<NotificationJpaEntity, Long>, NotificationQueryRepository {}
+        extends JpaRepository<NotificationJpaEntity, Long>, NotificationQueryRepository {
+    void deleteAllByUserId(Long userId);
+}

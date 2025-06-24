@@ -42,4 +42,9 @@ public class NewsScrapRepositoryImpl implements NewsScrapRepository {
     public List<NewsWithScrapDTO> findNewsScrappedByUser(long userId) {
         return newsScrapJpaRepository.findNewsScrappedByUser(userId);
     }
+
+    @Override
+    public void deleteAllByUserId(long userId) {
+        newsScrapJpaRepository.deleteAllByUserId(userId);
+    }
 }
