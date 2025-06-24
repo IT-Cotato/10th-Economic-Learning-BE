@@ -192,22 +192,36 @@ public class QuizService {
         return QuizResponseDTO.from(quiz);
     }
 
+    /** 사용자가 완료한 퀴즈 레벨별 조회 */
     public QuizCompletionDTO getCompleteQuizzesByLearningSet(
             final long userId, final long learningSetId) {
 
-        boolean beginnerCompleted =
-                getUserLearningSet(userId, learningSetId, Level.BEGINNER).isQuizCompleted();
-        boolean intermediateCompleted =
-                getUserLearningSet(userId, learningSetId, Level.INTERMEDIATE).isQuizCompleted();
-        boolean advancedCompleted =
-                getUserLearningSet(userId, learningSetId, Level.ADVANCED).isQuizCompleted();
+        List<UserLearningSet> userLearningSetList =
+                userLearningSetRepository.findByUserIdAndLearningSetId(userId, learningSetId);
+
+        if (userLearningSetList.isEmpty()) {
+            throw new LearningException(LEARNING_SET_NOT_FOUND);
+        }
+
+        boolean beginnerCompleted = false;
+        boolean intermediateCompleted = false;
+        boolean advancedCompleted = false;
+        for (UserLearningSet userLearningSet : userLearningSetList) {
+            Level level = userLearningSet.getLevel();
+
+            switch (level) {
+                case BEGINNER:
+                    beginnerCompleted = userLearningSet.isQuizCompleted();
+                    break;
+                case INTERMEDIATE:
+                    intermediateCompleted = userLearningSet.isQuizCompleted();
+                    break;
+                case ADVANCED:
+                    advancedCompleted = userLearningSet.isQuizCompleted();
+                    break;
+            }
+        }
 
         return QuizCompletionDTO.of(beginnerCompleted, intermediateCompleted, advancedCompleted);
-    }
-
-    private UserLearningSet getUserLearningSet(long userId, long learningSetId, Level level) {
-        return userLearningSetRepository
-                .findByUserIdAndLearningSetIdAndLevel(userId, learningSetId, level)
-                .orElseThrow(() -> new LearningException(LEARNING_SET_NOT_FOUND));
     }
 }
