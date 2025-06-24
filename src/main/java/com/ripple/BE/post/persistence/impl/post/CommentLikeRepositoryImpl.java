@@ -66,4 +66,9 @@ public class CommentLikeRepositoryImpl implements CommentLikeRepository {
     public void deleteAllByPostIdIn(final List<Long> postIds) {
         commentLikeJpaRepository.deleteAllByPostIdIn(postIds);
     }
+
+    @Override
+    public void deleteAllByUserId(final long userId) {
+        commentLikeJpaRepository.deleteAllByUserId(userId);
+    }
 }

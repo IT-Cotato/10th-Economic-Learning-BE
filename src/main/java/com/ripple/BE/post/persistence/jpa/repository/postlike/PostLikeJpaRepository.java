@@ -17,4 +17,6 @@ public interface PostLikeJpaRepository
     void deleteAllByPostId(long postId);
 
     void deleteAllByPostIdIn(List<Long> postIds);
+
+    void deleteAllByUserId(long userId);
 }

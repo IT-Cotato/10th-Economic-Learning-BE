@@ -15,4 +15,6 @@ public interface PostScrapJpaRepository
     void deleteAllByPostId(long postId);
 
     void deleteAllByPostIdIn(Collection<Long> postId);
+
+    void deleteAllByUserId(long userId);
 }

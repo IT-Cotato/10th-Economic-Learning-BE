@@ -14,6 +14,13 @@ import com.ripple.BE.learning.persistence.QuizScrapRepository;
 import com.ripple.BE.learning.persistence.UserLearningSetRepository;
 import com.ripple.BE.news.persistence.NewsScrapRepository;
 import com.ripple.BE.notification.persistence.NotificationRepository;
+import com.ripple.BE.post.application.impl.common.CommentCommandService;
+import com.ripple.BE.post.application.impl.post.PostCommandService;
+import com.ripple.BE.post.domain.comment.Comment;
+import com.ripple.BE.post.persistence.CommentLikeRepository;
+import com.ripple.BE.post.persistence.CommentRepository;
+import com.ripple.BE.post.persistence.PostLikeRepository;
+import com.ripple.BE.post.persistence.PostScrapRepository;
 import com.ripple.BE.term.persistence.TermScrapRepository;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.UserGoal;
@@ -30,6 +37,7 @@ import com.ripple.BE.user.repository.QuestRepository;
 import com.ripple.BE.user.repository.UserGoalRepository;
 import com.ripple.BE.user.repository.UserRepository;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,8 +66,15 @@ public class UserService {
     private final UserLearningSetRepository userLearningSetRepository;
     private final QuizScrapRepository quizScrapRepository;
     private final FailQuizRepository failQuizRepository;
+    private final CommentRepository commentRepository;
+
+    private final PostLikeRepository postLikeRepository;
+    private final CommentLikeRepository commentLikeRepository;
+    private final PostScrapRepository postScrapRepository;
 
     private final AttendanceService attendanceService;
+    private final PostCommandService postCommandService;
+    private final CommentCommandService commentCommandService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -266,6 +281,16 @@ public class UserService {
         if (user.getProfileImage() != null) {
             imageRepository.deleteById(user.getProfileImage().getId());
         }
+
+        // 게시글 관련 데이터 삭제
+        commentLikeRepository.deleteAllByUserId(userId);
+        postLikeRepository.deleteAllByUserId(userId);
+        postScrapRepository.deleteAllByUserId(userId);
+        List<Comment> comments = commentRepository.findAllByCommenterId(userId);
+        for (Comment comment : comments) {
+            commentCommandService.removeCommentFromPost(userId, comment.getPostId(), comment.getId());
+        }
+        postCommandService.deleteAllPostsByUserId(userId);
 
         // 유저 삭제
         userRepository.delete(user);
