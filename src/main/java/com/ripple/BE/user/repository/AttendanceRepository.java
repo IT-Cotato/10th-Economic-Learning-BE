@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     Optional<Attendance> findByUserId(Long userId);
 
-    void deleteByUserId(Long userId);
+    void deleteAllByUserId(Long userId);
 }

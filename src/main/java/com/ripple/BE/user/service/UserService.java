@@ -4,9 +4,14 @@ import static com.ripple.BE.user.domain.User.*;
 import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
 import com.ripple.BE.auth.dto.kakao.KakaoUserInfoResponse;
+import com.ripple.BE.chatbot.repository.ChatbotRepository;
 import com.ripple.BE.image.domain.Image;
 import com.ripple.BE.image.persistence.ImageRepository;
 import com.ripple.BE.image.persistence.jpa.entity.ImageJpaEntity;
+import com.ripple.BE.learning.persistence.ConceptScrapRepository;
+import com.ripple.BE.learning.persistence.FailQuizRepository;
+import com.ripple.BE.learning.persistence.QuizScrapRepository;
+import com.ripple.BE.learning.persistence.UserLearningSetRepository;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.UserGoal;
 import com.ripple.BE.user.domain.type.LoginType;
@@ -41,6 +46,12 @@ public class UserService {
     private final AttendanceLogRepository attendanceLogRepository;
     private final AttendanceRepository attendanceRepository;
     private final QuestRepository questRepository;
+    private final ChatbotRepository chatbotRepository;
+
+    private final ConceptScrapRepository conceptScrapRepository;
+    private final UserLearningSetRepository userLearningSetRepository;
+    private final QuizScrapRepository quizScrapRepository;
+    private final FailQuizRepository failQuizRepository;
 
     private final AttendanceService attendanceService;
 
@@ -228,11 +239,21 @@ public class UserService {
     public void deleteUser(final long userId) {
         User user = findUserById(userId);
 
+        chatbotRepository.deleteAllByUserId(userId);
+
+        // 학습 데이터 관련 삭제
+        conceptScrapRepository.deleteAllByUserId(userId);
+        userLearningSetRepository.deleteAllByUserId(userId);
+        quizScrapRepository.deleteAllByUserId(userId);
+        failQuizRepository.deleteAllByUserId(userId);
+
+        // 출석 관련 데이터 삭제
+        attendanceLogRepository.deleteAllByUserId(userId);
+        attendanceRepository.deleteAllByUserId(userId);
+
         // 유저 관련 데이터 삭제
-        questRepository.deleteByUserId(userId);
-        attendanceLogRepository.deleteByUserId(userId);
-        attendanceRepository.deleteByUserId(userId);
-        userGoalRepository.deleteByUserId(userId);
+        userGoalRepository.deleteAllByUserId(userId);
+        questRepository.deleteAllByUserId(userId);
         if (user.getProfileImage() != null) {
             imageRepository.deleteById(user.getProfileImage().getId());
         }

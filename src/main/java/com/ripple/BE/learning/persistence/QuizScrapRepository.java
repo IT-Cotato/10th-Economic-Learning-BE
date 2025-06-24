@@ -17,4 +17,6 @@ public interface QuizScrapRepository {
     QuizScrap save(final QuizScrap quizScrap);
 
     List<Quiz> findQuizScrappedByUserIdAndLevel(Long userId, Level level);
+
+    void deleteAllByUserId(final long userId);
 }

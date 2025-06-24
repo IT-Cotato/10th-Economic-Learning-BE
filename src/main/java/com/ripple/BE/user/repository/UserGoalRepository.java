@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface UserGoalRepository extends JpaRepository<UserGoal, Long> {
     Optional<UserGoal> findByUserId(Long userId);
 
-    void deleteByUserId(Long userId);
+    void deleteAllByUserId(Long userId);
 }

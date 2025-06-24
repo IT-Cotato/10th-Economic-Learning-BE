@@ -13,5 +13,5 @@ public interface QuestRepository extends JpaRepository<Quest, Long> {
 
     List<Quest> findAll();
 
-    void deleteByUserId(Long userId);
+    void deleteAllByUserId(Long userId);
 }

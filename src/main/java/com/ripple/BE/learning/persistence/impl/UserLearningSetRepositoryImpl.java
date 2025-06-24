@@ -54,4 +54,9 @@ public class UserLearningSetRepositoryImpl implements UserLearningSetRepository 
                 .map(UserLearningSetJpaEntity::toModel)
                 .toList();
     }
+
+    @Override
+    public void deleteAllByUserId(final long userId) {
+        userLearningSetJpaRepository.deleteAllByUserId(userId);
+    }
 }

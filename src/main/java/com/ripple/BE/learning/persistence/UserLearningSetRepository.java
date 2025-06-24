@@ -17,4 +17,6 @@ public interface UserLearningSetRepository {
     UserLearningSet save(final UserLearningSet userLearningSet);
 
     List<UserLearningSet> findAll();
+
+    void deleteAllByUserId(final long userId);
 }

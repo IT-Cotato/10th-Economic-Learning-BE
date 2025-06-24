@@ -13,4 +13,6 @@ public interface ConceptScrapJpaRepository
     void deleteByUserIdAndConceptId(Long userId, Long conceptId);
 
     Optional<ConceptScrapJpaEntity> findByUserIdAndConceptId(Long userId, Long conceptId);
+
+    void deleteAllByUserId(Long userId);
 }
