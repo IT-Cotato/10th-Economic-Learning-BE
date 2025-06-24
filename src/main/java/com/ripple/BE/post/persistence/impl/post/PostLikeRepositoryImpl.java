@@ -47,4 +47,9 @@ public class PostLikeRepositoryImpl implements PostLikeRepository {
     public void deleteAllByPostId(final long postId) {
         postLikeJpaRepository.deleteAllByPostId(postId);
     }
+
+    @Override
+    public void deleteAllByPostIdIn(final List<Long> postIds) {
+        postLikeJpaRepository.deleteAllByPostIdIn(postIds);
+    }
 }

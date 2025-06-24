@@ -53,4 +53,9 @@ public class CommentRepositoryImpl implements CommentRepository {
     public List<CommentWithPostDTO> findUserCommentsWithPost(final long userId) {
         return commentJpaRepository.findUserCommentsWithPost(userId);
     }
+
+    @Override
+    public void deleteAllByPostIdIn(final List<Long> postIds) {
+        commentJpaRepository.deleteAllByPostIdIn(postIds);
+    }
 }

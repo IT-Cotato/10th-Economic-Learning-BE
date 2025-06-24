@@ -21,4 +21,6 @@ public interface ImageRepository {
     void deleteAll(List<Image> images);
 
     void deleteById(Long id);
+
+    void deleteAllByPostIdIn(List<Long> postIds);
 }

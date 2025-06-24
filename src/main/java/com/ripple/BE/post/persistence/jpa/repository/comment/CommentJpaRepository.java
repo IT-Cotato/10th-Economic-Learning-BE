@@ -18,4 +18,6 @@ public interface CommentJpaRepository
     List<CommentJpaEntity> findAllByCommenterId(Long userId);
 
     void deleteAllByPostId(Long postId);
+
+    void deleteAllByPostIdIn(List<Long> postIds);
 }

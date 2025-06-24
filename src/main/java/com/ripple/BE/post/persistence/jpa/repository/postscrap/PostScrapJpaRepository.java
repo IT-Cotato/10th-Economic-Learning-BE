@@ -1,6 +1,7 @@
 package com.ripple.BE.post.persistence.jpa.repository.postscrap;
 
 import com.ripple.BE.post.persistence.jpa.entity.PostScrapJpaEntity;
+import java.util.Collection;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,4 +13,6 @@ public interface PostScrapJpaRepository
     boolean existsByPostIdAndUserId(long postId, long userId);
 
     void deleteAllByPostId(long postId);
+
+    void deleteAllByPostIdIn(Collection<Long> postId);
 }

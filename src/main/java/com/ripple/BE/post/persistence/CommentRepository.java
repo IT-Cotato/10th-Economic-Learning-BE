@@ -22,4 +22,6 @@ public interface CommentRepository {
     List<CommentWithPostDTO> findUserCommentsWithPost(final long userId);
 
     void deleteAllByPostId(final long postId);
+
+    void deleteAllByPostIdIn(final List<Long> postIds);
 }

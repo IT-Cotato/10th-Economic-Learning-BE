@@ -118,4 +118,21 @@ public class PostCommandService implements PostCommandUseCase {
 
         postRepository.delete(post);
     }
+
+    @Override
+    public void deleteAllPostsByUserId(final long userId) {
+        List<Post> posts = postRepository.findAllByAuthorId(userId);
+        if (posts.isEmpty()) {
+            return;
+        }
+        List<Long> postIds = posts.stream().map(Post::getId).toList();
+
+        imageRepository.deleteAllByPostIdIn(postIds);
+        postScrapRepository.deleteAllByPostIdIn(postIds);
+        postLikeRepository.deleteAllByPostIdIn(postIds);
+        commentLikeRepository.deleteAllByPostIdIn(postIds);
+        commentRepository.deleteAllByPostIdIn(postIds);
+
+        postRepository.deleteAllByAuthorId(userId);
+    }
 }
