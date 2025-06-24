@@ -258,6 +258,7 @@ public class UserService {
         }
     }
 
+    @Transactional
     public void deleteUser(final long userId) {
         User user = findUserById(userId);
 
