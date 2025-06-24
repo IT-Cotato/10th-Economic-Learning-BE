@@ -54,4 +54,11 @@ public class UserLearningSetRepositoryImpl implements UserLearningSetRepository 
                 .map(UserLearningSetJpaEntity::toModel)
                 .toList();
     }
+
+    @Override
+    public List<UserLearningSet> findByUserIdAndLearningSetId(long userId, long learningSetId) {
+        return userLearningSetJpaRepository.findByUserIdAndLearningSetId(userId, learningSetId).stream()
+                .map(UserLearningSetJpaEntity::toModel)
+                .toList();
+    }
 }
