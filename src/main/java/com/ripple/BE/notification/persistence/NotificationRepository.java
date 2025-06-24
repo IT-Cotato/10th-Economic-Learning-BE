@@ -16,5 +16,5 @@ public interface NotificationRepository {
 
     void delete(Notification notification);
 
-    void deleteAllByUserId(Long userId);
+    void deleteAllByReceiverId(Long receiverId);
 }

@@ -22,6 +22,7 @@ import com.ripple.BE.post.persistence.CommentRepository;
 import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostScrapRepository;
 import com.ripple.BE.term.persistence.TermScrapRepository;
+import com.ripple.BE.user.domain.Attendance;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.UserGoal;
 import com.ripple.BE.user.domain.type.LoginType;
@@ -260,27 +261,8 @@ public class UserService {
     public void deleteUser(final long userId) {
         User user = findUserById(userId);
 
+        // 챗봇 대화 기록 삭제
         chatbotRepository.deleteAllByUserId(userId);
-
-        // 학습 관련 데이터 삭제
-        conceptScrapRepository.deleteAllByUserId(userId);
-        userLearningSetRepository.deleteAllByUserId(userId);
-        quizScrapRepository.deleteAllByUserId(userId);
-        failQuizRepository.deleteAllByUserId(userId);
-        newsScrapRepository.deleteAllByUserId(userId);
-        termScrapRepository.deleteAllByUserId(userId);
-
-        // 출석 관련 데이터 삭제
-        attendanceLogRepository.deleteAllByUserId(userId);
-        attendanceRepository.deleteAllByUserId(userId);
-
-        // 유저 관련 데이터 삭제
-        userGoalRepository.deleteAllByUserId(userId);
-        questRepository.deleteAllByUserId(userId);
-        notificationRepository.deleteAllByUserId(userId);
-        if (user.getProfileImage() != null) {
-            imageRepository.deleteById(user.getProfileImage().getId());
-        }
 
         // 게시글 관련 데이터 삭제
         commentLikeRepository.deleteAllByUserId(userId);
@@ -291,6 +273,30 @@ public class UserService {
             commentCommandService.removeCommentFromPost(userId, comment.getPostId(), comment.getId());
         }
         postCommandService.deleteAllPostsByUserId(userId);
+
+        // 학습 관련 데이터 삭제
+        conceptScrapRepository.deleteAllByUserId(userId);
+        userLearningSetRepository.deleteAllByUserId(userId);
+        quizScrapRepository.deleteAllByUserId(userId);
+        failQuizRepository.deleteAllByUserId(userId);
+        newsScrapRepository.deleteAllByUserId(userId);
+        termScrapRepository.deleteAllByUserId(userId);
+
+        // 출석 관련 데이터 삭제
+        Attendance attendance =
+                attendanceRepository
+                        .findByUserId(userId)
+                        .orElseThrow(() -> new UserException(ATTENDANCE_NOT_FOUND));
+        attendanceLogRepository.deleteAllByAttendance(attendance);
+        attendanceRepository.deleteAllByUserId(userId);
+
+        // 유저 관련 데이터 삭제
+        userGoalRepository.deleteAllByUserId(userId);
+        questRepository.deleteAllByUserId(userId);
+        notificationRepository.deleteAllByReceiverId(userId);
+        if (user.getProfileImage() != null) {
+            imageRepository.deleteById(user.getProfileImage().getId());
+        }
 
         // 유저 삭제
         userRepository.delete(user);

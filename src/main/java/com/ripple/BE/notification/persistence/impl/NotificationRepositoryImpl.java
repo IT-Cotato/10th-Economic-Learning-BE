@@ -43,7 +43,7 @@ public class NotificationRepositoryImpl implements NotificationRepository {
     }
 
     @Override
-    public void deleteAllByUserId(Long userId) {
-        notificationJpaRepository.deleteAllByUserId(userId);
+    public void deleteAllByReceiverId(Long userId) {
+        notificationJpaRepository.deleteAllByReceiverId(userId);
     }
 }

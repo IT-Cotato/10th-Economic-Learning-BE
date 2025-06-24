@@ -1,5 +1,6 @@
 package com.ripple.BE.user.repository;
 
+import com.ripple.BE.user.domain.Attendance;
 import com.ripple.BE.user.domain.AttendanceLog;
 import java.time.LocalDate;
 import java.util.List;
@@ -14,5 +15,5 @@ public interface AttendanceLogRepository extends JpaRepository<AttendanceLog, Lo
 
     List<AttendanceLog> findByAttendanceId(Long attendanceId);
 
-    void deleteAllByUserId(Long userId);
+    void deleteAllByAttendance(Attendance attendance);
 }
