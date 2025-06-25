@@ -7,6 +7,8 @@ import com.ripple.BE.image.dto.response.ImageResponse;
 import com.ripple.BE.image.persistence.ImageRepository;
 import com.ripple.BE.post.application.CommentQueryUseCase;
 import com.ripple.BE.post.application.PostQueryUseCase;
+import com.ripple.BE.post.application.cache.PostCacheKey;
+import com.ripple.BE.post.application.cache.PostCacheManager;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.domain.type.PostType;
@@ -18,7 +20,7 @@ import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostRepository;
 import com.ripple.BE.post.persistence.PostScrapRepository;
-import com.ripple.BE.post.persistence.dto.PostWithScrapAndImageDTO;
+import com.ripple.BE.post.persistence.dto.PostWithImageDTO;
 import com.ripple.BE.search.service.SearchService;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.repository.UserRepository;
@@ -44,33 +46,57 @@ public class PostQueryService implements PostQueryUseCase {
     private final CommentQueryUseCase commentQueryUseCase;
     private final SearchService searchService;
 
+    private final PostCacheManager postCacheManager;
+
     private static final int PAGE_SIZE = 10;
 
     @Override
     public PostPreviewListResponseDTO getPosts(
-            final int page, final PostSort sort, final PostType type, final long userId) {
-        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+            final int page, final PostSort sort, final PostType type) {
 
+        // 1. 경제 톡톡인 경우 예외 처리
         if (type == PostType.ECONOMY_TALK) {
             throw new PostException(POST_TYPE_NOT_SUPPORTED);
         }
 
-        Page<PostWithScrapAndImageDTO> postPage =
+        // 2. 캐시에서 조회
+        String key = PostCacheKey.generatePostListKey(type, sort, page);
+        PostPreviewListResponseDTO cached = postCacheManager.getPosts(key);
+        if (cached != null) return cached;
+
+        // 3. 캐시에 없으면 DB에서 조회
+        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        Page<PostWithImageDTO> postPage =
                 (type == null)
-                        ? postRepository.findPosts(pageable, sort, userId)
-                        : postRepository.findByType(type, sort, pageable, userId);
+                        ? postRepository.findPosts(pageable, sort)
+                        : postRepository.findByType(type, sort, pageable);
 
         List<PostPreviewResponseDTO> previews =
                 postPage.getContent().stream().map(PostPreviewResponseDTO::from).toList();
+        PostPreviewListResponseDTO result =
+                PostPreviewListResponseDTO.of(previews, postPage.getTotalPages(), page);
 
-        return PostPreviewListResponseDTO.of(previews, postPage.getTotalPages(), postPage.getNumber());
+        // 4. 캐시에 저장
+        postCacheManager.putPosts(key, result);
+        return result;
     }
 
     @Override
-    public List<PostPreviewResponseDTO> getPopularPosts(final long userId) {
-        return postRepository.findPopularPosts(userId).stream()
-                .map(PostPreviewResponseDTO::from)
-                .toList();
+    public List<PostPreviewResponseDTO> getPopularPosts() {
+        String key = PostCacheKey.POPULAR_POSTS;
+
+        // 1. 캐시 조회
+        List<PostPreviewResponseDTO> cached = postCacheManager.getPopular(key);
+        if (cached != null) return cached;
+
+        // 2. 캐시에 없으면 DB 조회
+        List<PostPreviewResponseDTO> result =
+                postRepository.findPopularPosts().stream().map(PostPreviewResponseDTO::from).toList();
+
+        // 3. 캐시에 저장
+        postCacheManager.putPopular(key, result);
+
+        return result;
     }
 
     @Override
@@ -97,8 +123,7 @@ public class PostQueryService implements PostQueryUseCase {
     public PostPreviewListResponseDTO searchPosts(
             final String keyword, final int page, final long userId) {
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
-        Page<PostWithScrapAndImageDTO> postPage =
-                postRepository.searchNormalPosts(keyword, pageable, userId);
+        Page<PostWithImageDTO> postPage = postRepository.searchNormalPosts(keyword, pageable);
 
         List<PostPreviewResponseDTO> previews =
                 postPage.getContent().stream().map(PostPreviewResponseDTO::from).toList();
