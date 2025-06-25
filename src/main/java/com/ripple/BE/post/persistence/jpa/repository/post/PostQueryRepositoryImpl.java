@@ -2,7 +2,6 @@ package com.ripple.BE.post.persistence.jpa.repository.post;
 
 import static com.ripple.BE.image.persistence.jpa.entity.QImageJpaEntity.*;
 import static com.ripple.BE.post.persistence.jpa.entity.QPostJpaEntity.*;
-import static com.ripple.BE.post.persistence.jpa.entity.QPostScrapJpaEntity.*;
 
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.OrderSpecifier;
@@ -13,7 +12,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.domain.type.PostType;
-import com.ripple.BE.post.persistence.dto.PostWithScrapAndImageDTO;
+import com.ripple.BE.post.persistence.dto.PostWithImageDTO;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,22 +27,19 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
     private static final int POPULAR_POST_LIMIT = 10;
 
     @Override
-    public Page<PostWithScrapAndImageDTO> findByType(
-            PostType type, PostSort postSort, Pageable pageable, long userId) {
+    public Page<PostWithImageDTO> findByType(PostType type, PostSort postSort, Pageable pageable) {
         BooleanExpression predicate = postJpaEntity.type.eq(type);
-        return getPostDTOsByPageable(predicate, pageable, postSort, userId);
+        return getPostDTOsByPageable(predicate, pageable, postSort);
     }
 
     @Override
-    public Page<PostWithScrapAndImageDTO> findNormalPosts(
-            Pageable pageable, PostSort postSort, long userId) {
+    public Page<PostWithImageDTO> findNormalPosts(Pageable pageable, PostSort postSort) {
         BooleanExpression predicate = postJpaEntity.type.ne(PostType.ECONOMY_TALK);
-        return getPostDTOsByPageable(predicate, pageable, postSort, userId);
+        return getPostDTOsByPageable(predicate, pageable, postSort);
     }
 
     @Override
-    public Page<PostWithScrapAndImageDTO> searchNormalPosts(
-            String keyword, Pageable pageable, long userId) {
+    public Page<PostWithImageDTO> searchNormalPosts(String keyword, Pageable pageable) {
         BooleanExpression predicate = postJpaEntity.type.ne(PostType.ECONOMY_TALK);
 
         if (keyword != null && !keyword.trim().isEmpty()) {
@@ -52,15 +48,15 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                             postJpaEntity.title.contains(keyword).or(postJpaEntity.content.contains(keyword)));
         }
 
-        return getPostDTOsByPageable(predicate, pageable, PostSort.RECENT, userId);
+        return getPostDTOsByPageable(predicate, pageable, PostSort.RECENT);
     }
 
     @Override
-    public List<PostWithScrapAndImageDTO> findPopularPosts(long userId) {
+    public List<PostWithImageDTO> findPopularPosts() {
         BooleanExpression predicate = postJpaEntity.likeCount.goe(POPULAR_POST_LIKE_COUNT);
 
         return queryFactory
-                .select(selectPostDTOProjection(userId))
+                .select(selectPostDTOProjection())
                 .from(postJpaEntity)
                 .where(predicate)
                 .orderBy(postJpaEntity.createdDate.desc())
@@ -69,12 +65,12 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
     }
 
     @Override
-    public List<PostWithScrapAndImageDTO> findUserNormalPosts(long userId) {
+    public List<PostWithImageDTO> findUserNormalPosts(long userId) {
         BooleanExpression predicate =
                 postJpaEntity.authorId.eq(userId).and(postJpaEntity.type.ne(PostType.ECONOMY_TALK));
 
         return queryFactory
-                .select(selectPostDTOProjection(userId))
+                .select(selectPostDTOProjection())
                 .from(postJpaEntity)
                 .where(predicate)
                 .orderBy(postJpaEntity.createdDate.desc())
@@ -82,12 +78,12 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
     }
 
     // 공통 페이징 로직
-    private Page<PostWithScrapAndImageDTO> getPostDTOsByPageable(
-            BooleanExpression predicate, Pageable pageable, PostSort postSort, long userId) {
+    private Page<PostWithImageDTO> getPostDTOsByPageable(
+            BooleanExpression predicate, Pageable pageable, PostSort postSort) {
 
-        List<PostWithScrapAndImageDTO> content =
+        List<PostWithImageDTO> content =
                 queryFactory
-                        .select(selectPostDTOProjection(userId))
+                        .select(selectPostDTOProjection())
                         .from(postJpaEntity)
                         .where(predicate)
                         .orderBy(getOrderSpecifiers(postSort))
@@ -102,11 +98,11 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
     }
 
     @Override
-    public List<PostWithScrapAndImageDTO> findByIdIn(List<Long> ids, long userId) {
+    public List<PostWithImageDTO> findByIdIn(List<Long> ids) {
         BooleanExpression predicate = postJpaEntity.id.in(ids);
 
         return queryFactory
-                .select(selectPostDTOProjection(userId))
+                .select(selectPostDTOProjection())
                 .from(postJpaEntity)
                 .where(predicate)
                 .orderBy(postJpaEntity.createdDate.desc())
@@ -121,9 +117,9 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
     }
 
     // 공통 Projection
-    private ConstructorExpression<PostWithScrapAndImageDTO> selectPostDTOProjection(long userId) {
+    private ConstructorExpression<PostWithImageDTO> selectPostDTOProjection() {
         return Projections.constructor(
-                PostWithScrapAndImageDTO.class,
+                PostWithImageDTO.class,
                 postJpaEntity.id,
                 postJpaEntity.title,
                 postJpaEntity.content,
@@ -135,14 +131,6 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                         .where(imageJpaEntity.postId.eq(postJpaEntity.id))
                         .orderBy(imageJpaEntity.id.asc())
                         .limit(1),
-                JPAExpressions.select(postScrapJpaEntity.id.count())
-                        .from(postScrapJpaEntity)
-                        .where(
-                                postScrapJpaEntity
-                                        .postId
-                                        .eq(postJpaEntity.id)
-                                        .and(postScrapJpaEntity.userId.eq(userId)))
-                        .gt(0L),
                 postJpaEntity.createdDate);
     }
 }

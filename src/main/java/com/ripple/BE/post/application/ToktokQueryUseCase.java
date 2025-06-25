@@ -7,11 +7,11 @@ import com.ripple.BE.post.dto.response.ToktokResponseDTO;
 
 public interface ToktokQueryUseCase {
 
-    ToktokPreviewResponseDTO getTodayToktok(final long userId);
+    ToktokPreviewResponseDTO getTodayToktok();
 
     ToktokResponseDTO getToktok(final long id, final long userId);
 
-    ToktokPreviewListResponseDTO getToktoks(final int page, final PostSort sort, final long userId);
+    ToktokPreviewListResponseDTO getToktoks(final int page, final PostSort sort);
 
     ToktokPreviewListResponseDTO searchToktoks(
             final String keyword, final int page, final long userId);

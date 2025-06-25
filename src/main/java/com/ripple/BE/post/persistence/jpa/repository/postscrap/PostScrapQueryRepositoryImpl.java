@@ -5,10 +5,9 @@ import static com.ripple.BE.post.persistence.jpa.entity.QPostJpaEntity.*;
 import static com.ripple.BE.post.persistence.jpa.entity.QPostScrapJpaEntity.*;
 
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.ripple.BE.post.persistence.dto.PostWithScrapAndImageDTO;
+import com.ripple.BE.post.persistence.dto.PostWithImageDTO;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 
@@ -18,11 +17,11 @@ public class PostScrapQueryRepositoryImpl implements PostScrapQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<PostWithScrapAndImageDTO> findPostsScrappedByUser(long userId) {
+    public List<PostWithImageDTO> findPostsScrappedByUser(long userId) {
         return queryFactory
                 .select(
                         Projections.constructor(
-                                PostWithScrapAndImageDTO.class,
+                                PostWithImageDTO.class,
                                 postJpaEntity.id,
                                 postJpaEntity.title,
                                 postJpaEntity.content,
@@ -35,8 +34,6 @@ public class PostScrapQueryRepositoryImpl implements PostScrapQueryRepository {
                                         .where(imageJpaEntity.postId.eq(postJpaEntity.id))
                                         .orderBy(imageJpaEntity.id.asc())
                                         .limit(1),
-                                // 스크랩 여부는 항상 true
-                                Expressions.constant(true),
                                 postJpaEntity.createdDate))
                 .from(postScrapJpaEntity)
                 .join(postJpaEntity)

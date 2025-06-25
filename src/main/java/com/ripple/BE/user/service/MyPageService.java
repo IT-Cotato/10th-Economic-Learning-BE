@@ -22,7 +22,7 @@ import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostRepository;
 import com.ripple.BE.post.persistence.PostScrapRepository;
 import com.ripple.BE.post.persistence.dto.CommentWithPostDTO;
-import com.ripple.BE.post.persistence.dto.PostWithScrapAndImageDTO;
+import com.ripple.BE.post.persistence.dto.PostWithImageDTO;
 import com.ripple.BE.term.dto.response.TermListResponseDTO;
 import com.ripple.BE.term.persistence.TermScrapRepository;
 import com.ripple.BE.term.persistence.dto.TermWithScrapDTO;
@@ -60,13 +60,13 @@ public class MyPageService {
     private final ConceptScrapRepository conceptScrapRepository;
 
     public List<PostPreviewResponseDTO> getMyPosts(final long userId) {
-        List<PostWithScrapAndImageDTO> posts = postRepository.findUserNormalPosts(userId);
+        List<PostWithImageDTO> posts = postRepository.findUserNormalPosts(userId);
 
         return posts.stream().map(PostPreviewResponseDTO::from).collect(Collectors.toList());
     }
 
     public List<PostPreviewResponseDTO> getMyLikePosts(final long userId) {
-        List<PostWithScrapAndImageDTO> posts = postLikeRepository.findPostsLikedByUser(userId);
+        List<PostWithImageDTO> posts = postLikeRepository.findPostsLikedByUser(userId);
         return posts.stream().map(PostPreviewResponseDTO::from).collect(Collectors.toList());
     }
 
@@ -74,13 +74,13 @@ public class MyPageService {
         List<Comment> comments = commentRepository.findAllByCommenterId(userId);
         List<Long> postIds = getPostIds(comments);
 
-        List<PostWithScrapAndImageDTO> posts = postRepository.findByIdIn(postIds, userId);
+        List<PostWithImageDTO> posts = postRepository.findByIdIn(postIds);
 
         return posts.stream().map(PostPreviewResponseDTO::from).toList();
     }
 
     public List<PostPreviewResponseDTO> getMyScrapPosts(final long userId) {
-        List<PostWithScrapAndImageDTO> posts = postScrapRepository.findPostsScrappedByUser(userId);
+        List<PostWithImageDTO> posts = postScrapRepository.findPostsScrappedByUser(userId);
         return posts.stream().map(PostPreviewResponseDTO::from).collect(Collectors.toList());
     }
 

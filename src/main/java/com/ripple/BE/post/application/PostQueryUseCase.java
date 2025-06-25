@@ -9,10 +9,9 @@ import java.util.List;
 
 public interface PostQueryUseCase {
 
-    PostPreviewListResponseDTO getPosts(
-            final int page, final PostSort sort, final PostType type, final long userId);
+    PostPreviewListResponseDTO getPosts(final int page, final PostSort sort, final PostType type);
 
-    List<PostPreviewResponseDTO> getPopularPosts(final long userId);
+    List<PostPreviewResponseDTO> getPopularPosts();
 
     PostResponseDTO getPost(final long postId, final long userId);
 
