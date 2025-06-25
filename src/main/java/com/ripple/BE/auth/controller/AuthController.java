@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +27,7 @@ public class AuthController {
     private final AuthService authService;
 
     @Operation(summary = "카카오 로그인", description = "카카오 로그인을 진행합니다.")
-    @GetMapping("/login/kakao")
+    @PostMapping("/login/kakao")
     public ResponseEntity<ApiResponse<Object>> kakaoLogin(@RequestParam String code) {
 
         return ResponseEntity.status(HttpStatus.OK)

@@ -17,4 +17,6 @@ public interface ConceptScrapRepository {
     void delete(final ConceptScrap conceptScrap);
 
     List<Concept> findConceptsScrappedByUserAndLevel(final long userId, final Level level);
+
+    void deleteAllByUserId(final long userId);
 }

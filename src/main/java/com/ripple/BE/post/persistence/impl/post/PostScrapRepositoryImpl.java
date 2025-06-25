@@ -47,4 +47,14 @@ public class PostScrapRepositoryImpl implements PostScrapRepository {
     public void deleteAllByPostId(final long postId) {
         postScrapJpaRepository.deleteAllByPostId(postId);
     }
+
+    @Override
+    public void deleteAllByPostIdIn(final List<Long> postIds) {
+        postScrapJpaRepository.deleteAllByPostIdIn(postIds);
+    }
+
+    @Override
+    public void deleteAllByUserId(final long userId) {
+        postScrapJpaRepository.deleteAllByUserId(userId);
+    }
 }

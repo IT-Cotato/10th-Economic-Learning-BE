@@ -19,4 +19,8 @@ public interface ImageRepository {
     void saveAll(List<Image> images);
 
     void deleteAll(List<Image> images);
+
+    void deleteById(Long id);
+
+    void deleteAllByPostIdIn(List<Long> postIds);
 }

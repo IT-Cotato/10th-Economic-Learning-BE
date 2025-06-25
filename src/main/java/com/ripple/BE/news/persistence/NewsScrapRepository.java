@@ -16,4 +16,6 @@ public interface NewsScrapRepository {
     void delete(NewsScrap newsScrap); // 스크랩 삭제
 
     List<NewsWithScrapDTO> findNewsScrappedByUser(long userId); // 사용자가 스크랩한 뉴스 목록 조회
+
+    void deleteAllByUserId(long userId); // 사용자 ID로 모든 스크랩 삭제
 }

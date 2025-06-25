@@ -48,4 +48,9 @@ public class TermScrapRepositoryImpl implements TermScrapRepository {
     public List<TermWithScrapDTO> findTermsScrappedByUserAndKeyword(long userId, String keyword) {
         return termScrapJpaRepository.findTermsScrappedByUserAndKeyword(userId, keyword);
     }
+
+    @Override
+    public void deleteAllByUserId(final long userId) {
+        termScrapJpaRepository.deleteAllByUserId(userId);
+    }
 }

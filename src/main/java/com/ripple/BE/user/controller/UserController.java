@@ -250,4 +250,18 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(myToktok));
     }
+
+    @Operation(
+            summary = "유저 탈퇴",
+            description =
+                """
+                - 로그인한 유저를 탈퇴시킵니다.
+                - 유저의 모든 데이터는 삭제되며, 복구할 수 없습니다.
+                """
+    )
+    @DeleteMapping()
+    public ResponseEntity<ApiResponse<?>> deleteUser(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        userService.deleteUser(customUserDetails.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
+    }
 }

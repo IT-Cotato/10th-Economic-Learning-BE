@@ -4,9 +4,25 @@ import static com.ripple.BE.user.domain.User.*;
 import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
 import com.ripple.BE.auth.dto.kakao.KakaoUserInfoResponse;
+import com.ripple.BE.chatbot.repository.ChatbotRepository;
 import com.ripple.BE.image.domain.Image;
 import com.ripple.BE.image.persistence.ImageRepository;
 import com.ripple.BE.image.persistence.jpa.entity.ImageJpaEntity;
+import com.ripple.BE.learning.persistence.ConceptScrapRepository;
+import com.ripple.BE.learning.persistence.FailQuizRepository;
+import com.ripple.BE.learning.persistence.QuizScrapRepository;
+import com.ripple.BE.learning.persistence.UserLearningSetRepository;
+import com.ripple.BE.news.persistence.NewsScrapRepository;
+import com.ripple.BE.notification.persistence.NotificationRepository;
+import com.ripple.BE.post.application.impl.common.CommentCommandService;
+import com.ripple.BE.post.application.impl.post.PostCommandService;
+import com.ripple.BE.post.domain.comment.Comment;
+import com.ripple.BE.post.persistence.CommentLikeRepository;
+import com.ripple.BE.post.persistence.CommentRepository;
+import com.ripple.BE.post.persistence.PostLikeRepository;
+import com.ripple.BE.post.persistence.PostScrapRepository;
+import com.ripple.BE.term.persistence.TermScrapRepository;
+import com.ripple.BE.user.domain.Attendance;
 import com.ripple.BE.user.domain.User;
 import com.ripple.BE.user.domain.UserGoal;
 import com.ripple.BE.user.domain.type.LoginType;
@@ -16,9 +32,13 @@ import com.ripple.BE.user.dto.request.PatchUserProfileRequest;
 import com.ripple.BE.user.dto.request.UpdateUserProfileRequest;
 import com.ripple.BE.user.dto.request.UserGoalRequest;
 import com.ripple.BE.user.exception.UserException;
+import com.ripple.BE.user.repository.AttendanceLogRepository;
+import com.ripple.BE.user.repository.AttendanceRepository;
+import com.ripple.BE.user.repository.QuestRepository;
 import com.ripple.BE.user.repository.UserGoalRepository;
 import com.ripple.BE.user.repository.UserRepository;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +54,29 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ImageRepository imageRepository;
-    private final AttendanceService attendanceService;
-
     private final UserGoalRepository userGoalRepository;
+    private final AttendanceLogRepository attendanceLogRepository;
+    private final AttendanceRepository attendanceRepository;
+    private final QuestRepository questRepository;
+    private final ChatbotRepository chatbotRepository;
+    private final NotificationRepository notificationRepository;
+    private final NewsScrapRepository newsScrapRepository;
+    private final TermScrapRepository termScrapRepository;
+
+    private final ConceptScrapRepository conceptScrapRepository;
+    private final UserLearningSetRepository userLearningSetRepository;
+    private final QuizScrapRepository quizScrapRepository;
+    private final FailQuizRepository failQuizRepository;
+    private final CommentRepository commentRepository;
+
+    private final PostLikeRepository postLikeRepository;
+    private final CommentLikeRepository commentLikeRepository;
+    private final PostScrapRepository postScrapRepository;
+
+    private final AttendanceService attendanceService;
+    private final PostCommandService postCommandService;
+    private final CommentCommandService commentCommandService;
+
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -216,5 +256,50 @@ public class UserService {
 
             user.updateProfileImage(ImageJpaEntity.from(image)); // 추후 수정 필요
         }
+    }
+
+    @Transactional
+    public void deleteUser(final long userId) {
+        User user = findUserById(userId);
+
+        // 챗봇 대화 기록 삭제
+        chatbotRepository.deleteAllByUserId(userId);
+
+        // 게시글 관련 데이터 삭제
+        commentLikeRepository.deleteAllByUserId(userId);
+        postLikeRepository.deleteAllByUserId(userId);
+        postScrapRepository.deleteAllByUserId(userId);
+        List<Comment> comments = commentRepository.findAllByCommenterId(userId);
+        for (Comment comment : comments) {
+            commentCommandService.removeCommentFromPost(userId, comment.getPostId(), comment.getId());
+        }
+        postCommandService.deleteAllPostsByUserId(userId);
+
+        // 학습 관련 데이터 삭제
+        conceptScrapRepository.deleteAllByUserId(userId);
+        userLearningSetRepository.deleteAllByUserId(userId);
+        quizScrapRepository.deleteAllByUserId(userId);
+        failQuizRepository.deleteAllByUserId(userId);
+        newsScrapRepository.deleteAllByUserId(userId);
+        termScrapRepository.deleteAllByUserId(userId);
+
+        // 출석 관련 데이터 삭제
+        Attendance attendance =
+                attendanceRepository
+                        .findByUserId(userId)
+                        .orElseThrow(() -> new UserException(ATTENDANCE_NOT_FOUND));
+        attendanceLogRepository.deleteAllByAttendance(attendance);
+        attendanceRepository.deleteAllByUserId(userId);
+
+        // 유저 관련 데이터 삭제
+        userGoalRepository.deleteAllByUserId(userId);
+        questRepository.deleteAllByUserId(userId);
+        notificationRepository.deleteAllByReceiverId(userId);
+        if (user.getProfileImage() != null) {
+            imageRepository.deleteById(user.getProfileImage().getId());
+        }
+
+        // 유저 삭제
+        userRepository.delete(user);
     }
 }

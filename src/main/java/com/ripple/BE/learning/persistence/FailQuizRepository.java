@@ -6,4 +6,6 @@ import java.util.List;
 public interface FailQuizRepository {
 
     void saveAll(List<FailQuiz> failQuizzes);
+
+    void deleteAllByUserId(final long userId);
 }

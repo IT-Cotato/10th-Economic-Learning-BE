@@ -46,4 +46,9 @@ public class QuizScrapRepositoryImpl implements QuizScrapRepository {
                 .map(QuizJpaEntity::toModel)
                 .toList();
     }
+
+    @Override
+    public void deleteAllByUserId(final long userId) {
+        quizScrapJpaRepository.deleteAllByUserId(userId);
+    }
 }

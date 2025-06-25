@@ -10,4 +10,6 @@ public interface TermScrapJpaRepository
     Optional<TermScrapJpaEntity> findByTermIdAndUserId(long termId, long userId);
 
     boolean existsByTermIdAndUserId(long termId, long userId);
+
+    void deleteAllByUserId(long userId);
 }

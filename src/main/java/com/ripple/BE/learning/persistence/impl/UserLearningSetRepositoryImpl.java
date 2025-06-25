@@ -56,6 +56,11 @@ public class UserLearningSetRepositoryImpl implements UserLearningSetRepository 
     }
 
     @Override
+    public void deleteAllByUserId(final long userId) {
+        userLearningSetJpaRepository.deleteAllByUserId(userId);
+    }
+  
+    @Override
     public List<UserLearningSet> findByUserIdAndLearningSetId(long userId, long learningSetId) {
         return userLearningSetJpaRepository.findByUserIdAndLearningSetId(userId, learningSetId).stream()
                 .map(UserLearningSetJpaEntity::toModel)

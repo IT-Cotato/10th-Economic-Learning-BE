@@ -22,5 +22,7 @@ public interface UserLearningSetJpaRepository
     List<UserLearningSetJpaEntity> findByUserIdAndLevel(
             @Param("userId") long userId, @Param("level") Level level);
 
+    void deleteAllByUserId(Long userId);
+
     List<UserLearningSetJpaEntity> findByUserIdAndLearningSetId(Long userId, Long learningSetId);
 }
