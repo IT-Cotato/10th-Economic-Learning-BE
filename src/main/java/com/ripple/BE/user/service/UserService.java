@@ -111,7 +111,7 @@ public class UserService {
     public void updateAlarm(final boolean alarm, final long userId) {
 
         User user = findUserById(userId);
-        user.setCoummunityAlarmAllowed(alarm);
+        user.updateCommunityAlarmAllowed(alarm);
     }
 
     public UserInfoDTO getUserInfo(final long userId) {
@@ -198,14 +198,6 @@ public class UserService {
 
         if (updateUserProfileRequest.profileIntro() != null) {
             user.updateProfileIntro(updateUserProfileRequest.profileIntro());
-        }
-
-        if (updateUserProfileRequest.isLearningAlarmAllowed() != null) {
-            user.updateLearningAlarmAllowed(updateUserProfileRequest.isLearningAlarmAllowed());
-        }
-
-        if (updateUserProfileRequest.isCommunityAlarmAllowed() != null) {
-            user.updateCommunityAlarmAllowed(updateUserProfileRequest.isCommunityAlarmAllowed());
         }
 
         if (updateUserProfileRequest.imageId() != null) {

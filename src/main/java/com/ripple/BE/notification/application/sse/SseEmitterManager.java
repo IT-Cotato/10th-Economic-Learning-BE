@@ -25,7 +25,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class SseEmitterManager {
 
     private final ThreadPoolTaskScheduler heartbeatScheduler; // 하트비트 전송용 스케줄러
-    private final ThreadPoolTaskExecutor asyncExecutor; // 비동기 작업 실행용 스레드풀
+    private final ThreadPoolTaskExecutor threadPoolTaskExecutor; // 비동기 작업 실행용
 
     // 클라이언트 ID 기준 emitter 관리
     private final Map<String, SseEmitter> emitterMap = new ConcurrentHashMap<>(512);
@@ -114,7 +114,7 @@ public class SseEmitterManager {
 
         if (emitter != null) {
             Future<?> shutdownTask =
-                    asyncExecutor.submit(
+                    threadPoolTaskExecutor.submit(
                             () -> {
                                 if (cause != null) emitter.completeWithError(cause);
                                 else emitter.complete();
@@ -136,7 +136,8 @@ public class SseEmitterManager {
 
     /** 알림 전송 */
     public void pushNotification(String clientId, NotificationSseDTO notification) {
-        asyncExecutor.submit(
+
+        threadPoolTaskExecutor.submit(
                 () -> {
                     SseEmitter emitter = emitterMap.get(clientId);
                     if (emitter != null) {
