@@ -2,7 +2,6 @@ package com.ripple.BE.learning.application.quiz;
 
 import java.time.Duration;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,27 +36,16 @@ public class QuizRedisService {
         redisTemplate.expire(getRedisKey(userId, type), Duration.ofMinutes(QUIZ_TIME)); // 만료 시간 설정
     }
 
-    // Redis 리스트에 저장 및 조회 추가
-    protected <T> void saveToRedisList(final long userId, final String type, final T data) {
-        redisTemplate.opsForList().rightPush(getRedisKey(userId, type), data); // RPUSH로 추가
-        redisTemplate.expire(getRedisKey(userId, type), Duration.ofMinutes(QUIZ_TIME)); // 만료 시간 설정
+    // Redis에 Map 저장
+    protected <K, V> void saveMapToRedis(final String key, final String type, final Map<K, V> data) {
+        String newKey = getRedisKey(key, type);
+        redisTemplate.opsForHash().putAll(newKey, data);
+        redisTemplate.expire(key, Duration.ofMinutes(QUIZ_TIME));
     }
 
     // Redis에서 데이터 가져오기
     protected <T> T fetchFromRedis(final long userId, final String type, final Class<T> clazz) {
         return clazz.cast(redisTemplate.opsForValue().get(getRedisKey(userId, type)));
-    }
-
-    // Redis에서 리스트 가져오기
-    protected <T> List<T> fetchListFromRedis(
-            final long userId, final String type, final Class<T> clazz) {
-        List<Object> rawList =
-                redisTemplate.opsForList().range(getRedisKey(userId, type), 0, -1); // 전체 조회
-        if (rawList == null || rawList.isEmpty()) {
-            return Collections.emptyList(); // 빈 리스트 반환
-        }
-
-        return rawList.stream().map(clazz::cast).collect(Collectors.toList());
     }
 
     // Redis에서 Set 조회
@@ -68,13 +56,6 @@ public class QuizRedisService {
             return Collections.emptySet();
         }
         return rawSet.stream().map(clazz::cast).collect(Collectors.toSet());
-    }
-
-    // Redis에 Map 저장
-    protected <K, V> void saveMapToRedis(final String key, final String type, final Map<K, V> data) {
-        String newKey = getRedisKey(key, type);
-        redisTemplate.opsForHash().putAll(newKey, data);
-        redisTemplate.expire(key, Duration.ofMinutes(QUIZ_TIME));
     }
 
     // Redis에서 Map 조회
