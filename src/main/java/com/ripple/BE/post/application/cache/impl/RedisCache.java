@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 public class RedisCache implements PostCache {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private static final Duration TTL = Duration.ofMinutes(2);
+    private static final Duration TTL = Duration.ofMinutes(3);
 
     @Override
     public PostPreviewListResponseDTO getPostList(String key) {

@@ -16,13 +16,13 @@ import org.springframework.stereotype.Component;
 public class CaffeineCache implements PostCache {
 
     private final Cache<String, PostPreviewListResponseDTO> postCache =
-            Caffeine.newBuilder().maximumSize(1000).expireAfterWrite(Duration.ofMinutes(1)).build();
+            Caffeine.newBuilder().maximumSize(1000).expireAfterWrite(Duration.ofMinutes(3)).build();
 
     private final Cache<String, List<PostPreviewResponseDTO>> popularCache =
-            Caffeine.newBuilder().maximumSize(100).expireAfterWrite(Duration.ofMinutes(1)).build();
+            Caffeine.newBuilder().maximumSize(100).expireAfterWrite(Duration.ofMinutes(3)).build();
 
     private final Cache<String, ToktokPreviewListResponseDTO> toktokCache =
-            Caffeine.newBuilder().maximumSize(1000).expireAfterWrite(Duration.ofMinutes(1)).build();
+            Caffeine.newBuilder().maximumSize(1000).expireAfterWrite(Duration.ofMinutes(3)).build();
 
     @Override
     public PostPreviewListResponseDTO getPostList(String key) {
