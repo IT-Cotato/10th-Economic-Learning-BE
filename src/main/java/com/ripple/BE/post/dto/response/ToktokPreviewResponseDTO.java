@@ -1,7 +1,7 @@
 package com.ripple.BE.post.dto.response;
 
 import com.ripple.BE.global.utils.RelativeTimeFormatter;
-import com.ripple.BE.post.persistence.dto.ToktokWithScrapAndImageDTO;
+import com.ripple.BE.post.persistence.dto.ToktokWithImageDTO;
 import com.ripple.BE.user.domain.User;
 import java.util.List;
 
@@ -12,7 +12,6 @@ public record ToktokPreviewResponseDTO(
         long likeCount,
         long scrapCount,
         String imageUrl,
-        Boolean isScraped,
         String createdDate,
         List<UserRandomProfileDTO> userProfiles // 중첩 DTO
         ) {
@@ -24,7 +23,7 @@ public record ToktokPreviewResponseDTO(
         }
     }
 
-    public static ToktokPreviewResponseDTO of(ToktokWithScrapAndImageDTO dto, List<User> users) {
+    public static ToktokPreviewResponseDTO of(ToktokWithImageDTO dto, List<User> users) {
         return new ToktokPreviewResponseDTO(
                 dto.id(),
                 dto.title(),
@@ -32,7 +31,6 @@ public record ToktokPreviewResponseDTO(
                 dto.likeCount(),
                 dto.scrapCount(),
                 dto.imageUrl(),
-                dto.isScraped(),
                 RelativeTimeFormatter.formatRelativeTime(dto.usedDate().atStartOfDay()),
                 users.stream().map(UserRandomProfileDTO::from).toList());
     }

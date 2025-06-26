@@ -30,11 +30,9 @@ public class ToktokController {
 
     @Operation(summary = "오늘의 경제 톡톡 주제 조회", description = "오늘의 경제 톡톡 주제를 조회합니다. 커뮤니티 홈 화면에 표시됩니다.")
     @GetMapping("/toktok-today")
-    public ResponseEntity<ApiResponse<Object>> getTodayToktok(
-            final @AuthenticationPrincipal CustomUserDetails currentUser) {
+    public ResponseEntity<ApiResponse<Object>> getTodayToktok() {
 
-        ToktokPreviewResponseDTO toktokPreviewResponseDTO =
-                toktokUseCase.getTodayToktok(currentUser.getId());
+        ToktokPreviewResponseDTO toktokPreviewResponseDTO = toktokUseCase.getTodayToktok();
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(toktokPreviewResponseDTO));
     }
@@ -47,8 +45,7 @@ public class ToktokController {
             final @AuthenticationPrincipal CustomUserDetails currentUser,
             final @RequestParam(required = false, defaultValue = "0") @PositiveOrZero int page,
             final @RequestParam(required = false, defaultValue = "RECENT") PostSort sort) {
-        ToktokPreviewListResponseDTO toktokListDTO =
-                toktokUseCase.getToktoks(page, sort, currentUser.getId());
+        ToktokPreviewListResponseDTO toktokListDTO = toktokUseCase.getToktoks(page, sort);
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(toktokListDTO));
     }

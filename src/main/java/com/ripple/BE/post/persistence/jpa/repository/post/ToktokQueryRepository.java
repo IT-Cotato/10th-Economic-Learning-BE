@@ -1,7 +1,7 @@
 package com.ripple.BE.post.persistence.jpa.repository.post;
 
 import com.ripple.BE.post.domain.type.PostSort;
-import com.ripple.BE.post.persistence.dto.ToktokWithScrapAndImageDTO;
+import com.ripple.BE.post.persistence.dto.ToktokWithImageDTO;
 import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import java.time.LocalDate;
 import java.util.List;
@@ -16,11 +16,9 @@ public interface ToktokQueryRepository {
 
     List<PostJpaEntity> findNewToktokPosts();
 
-    Page<ToktokWithScrapAndImageDTO> findUsedToktokPosts(
-            Pageable pageable, PostSort postSort, long userId);
+    Page<ToktokWithImageDTO> findUsedToktokPosts(Pageable pageable, PostSort postSort);
 
-    Optional<ToktokWithScrapAndImageDTO> findByUsedDate(LocalDate usedDate, long userId);
+    Optional<ToktokWithImageDTO> findByUsedDate(LocalDate usedDate);
 
-    Page<ToktokWithScrapAndImageDTO> searchUsedToktokPosts(
-            String keyword, Pageable pageable, long userId);
+    Page<ToktokWithImageDTO> searchUsedToktokPosts(String keyword, Pageable pageable);
 }

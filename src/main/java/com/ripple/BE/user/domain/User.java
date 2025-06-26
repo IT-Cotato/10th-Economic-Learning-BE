@@ -28,7 +28,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Table(name = "users")
 @Getter
@@ -89,12 +88,8 @@ public class User extends BaseJpaEntity {
     @Column(name = "current_level")
     private Level currentLevel; // 현재 학습 단계
 
-    @Column(name = "is_learning_alarm_allowed")
-    private boolean isLearningAlarmAllowed = false; // 학습 푸시 알람 여부
-
-    @Setter
     @Column(name = "is_community_alarm_allowed")
-    private boolean isCoummunityAlarmAllowed = false; // 커뮤니티 푸시 알람 여부
+    private boolean isCoummunityAlarmAllowed = true; // 커뮤니티 푸시 알람 여부
 
     @Column(name = "is_profile_completed")
     private boolean isProfileCompleted = false; // 최초 1회 프로필 등록
@@ -155,7 +150,6 @@ public class User extends BaseJpaEntity {
         this.birthDate = request.birthDate();
         this.gender = request.gender();
         this.profileIntro = request.profileIntro();
-        this.isLearningAlarmAllowed = request.isLearningAlarmAllowed();
         this.isCoummunityAlarmAllowed = request.isCommunityAlarmAllowed();
         this.isProfileCompleted = true;
     }
@@ -198,10 +192,6 @@ public class User extends BaseJpaEntity {
 
     public void updateProfileImage(ImageJpaEntity image) {
         this.profileImage = image;
-    }
-
-    public void updateLearningAlarmAllowed(boolean isLearningAlarmAllowed) {
-        this.isLearningAlarmAllowed = isLearningAlarmAllowed;
     }
 
     public void updateCommunityAlarmAllowed(boolean isCommunityAlarmAllowed) {

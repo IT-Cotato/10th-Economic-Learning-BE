@@ -3,7 +3,7 @@ package com.ripple.BE.post.persistence;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.domain.type.PostType;
-import com.ripple.BE.post.persistence.dto.PostWithScrapAndImageDTO;
+import com.ripple.BE.post.persistence.dto.PostWithImageDTO;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -20,25 +20,23 @@ public interface PostRepository {
     Optional<Post> findByIdForUpdate(final long id);
 
     // 게시글 종류를 통해 게시글을 조회한다.
-    Page<PostWithScrapAndImageDTO> findByType(
-            final PostType type, final PostSort postSort, final Pageable pageable, final long userId);
+    Page<PostWithImageDTO> findByType(
+            final PostType type, final PostSort postSort, final Pageable pageable);
 
     // 모든 게시글을 조회한다.
-    Page<PostWithScrapAndImageDTO> findPosts(
-            final Pageable pageable, final PostSort postSort, final long userId);
+    Page<PostWithImageDTO> findPosts(final Pageable pageable, final PostSort postSort);
 
     // 인기 게시글을 조회한다.
-    List<PostWithScrapAndImageDTO> findPopularPosts(final long userId);
+    List<PostWithImageDTO> findPopularPosts();
 
     // 사용자가 작성한 게시글을 조회한다.
-    List<PostWithScrapAndImageDTO> findUserNormalPosts(final long userId);
+    List<PostWithImageDTO> findUserNormalPosts(final long userId);
 
     // 게시물을 검색한다.
-    Page<PostWithScrapAndImageDTO> searchNormalPosts(
-            final String keyword, final Pageable pageable, final long userId);
+    Page<PostWithImageDTO> searchNormalPosts(final String keyword, final Pageable pageable);
 
     // 게시글 ID 목록을 통해 게시글을 조회한다.
-    List<PostWithScrapAndImageDTO> findByIdIn(final List<Long> postIds, final long userId);
+    List<PostWithImageDTO> findByIdIn(final List<Long> postIds);
 
     List<Post> findAllByAuthorId(final long authorId);
 

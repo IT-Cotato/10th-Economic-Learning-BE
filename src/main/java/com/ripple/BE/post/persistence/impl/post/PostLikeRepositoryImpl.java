@@ -2,7 +2,7 @@ package com.ripple.BE.post.persistence.impl.post;
 
 import com.ripple.BE.post.domain.post.PostLike;
 import com.ripple.BE.post.persistence.PostLikeRepository;
-import com.ripple.BE.post.persistence.dto.PostWithScrapAndImageDTO;
+import com.ripple.BE.post.persistence.dto.PostWithImageDTO;
 import com.ripple.BE.post.persistence.jpa.entity.PostLikeJpaEntity;
 import com.ripple.BE.post.persistence.jpa.repository.postlike.PostLikeJpaRepository;
 import java.util.List;
@@ -29,7 +29,7 @@ public class PostLikeRepositoryImpl implements PostLikeRepository {
     }
 
     @Override
-    public List<PostWithScrapAndImageDTO> findPostsLikedByUser(final long userId) {
+    public List<PostWithImageDTO> findPostsLikedByUser(final long userId) {
         return postLikeJpaRepository.findPostsLikedByUser(userId);
     }
 

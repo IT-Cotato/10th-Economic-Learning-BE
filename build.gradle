@@ -102,6 +102,9 @@ dependencies {
 
     // discord
     implementation 'com.github.napstr:logback-discord-appender:1.0.0'
+
+    // caffeine
+    implementation 'com.github.ben-manes.caffeine:caffeine'
 }
 
 clean {	delete file('src/main/generated')}

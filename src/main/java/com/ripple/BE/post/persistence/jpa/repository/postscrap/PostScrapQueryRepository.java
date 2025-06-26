@@ -1,9 +1,9 @@
 package com.ripple.BE.post.persistence.jpa.repository.postscrap;
 
-import com.ripple.BE.post.persistence.dto.PostWithScrapAndImageDTO;
+import com.ripple.BE.post.persistence.dto.PostWithImageDTO;
 import java.util.List;
 
 public interface PostScrapQueryRepository {
 
-    List<PostWithScrapAndImageDTO> findPostsScrappedByUser(long userId);
+    List<PostWithImageDTO> findPostsScrappedByUser(long userId);
 }

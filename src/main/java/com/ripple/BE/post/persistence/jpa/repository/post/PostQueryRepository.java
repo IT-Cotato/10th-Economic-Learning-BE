@@ -2,23 +2,22 @@ package com.ripple.BE.post.persistence.jpa.repository.post;
 
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.domain.type.PostType;
-import com.ripple.BE.post.persistence.dto.PostWithScrapAndImageDTO;
+import com.ripple.BE.post.persistence.dto.PostWithImageDTO;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface PostQueryRepository {
 
-    Page<PostWithScrapAndImageDTO> findByType(
-            PostType type, PostSort postSort, Pageable pageable, long userId);
+    Page<PostWithImageDTO> findByType(PostType type, PostSort postSort, Pageable pageable);
 
-    Page<PostWithScrapAndImageDTO> findNormalPosts(Pageable pageable, PostSort postSort, long userId);
+    Page<PostWithImageDTO> findNormalPosts(Pageable pageable, PostSort postSort);
 
-    Page<PostWithScrapAndImageDTO> searchNormalPosts(String keyword, Pageable pageable, long userId);
+    Page<PostWithImageDTO> searchNormalPosts(String keyword, Pageable pageable);
 
-    List<PostWithScrapAndImageDTO> findPopularPosts(long userId);
+    List<PostWithImageDTO> findPopularPosts();
 
-    List<PostWithScrapAndImageDTO> findUserNormalPosts(long userId);
+    List<PostWithImageDTO> findUserNormalPosts(long userId);
 
-    List<PostWithScrapAndImageDTO> findByIdIn(List<Long> ids, long userId);
+    List<PostWithImageDTO> findByIdIn(List<Long> ids);
 }

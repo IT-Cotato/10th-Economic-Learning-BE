@@ -2,7 +2,7 @@ package com.ripple.BE.post.persistence.impl.post;
 
 import com.ripple.BE.post.domain.post.PostScrap;
 import com.ripple.BE.post.persistence.PostScrapRepository;
-import com.ripple.BE.post.persistence.dto.PostWithScrapAndImageDTO;
+import com.ripple.BE.post.persistence.dto.PostWithImageDTO;
 import com.ripple.BE.post.persistence.jpa.entity.PostScrapJpaEntity;
 import com.ripple.BE.post.persistence.jpa.repository.postscrap.PostScrapJpaRepository;
 import java.util.List;
@@ -39,7 +39,7 @@ public class PostScrapRepositoryImpl implements PostScrapRepository {
     }
 
     @Override
-    public List<PostWithScrapAndImageDTO> findPostsScrappedByUser(final long userId) {
+    public List<PostWithImageDTO> findPostsScrappedByUser(final long userId) {
         return postScrapJpaRepository.findPostsScrappedByUser(userId);
     }
 

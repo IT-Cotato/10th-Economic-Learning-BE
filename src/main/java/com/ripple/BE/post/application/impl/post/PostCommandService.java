@@ -7,10 +7,13 @@ import com.ripple.BE.image.domain.Image;
 import com.ripple.BE.image.exception.ImageException;
 import com.ripple.BE.image.persistence.ImageRepository;
 import com.ripple.BE.post.application.PostCommandUseCase;
+import com.ripple.BE.post.application.cache.PostCacheKey;
+import com.ripple.BE.post.application.cache.redis.PostCacheEvictionPublisher;
 import com.ripple.BE.post.application.command.CreatePostCommand;
 import com.ripple.BE.post.application.command.UpdatePostCommand;
 import com.ripple.BE.post.domain.comment.Comment;
 import com.ripple.BE.post.domain.post.Post;
+import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.CommentLikeRepository;
 import com.ripple.BE.post.persistence.CommentRepository;
@@ -34,6 +37,8 @@ public class PostCommandService implements PostCommandUseCase {
     private final PostScrapRepository postScrapRepository;
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
+
+    private final PostCacheEvictionPublisher cacheEvictionPublisher;
 
     @Override
     public void createPost(final CreatePostCommand createPostCommand) {
@@ -60,6 +65,10 @@ public class PostCommandService implements PostCommandUseCase {
 
             imageRepository.saveAll(imagesToUpdate);
         }
+
+        // 게시글 생성 후 캐시 무효화
+        cacheEvictionPublisher.publishEvict(
+                PostCacheKey.generatePostListKey(createPostCommand.type(), PostSort.RECENT, 0));
     }
 
     @Override

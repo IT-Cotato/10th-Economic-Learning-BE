@@ -4,7 +4,7 @@ import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.domain.type.PostType;
 import com.ripple.BE.post.persistence.PostRepository;
-import com.ripple.BE.post.persistence.dto.PostWithScrapAndImageDTO;
+import com.ripple.BE.post.persistence.dto.PostWithImageDTO;
 import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import com.ripple.BE.post.persistence.jpa.repository.post.PostJpaRepository;
 import java.util.List;
@@ -43,36 +43,34 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public Page<PostWithScrapAndImageDTO> findByType(
-            final PostType type, final PostSort postSort, final Pageable pageable, final long userId) {
-        return postJpaRepository.findByType(type, postSort, pageable, userId);
+    public Page<PostWithImageDTO> findByType(
+            final PostType type, final PostSort postSort, final Pageable pageable) {
+        return postJpaRepository.findByType(type, postSort, pageable);
     }
 
     @Override
-    public Page<PostWithScrapAndImageDTO> findPosts(
-            final Pageable pageable, final PostSort postSort, final long userId) {
-        return postJpaRepository.findNormalPosts(pageable, postSort, userId);
+    public Page<PostWithImageDTO> findPosts(final Pageable pageable, final PostSort postSort) {
+        return postJpaRepository.findNormalPosts(pageable, postSort);
     }
 
     @Override
-    public List<PostWithScrapAndImageDTO> findPopularPosts(final long userId) {
-        return postJpaRepository.findPopularPosts(userId);
+    public List<PostWithImageDTO> findPopularPosts() {
+        return postJpaRepository.findPopularPosts();
     }
 
     @Override
-    public Page<PostWithScrapAndImageDTO> searchNormalPosts(
-            final String keyword, final Pageable pageable, final long userId) {
-        return postJpaRepository.searchNormalPosts(keyword, pageable, userId);
+    public Page<PostWithImageDTO> searchNormalPosts(final String keyword, final Pageable pageable) {
+        return postJpaRepository.searchNormalPosts(keyword, pageable);
     }
 
     @Override
-    public List<PostWithScrapAndImageDTO> findUserNormalPosts(final long userId) {
+    public List<PostWithImageDTO> findUserNormalPosts(final long userId) {
         return postJpaRepository.findUserNormalPosts(userId);
     }
 
     @Override
-    public List<PostWithScrapAndImageDTO> findByIdIn(final List<Long> postIds, final long userId) {
-        return postJpaRepository.findByIdIn(postIds, userId);
+    public List<PostWithImageDTO> findByIdIn(final List<Long> postIds) {
+        return postJpaRepository.findByIdIn(postIds);
     }
 
     @Override

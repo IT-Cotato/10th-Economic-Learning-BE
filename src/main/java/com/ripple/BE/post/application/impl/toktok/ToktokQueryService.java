@@ -6,6 +6,8 @@ import com.ripple.BE.image.dto.response.ImageResponse;
 import com.ripple.BE.image.persistence.ImageRepository;
 import com.ripple.BE.post.application.CommentQueryUseCase;
 import com.ripple.BE.post.application.ToktokQueryUseCase;
+import com.ripple.BE.post.application.cache.PostCacheKey;
+import com.ripple.BE.post.application.cache.PostCacheManager;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.dto.response.CommentResponseDTO;
@@ -16,7 +18,7 @@ import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostScrapRepository;
 import com.ripple.BE.post.persistence.ToktokRepository;
-import com.ripple.BE.post.persistence.dto.ToktokWithScrapAndImageDTO;
+import com.ripple.BE.post.persistence.dto.ToktokWithImageDTO;
 import com.ripple.BE.user.domain.User;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -42,21 +44,23 @@ public class ToktokQueryService implements ToktokQueryUseCase {
 
     private final CommentQueryUseCase commentQueryUseCase;
 
+    private final PostCacheManager postCacheManager;
+
     private static final int PAGE_SIZE = 10;
     private static final int RANDOM_USER_COUNT = 4;
 
     @Override
-    public ToktokPreviewResponseDTO getTodayToktok(final long userId) {
+    public ToktokPreviewResponseDTO getTodayToktok() {
 
-        ToktokWithScrapAndImageDTO toktokWithScrapAndImageDTO =
+        ToktokWithImageDTO toktokWithImageDTO =
                 toktokRepository
-                        .findByUsedDate(LocalDate.now(), userId)
+                        .findByUsedDate(LocalDate.now())
                         .orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
-        List<User> users = toktokRepository.findUsersByToktokPostId(toktokWithScrapAndImageDTO.id());
+        List<User> users = toktokRepository.findUsersByToktokPostId(toktokWithImageDTO.id());
         List<User> randomUsers = users.size() > RANDOM_USER_COUNT ? getRandomUsers(users) : users;
 
-        return ToktokPreviewResponseDTO.of(toktokWithScrapAndImageDTO, randomUsers);
+        return ToktokPreviewResponseDTO.of(toktokWithImageDTO, randomUsers);
     }
 
     @Override
@@ -81,20 +85,23 @@ public class ToktokQueryService implements ToktokQueryUseCase {
     }
 
     @Override
-    public ToktokPreviewListResponseDTO getToktoks(
-            final int page, final PostSort sort, final long userId) {
+    public ToktokPreviewListResponseDTO getToktoks(final int page, final PostSort sort) {
+        // 1. 캐시에서 조회
+        String key = PostCacheKey.generateToktokListKey(sort, page);
+        ToktokPreviewListResponseDTO cached = postCacheManager.getToktoks(key);
+        if (cached != null) return cached;
+
+        // 2. 캐시에 없으면 DB에서 조회
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
-        Page<ToktokWithScrapAndImageDTO> postPage =
-                toktokRepository.findUsedToktokPosts(pageable, sort, userId);
+        Page<ToktokWithImageDTO> postPage = toktokRepository.findUsedToktokPosts(pageable, sort);
 
-        // 1. 게시글 ID 목록 추출
-        List<Long> postIds =
-                postPage.getContent().stream().map(ToktokWithScrapAndImageDTO::id).toList();
+        // 3. 게시글 ID 목록 추출
+        List<Long> postIds = postPage.getContent().stream().map(ToktokWithImageDTO::id).toList();
 
-        // 2. 게시글 ID별 유저 목록 한 번에 조회
+        // 4. 게시글 ID별 유저 목록 한 번에 조회
         Map<Long, List<User>> usersByPostId = toktokRepository.findUsersByToktokPostIds(postIds);
 
-        // 3. DTO로 매핑 (랜덤 4명)
+        // 5. DTO로 매핑 (랜덤 4명)
         List<ToktokPreviewResponseDTO> previews =
                 postPage.getContent().stream()
                         .map(
@@ -105,8 +112,12 @@ public class ToktokQueryService implements ToktokQueryUseCase {
                                 })
                         .toList();
 
-        return ToktokPreviewListResponseDTO.of(
-                previews, postPage.getTotalPages(), postPage.getNumber());
+        // 6. 캐시에 저장
+        ToktokPreviewListResponseDTO response =
+                ToktokPreviewListResponseDTO.of(previews, postPage.getTotalPages(), postPage.getNumber());
+        postCacheManager.putToktoks(key, response);
+
+        return response;
     }
 
     public ToktokPreviewListResponseDTO searchToktoks(
@@ -114,12 +125,10 @@ public class ToktokQueryService implements ToktokQueryUseCase {
 
         // 1. 페이지 요청 생성
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
-        Page<ToktokWithScrapAndImageDTO> postPage =
-                toktokRepository.searchUsedToktokPosts(keyword, pageable, userId);
+        Page<ToktokWithImageDTO> postPage = toktokRepository.searchUsedToktokPosts(keyword, pageable);
 
         // 2. 게시글 ID 목록 추출
-        List<Long> postIds =
-                postPage.getContent().stream().map(ToktokWithScrapAndImageDTO::id).toList();
+        List<Long> postIds = postPage.getContent().stream().map(ToktokWithImageDTO::id).toList();
 
         // 3. 게시글 ID별 유저 목록 한 번에 조회
         Map<Long, List<User>> usersByPostId = toktokRepository.findUsersByToktokPostIds(postIds);

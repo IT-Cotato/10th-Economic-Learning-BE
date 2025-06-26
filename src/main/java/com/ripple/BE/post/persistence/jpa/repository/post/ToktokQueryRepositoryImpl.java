@@ -2,7 +2,6 @@ package com.ripple.BE.post.persistence.jpa.repository.post;
 
 import static com.ripple.BE.image.persistence.jpa.entity.QImageJpaEntity.*;
 import static com.ripple.BE.post.persistence.jpa.entity.QPostJpaEntity.*;
-import static com.ripple.BE.post.persistence.jpa.entity.QPostScrapJpaEntity.*;
 
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.OrderSpecifier;
@@ -13,7 +12,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.domain.type.PostType;
-import com.ripple.BE.post.persistence.dto.ToktokWithScrapAndImageDTO;
+import com.ripple.BE.post.persistence.dto.ToktokWithImageDTO;
 import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -39,8 +38,7 @@ public class ToktokQueryRepositoryImpl implements ToktokQueryRepository {
     }
 
     @Override
-    public Page<ToktokWithScrapAndImageDTO> searchUsedToktokPosts(
-            String keyword, Pageable pageable, long userId) {
+    public Page<ToktokWithImageDTO> searchUsedToktokPosts(String keyword, Pageable pageable) {
         BooleanExpression predicate =
                 postJpaEntity.type.eq(PostType.ECONOMY_TALK).and(postJpaEntity.usedDate.isNotNull());
 
@@ -50,9 +48,9 @@ public class ToktokQueryRepositoryImpl implements ToktokQueryRepository {
                             postJpaEntity.title.contains(keyword).or(postJpaEntity.content.contains(keyword)));
         }
 
-        List<ToktokWithScrapAndImageDTO> content =
+        List<ToktokWithImageDTO> content =
                 jpaQueryFactory
-                        .select(toktokPreviewProjection(userId))
+                        .select(toktokPreviewProjection())
                         .from(postJpaEntity)
                         .where(predicate)
                         .orderBy(postJpaEntity.usedDate.desc())
@@ -75,14 +73,13 @@ public class ToktokQueryRepositoryImpl implements ToktokQueryRepository {
     }
 
     @Override
-    public Page<ToktokWithScrapAndImageDTO> findUsedToktokPosts(
-            Pageable pageable, PostSort postSort, long userId) {
+    public Page<ToktokWithImageDTO> findUsedToktokPosts(Pageable pageable, PostSort postSort) {
         BooleanExpression predicate =
                 postJpaEntity.type.eq(PostType.ECONOMY_TALK).and(postJpaEntity.usedDate.isNotNull());
 
-        List<ToktokWithScrapAndImageDTO> content =
+        List<ToktokWithImageDTO> content =
                 jpaQueryFactory
-                        .select(toktokPreviewProjection(userId))
+                        .select(toktokPreviewProjection())
                         .from(postJpaEntity)
                         .where(predicate)
                         .orderBy(getOrderSpecifiers(postSort))
@@ -97,13 +94,13 @@ public class ToktokQueryRepositoryImpl implements ToktokQueryRepository {
     }
 
     @Override
-    public Optional<ToktokWithScrapAndImageDTO> findByUsedDate(LocalDate usedDate, long userId) {
+    public Optional<ToktokWithImageDTO> findByUsedDate(LocalDate usedDate) {
         BooleanExpression predicate =
                 postJpaEntity.type.eq(PostType.ECONOMY_TALK).and(postJpaEntity.usedDate.eq(usedDate));
 
-        ToktokWithScrapAndImageDTO dto =
+        ToktokWithImageDTO dto =
                 jpaQueryFactory
-                        .select(toktokPreviewProjection(userId))
+                        .select(toktokPreviewProjection())
                         .from(postJpaEntity)
                         .where(predicate)
                         .fetchOne();
@@ -111,9 +108,9 @@ public class ToktokQueryRepositoryImpl implements ToktokQueryRepository {
         return Optional.ofNullable(dto);
     }
 
-    private ConstructorExpression<ToktokWithScrapAndImageDTO> toktokPreviewProjection(long userId) {
+    private ConstructorExpression<ToktokWithImageDTO> toktokPreviewProjection() {
         return Projections.constructor(
-                ToktokWithScrapAndImageDTO.class,
+                ToktokWithImageDTO.class,
                 postJpaEntity.id,
                 postJpaEntity.title,
                 postJpaEntity.content,
@@ -126,14 +123,6 @@ public class ToktokQueryRepositoryImpl implements ToktokQueryRepository {
                         .where(imageJpaEntity.postId.eq(postJpaEntity.id))
                         .orderBy(imageJpaEntity.id.asc())
                         .limit(1),
-                JPAExpressions.select(postScrapJpaEntity.count())
-                        .from(postScrapJpaEntity)
-                        .where(
-                                postScrapJpaEntity
-                                        .postId
-                                        .eq(postJpaEntity.id)
-                                        .and(postScrapJpaEntity.userId.eq(userId)))
-                        .gt(0L),
                 postJpaEntity.usedDate);
     }
 

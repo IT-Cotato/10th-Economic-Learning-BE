@@ -120,7 +120,7 @@ public class PostController {
             @RequestParam(required = false) PostType type) {
 
         PostPreviewListResponseDTO postPreviewListResponseDTO =
-                postQueryUseCase.getPosts(page, sort, type, currentUser.getId());
+                postQueryUseCase.getPosts(page, sort, type);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(postPreviewListResponseDTO));
     }
 
@@ -128,10 +128,8 @@ public class PostController {
             summary = "인기 게시물 목록 조회",
             description = "인기 게시물 목록을 조회합니다. 페이지 번호는 0부터 시작하며, 페이지 당 10개의 게시물을 반환합니다.")
     @GetMapping("/popular")
-    public ResponseEntity<ApiResponse<Object>> getPopularPosts(
-            @AuthenticationPrincipal CustomUserDetails currentUser) {
-        List<PostPreviewResponseDTO> postPreviewResponseDTOList =
-                postQueryUseCase.getPopularPosts(currentUser.getId());
+    public ResponseEntity<ApiResponse<Object>> getPopularPosts() {
+        List<PostPreviewResponseDTO> postPreviewResponseDTOList = postQueryUseCase.getPopularPosts();
 
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.from(postPreviewResponseDTOList));
     }

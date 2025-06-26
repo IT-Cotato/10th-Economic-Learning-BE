@@ -3,12 +3,11 @@ package com.ripple.BE.post.persistence.jpa.repository.postlike;
 import static com.ripple.BE.image.persistence.jpa.entity.QImageJpaEntity.*;
 import static com.ripple.BE.post.persistence.jpa.entity.QPostJpaEntity.*;
 import static com.ripple.BE.post.persistence.jpa.entity.QPostLikeJpaEntity.*;
-import static com.ripple.BE.post.persistence.jpa.entity.QPostScrapJpaEntity.*;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.ripple.BE.post.persistence.dto.PostWithScrapAndImageDTO;
+import com.ripple.BE.post.persistence.dto.PostWithImageDTO;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 
@@ -18,11 +17,11 @@ public class PostLikeQueryRepositoryImpl implements PostLikeQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<PostWithScrapAndImageDTO> findPostsLikedByUser(long userId) {
+    public List<PostWithImageDTO> findPostsLikedByUser(long userId) {
         return queryFactory
                 .select(
                         Projections.constructor(
-                                PostWithScrapAndImageDTO.class,
+                                PostWithImageDTO.class,
                                 postJpaEntity.id,
                                 postJpaEntity.title,
                                 postJpaEntity.content,
@@ -35,15 +34,6 @@ public class PostLikeQueryRepositoryImpl implements PostLikeQueryRepository {
                                         .where(imageJpaEntity.postId.eq(postJpaEntity.id))
                                         .orderBy(imageJpaEntity.id.asc())
                                         .limit(1),
-                                // 스크랩 여부 (userId 기준)
-                                JPAExpressions.select(postScrapJpaEntity.id.count())
-                                        .from(postScrapJpaEntity)
-                                        .where(
-                                                postScrapJpaEntity
-                                                        .postId
-                                                        .eq(postJpaEntity.id)
-                                                        .and(postScrapJpaEntity.userId.eq(userId)))
-                                        .gt(0L),
                                 postJpaEntity.createdDate))
                 .from(postLikeJpaEntity)
                 .join(postJpaEntity)

@@ -3,7 +3,7 @@ package com.ripple.BE.post.persistence.impl.toktok;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.persistence.ToktokRepository;
-import com.ripple.BE.post.persistence.dto.ToktokWithScrapAndImageDTO;
+import com.ripple.BE.post.persistence.dto.ToktokWithImageDTO;
 import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import com.ripple.BE.post.persistence.jpa.repository.comment.CommentJpaRepository;
 import com.ripple.BE.post.persistence.jpa.repository.post.PostJpaRepository;
@@ -44,9 +44,8 @@ public class ToktokRepositoryImpl implements ToktokRepository {
     }
 
     @Override
-    public Optional<ToktokWithScrapAndImageDTO> findByUsedDate(
-            final LocalDate usedDate, final long userId) {
-        return toktokJpaRepository.findByUsedDate(usedDate, userId);
+    public Optional<ToktokWithImageDTO> findByUsedDate(final LocalDate usedDate) {
+        return toktokJpaRepository.findByUsedDate(usedDate);
     }
 
     @Override
@@ -55,9 +54,9 @@ public class ToktokRepositoryImpl implements ToktokRepository {
     }
 
     @Override
-    public Page<ToktokWithScrapAndImageDTO> findUsedToktokPosts(
-            final Pageable pageable, final PostSort postSort, final long userId) {
-        return toktokJpaRepository.findUsedToktokPosts(pageable, postSort, userId);
+    public Page<ToktokWithImageDTO> findUsedToktokPosts(
+            final Pageable pageable, final PostSort postSort) {
+        return toktokJpaRepository.findUsedToktokPosts(pageable, postSort);
     }
 
     @Override
@@ -71,9 +70,9 @@ public class ToktokRepositoryImpl implements ToktokRepository {
     }
 
     @Override
-    public Page<ToktokWithScrapAndImageDTO> searchUsedToktokPosts(
-            final String keyword, final Pageable pageable, final long userId) {
-        return toktokJpaRepository.searchUsedToktokPosts(keyword, pageable, userId);
+    public Page<ToktokWithImageDTO> searchUsedToktokPosts(
+            final String keyword, final Pageable pageable) {
+        return toktokJpaRepository.searchUsedToktokPosts(keyword, pageable);
     }
 
     @Override

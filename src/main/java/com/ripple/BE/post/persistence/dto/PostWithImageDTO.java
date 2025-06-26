@@ -1,16 +1,14 @@
 package com.ripple.BE.post.persistence.dto;
 
 import com.ripple.BE.post.domain.type.PostType;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-public record ToktokWithScrapAndImageDTO(
+public record PostWithImageDTO(
         Long id,
         String title,
         String content,
         PostType type,
         long likeCount,
         long commentCount,
-        long scrapCount,
         String imageUrl,
-        boolean isScraped,
-        LocalDate usedDate) {}
+        LocalDateTime createdDate) {}

@@ -11,6 +11,7 @@ import com.ripple.BE.image.exception.ImageException;
 import com.ripple.BE.image.persistence.ImageRepository;
 import com.ripple.BE.image.s3.S3Uploader;
 import com.ripple.BE.post.application.ToktokAdminUseCase;
+import com.ripple.BE.post.application.cache.redis.PostCacheEvictionPublisher;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.ToktokRepository;
@@ -42,6 +43,8 @@ public class ToktokAdminService implements ToktokAdminUseCase {
     private final ImageRepository imageRepository;
 
     private final S3Uploader s3Uploader;
+
+    private final PostCacheEvictionPublisher postCacheEvictionPublisher;
 
     @Override
     /** 엑셀을 기반으로 Toktok 게시글을 생성 */
@@ -110,8 +113,8 @@ public class ToktokAdminService implements ToktokAdminUseCase {
         return Image.withoutId(s3Info, null, null);
     }
 
-    @Override
     // 오늘의 게시물을 저장하는 메서드
+    @Override
     @Scheduled(cron = "0 0 0 * * *") // 매일 00시 00분 00초에 실행
     public void updateTodayToktok() {
 
@@ -127,5 +130,8 @@ public class ToktokAdminService implements ToktokAdminUseCase {
         Post selectedPost = unusedPosts.get(random.nextInt(unusedPosts.size()));
 
         toktokRepository.save(selectedPost.updateUsedDate(LocalDate.now()));
+
+        // 톡톡 업데이트 후 캐시 무효화
+        postCacheEvictionPublisher.publishEvictAllToktok();
     }
 }
