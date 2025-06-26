@@ -21,4 +21,8 @@ public interface UserLearningSetJpaRepository
                     + "WHERE lsc.userId = :userId AND lsc.level = :level")
     List<UserLearningSetJpaEntity> findByUserIdAndLevel(
             @Param("userId") long userId, @Param("level") Level level);
+
+    void deleteAllByUserId(Long userId);
+
+    List<UserLearningSetJpaEntity> findByUserIdAndLearningSetId(Long userId, Long learningSetId);
 }

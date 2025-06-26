@@ -18,4 +18,6 @@ public interface TermScrapRepository {
     List<TermWithScrapDTO> findTermsScrappedByUserAndInitial(long userId, String initial);
 
     List<TermWithScrapDTO> findTermsScrappedByUserAndKeyword(long userId, String keyword);
+
+    void deleteAllByUserId(long userId);
 }

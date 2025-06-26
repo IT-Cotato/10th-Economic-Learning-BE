@@ -12,4 +12,8 @@ public interface ImageJpaRepository extends JpaRepository<ImageJpaEntity, Long> 
     Optional<ImageJpaEntity> findByS3InfoUrl(String url);
 
     List<ImageJpaEntity> findByPostId(Long postId);
+
+    void deleteById(Long id);
+
+    void deleteAllByPostIdIn(List<Long> postIds);
 }

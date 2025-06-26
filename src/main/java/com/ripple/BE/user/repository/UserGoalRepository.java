@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserGoalRepository extends JpaRepository<UserGoal, Long> {
     Optional<UserGoal> findByUserId(Long userId);
+
+    void deleteAllByUserId(Long userId);
 }

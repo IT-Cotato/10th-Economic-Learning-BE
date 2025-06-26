@@ -19,4 +19,8 @@ public interface PostScrapRepository {
     List<PostWithImageDTO> findPostsScrappedByUser(final long userId);
 
     void deleteAllByPostId(final long postId);
+
+    void deleteAllByPostIdIn(final List<Long> postIds);
+
+    void deleteAllByUserId(final long userId);
 }

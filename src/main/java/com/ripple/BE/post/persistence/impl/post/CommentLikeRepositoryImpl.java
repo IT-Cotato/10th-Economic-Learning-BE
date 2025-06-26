@@ -61,4 +61,14 @@ public class CommentLikeRepositoryImpl implements CommentLikeRepository {
     public List<LikeCommentWithPostDTO> findLikedCommentsByUserIdWithPost(long userId) {
         return commentLikeJpaRepository.findLikedCommentsByUserIdWithPost(userId);
     }
+
+    @Override
+    public void deleteAllByCommentIdIn(final List<Long> commentIds) {
+        commentLikeJpaRepository.deleteAllByCommentIdIn(commentIds);
+    }
+
+    @Override
+    public void deleteAllByUserId(final long userId) {
+        commentLikeJpaRepository.deleteAllByUserId(userId);
+    }
 }

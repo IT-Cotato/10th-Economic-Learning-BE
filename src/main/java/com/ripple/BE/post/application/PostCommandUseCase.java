@@ -10,4 +10,6 @@ public interface PostCommandUseCase {
     void updatePost(final UpdatePostCommand updatePostCommand);
 
     void deletePost(final long postId, final long userId);
+
+    void deleteAllPostsByUserId(final long userId);
 }

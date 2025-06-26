@@ -14,4 +14,6 @@ public interface QuizScrapJpaRepository
     Optional<QuizScrapJpaEntity> findByQuizIdAndUserId(Long quizId, Long userId);
 
     void deleteByQuizIdAndUserId(Long quizId, Long userId);
+
+    void deleteAllByUserId(Long userId);
 }

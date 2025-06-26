@@ -9,6 +9,7 @@ import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import com.ripple.BE.post.persistence.jpa.repository.post.PostJpaRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -70,5 +71,17 @@ public class PostRepositoryImpl implements PostRepository {
     @Override
     public List<PostWithImageDTO> findByIdIn(final List<Long> postIds) {
         return postJpaRepository.findByIdIn(postIds);
+    }
+
+    @Override
+    public List<Post> findAllByAuthorId(final long authorId) {
+        return postJpaRepository.findAllByAuthorId(authorId).stream()
+                .map(PostJpaEntity::toModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteAllByAuthorId(final long authorId) {
+        postJpaRepository.deleteAllByAuthorId(authorId);
     }
 }

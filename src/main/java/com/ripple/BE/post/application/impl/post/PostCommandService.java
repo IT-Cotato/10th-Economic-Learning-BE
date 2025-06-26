@@ -11,6 +11,7 @@ import com.ripple.BE.post.application.cache.PostCacheKey;
 import com.ripple.BE.post.application.cache.redis.PostCacheEvictionPublisher;
 import com.ripple.BE.post.application.command.CreatePostCommand;
 import com.ripple.BE.post.application.command.UpdatePostCommand;
+import com.ripple.BE.post.domain.comment.Comment;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.exception.PostException;
@@ -126,5 +127,25 @@ public class PostCommandService implements PostCommandUseCase {
         commentRepository.deleteAllByPostId(post.getId());
 
         postRepository.delete(post);
+    }
+
+    @Override
+    public void deleteAllPostsByUserId(final long userId) {
+        List<Post> posts = postRepository.findAllByAuthorId(userId);
+        if (posts.isEmpty()) {
+            return;
+        }
+        List<Long> postIds = posts.stream().map(Post::getId).toList();
+        List<Long> commentIds =
+                commentRepository.findAllByPostIdIn(postIds).stream().map(Comment::getId).toList();
+
+        imageRepository.deleteAllByPostIdIn(postIds);
+        postScrapRepository.deleteAllByPostIdIn(postIds);
+        postLikeRepository.deleteAllByPostIdIn(postIds);
+
+        commentLikeRepository.deleteAllByCommentIdIn(commentIds);
+        commentRepository.deleteAllByPostIdIn(postIds);
+
+        postRepository.deleteAllByAuthorId(userId);
     }
 }

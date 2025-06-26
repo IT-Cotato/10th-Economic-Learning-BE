@@ -31,4 +31,8 @@ public interface CommentLikeJpaRepository
 	void deleteAllByPostId(@Param("postId") Long postId);
 
 	List<CommentLikeJpaEntity> findByUserIdAndCommentIdIn(long userId, Set<Long> commentIds);
+
+	void deleteAllByCommentIdIn(List<Long> commentIds);
+
+	void deleteAllByUserId(long userId);
 }

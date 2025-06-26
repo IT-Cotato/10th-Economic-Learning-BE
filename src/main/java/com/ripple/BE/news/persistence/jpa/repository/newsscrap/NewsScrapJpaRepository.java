@@ -10,4 +10,6 @@ public interface NewsScrapJpaRepository
     Optional<NewsScrapJpaEntity> findByNewsIdAndUserId(long newsId, long userId);
 
     boolean existsByNewsIdAndUserId(long newsId, long userId);
+
+    void deleteAllByUserId(long userId);
 }

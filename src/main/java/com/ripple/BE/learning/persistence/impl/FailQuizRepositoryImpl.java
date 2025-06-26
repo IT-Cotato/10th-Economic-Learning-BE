@@ -21,4 +21,9 @@ public class FailQuizRepositoryImpl implements FailQuizRepository {
         }
         failQuizJpaRepository.saveAll(failQuizzes.stream().map(FailQuizJpaEntity::from).toList());
     }
+
+    @Override
+    public void deleteAllByUserId(final long userId) {
+        failQuizJpaRepository.deleteAllByUserId(userId);
+    }
 }

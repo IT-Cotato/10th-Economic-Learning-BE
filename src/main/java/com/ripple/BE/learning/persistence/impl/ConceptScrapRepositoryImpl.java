@@ -48,4 +48,9 @@ public class ConceptScrapRepositoryImpl implements ConceptScrapRepository {
                 .map(ConceptJpaEntity::toModel)
                 .toList();
     }
+
+    @Override
+    public void deleteAllByUserId(final long userId) {
+        conceptScrapJpaRepository.deleteAllByUserId(userId);
+    }
 }

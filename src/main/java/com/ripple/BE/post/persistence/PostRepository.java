@@ -37,4 +37,8 @@ public interface PostRepository {
 
     // 게시글 ID 목록을 통해 게시글을 조회한다.
     List<PostWithImageDTO> findByIdIn(final List<Long> postIds);
+
+    List<Post> findAllByAuthorId(final long authorId);
+
+    void deleteAllByAuthorId(final long authorId);
 }

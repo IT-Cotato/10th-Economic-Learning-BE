@@ -49,4 +49,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	@Modifying
 	@Query("UPDATE User u SET u.currentLevel = :newLevel WHERE u.id = :userId")
 	void updateLevel(@Param("userId") Long userId, @Param("newLevel") String newLevel);
+
+	void deleteById(Long id);
 }

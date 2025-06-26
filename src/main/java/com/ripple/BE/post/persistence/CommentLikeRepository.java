@@ -23,4 +23,8 @@ public interface CommentLikeRepository {
     List<CommentLike> findByUserIdAndCommentIdIn(final long userId, final Set<Long> commentIds);
 
     List<LikeCommentWithPostDTO> findLikedCommentsByUserIdWithPost(long userId);
+
+    void deleteAllByCommentIdIn(final List<Long> commentIds);
+
+    void deleteAllByUserId(final long userId);
 }

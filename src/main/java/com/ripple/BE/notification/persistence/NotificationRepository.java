@@ -15,4 +15,6 @@ public interface NotificationRepository {
     long countByUserIdAndIsReadFalse(Long receiverId);
 
     void delete(Notification notification);
+
+    void deleteAllByReceiverId(Long receiverId);
 }
