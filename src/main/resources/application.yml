@@ -8,11 +8,10 @@ spring:
   ai:
     openai:
       api-key: ${OPENAI_API_KEY}
-  spring:
-    servlet:
-      multipart:
-        max-file-size: 10MB
-        max-request-size: 10MB
+  servlet:
+    multipart:
+      max-file-size: 3MB
+      max-request-size: 3MB
 
   #JWT
   jwt:
