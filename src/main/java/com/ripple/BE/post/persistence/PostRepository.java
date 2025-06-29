@@ -3,6 +3,7 @@ package com.ripple.BE.post.persistence;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.domain.type.PostType;
+import com.ripple.BE.post.persistence.dto.PostDetailDTO;
 import com.ripple.BE.post.persistence.dto.PostWithImageDTO;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +38,9 @@ public interface PostRepository {
 
     // 게시글 ID 목록을 통해 게시글을 조회한다.
     List<PostWithImageDTO> findByIdIn(final List<Long> postIds);
+
+    // 게시물의 상세 정보를 조회한다.
+    Optional<PostDetailDTO> findPostDetail(final long postId, final long userId);
 
     List<Post> findAllByAuthorId(final long authorId);
 

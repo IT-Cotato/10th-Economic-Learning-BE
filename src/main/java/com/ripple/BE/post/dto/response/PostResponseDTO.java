@@ -2,9 +2,8 @@ package com.ripple.BE.post.dto.response;
 
 import com.ripple.BE.global.utils.RelativeTimeFormatter;
 import com.ripple.BE.image.dto.response.ImageResponse;
-import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostType;
-import com.ripple.BE.user.domain.User;
+import com.ripple.BE.post.persistence.dto.PostDetailDTO;
 import java.util.List;
 
 public record PostResponseDTO(
@@ -25,28 +24,22 @@ public record PostResponseDTO(
         String createdDate) {
 
     public static PostResponseDTO of(
-            Post post,
-            User author,
-            List<ImageResponse> imageList,
-            List<CommentResponseDTO> commentList,
-            boolean isScraped,
-            boolean isLiked,
-            boolean isAuthor) {
+            PostDetailDTO dto, List<ImageResponse> imageList, List<CommentResponseDTO> commentList) {
         return new PostResponseDTO(
-                post.getTitle(),
-                author.getNickname(),
-                post.getAuthorId(),
-                author.getProfileImage() == null ? null : author.getProfileImage().getS3Info().getUrl(),
-                post.getContent(),
-                post.getType(),
-                post.getLikeCount(),
-                post.getCommentCount(),
-                post.getScrapCount(),
-                isScraped,
-                isLiked,
-                isAuthor,
+                dto.title(),
+                dto.authorNickname(),
+                dto.authorId(),
+                dto.profileImageUrl(),
+                dto.content(),
+                dto.type(),
+                dto.likeCount(),
+                dto.commentCount(),
+                dto.scrapCount(),
+                dto.isScrapped(),
+                dto.isLiked(),
+                dto.isAuthor(),
                 imageList,
                 commentList,
-                RelativeTimeFormatter.formatRelativeTime(post.getCreatedDate()));
+                RelativeTimeFormatter.formatRelativeTime(dto.createdDate()));
     }
 }

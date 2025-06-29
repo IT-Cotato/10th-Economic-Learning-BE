@@ -4,6 +4,7 @@ import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.domain.type.PostType;
 import com.ripple.BE.post.persistence.PostRepository;
+import com.ripple.BE.post.persistence.dto.PostDetailDTO;
 import com.ripple.BE.post.persistence.dto.PostWithImageDTO;
 import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import com.ripple.BE.post.persistence.jpa.repository.post.PostJpaRepository;
@@ -71,6 +72,11 @@ public class PostRepositoryImpl implements PostRepository {
     @Override
     public List<PostWithImageDTO> findByIdIn(final List<Long> postIds) {
         return postJpaRepository.findByIdIn(postIds);
+    }
+
+    @Override
+    public Optional<PostDetailDTO> findPostDetail(final long postId, final long userId) {
+        return postJpaRepository.findPostDetail(postId, userId);
     }
 
     @Override

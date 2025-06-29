@@ -1,7 +1,6 @@
 package com.ripple.BE.post.application.impl.post;
 
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
-import static com.ripple.BE.user.exception.errorcode.UserErrorCode.*;
 
 import com.ripple.BE.image.dto.response.ImageResponse;
 import com.ripple.BE.image.persistence.ImageRepository;
@@ -9,7 +8,6 @@ import com.ripple.BE.post.application.CommentQueryUseCase;
 import com.ripple.BE.post.application.PostQueryUseCase;
 import com.ripple.BE.post.application.cache.PostCacheKey;
 import com.ripple.BE.post.application.cache.PostCacheManager;
-import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.domain.type.PostType;
 import com.ripple.BE.post.dto.response.CommentResponseDTO;
@@ -17,13 +15,10 @@ import com.ripple.BE.post.dto.response.PostPreviewListResponseDTO;
 import com.ripple.BE.post.dto.response.PostPreviewResponseDTO;
 import com.ripple.BE.post.dto.response.PostResponseDTO;
 import com.ripple.BE.post.exception.PostException;
-import com.ripple.BE.post.persistence.PostLikeRepository;
 import com.ripple.BE.post.persistence.PostRepository;
-import com.ripple.BE.post.persistence.PostScrapRepository;
+import com.ripple.BE.post.persistence.dto.PostDetailDTO;
 import com.ripple.BE.post.persistence.dto.PostWithImageDTO;
 import com.ripple.BE.search.service.SearchService;
-import com.ripple.BE.user.domain.User;
-import com.ripple.BE.user.repository.UserRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,9 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostQueryService implements PostQueryUseCase {
 
     private final PostRepository postRepository;
-    private final PostLikeRepository postLikeRepository;
-    private final PostScrapRepository postScrapRepository;
-    private final UserRepository userRepository;
     private final ImageRepository imageRepository;
 
     private final CommentQueryUseCase commentQueryUseCase;
@@ -101,23 +93,20 @@ public class PostQueryService implements PostQueryUseCase {
 
     @Override
     public PostResponseDTO getPost(final long postId, final long userId) {
-        Post post =
-                postRepository.findById(postId).orElseThrow(() -> new PostException(POST_NOT_FOUND));
-        User author =
-                userRepository
-                        .findById(post.getAuthorId())
-                        .orElseThrow(() -> new PostException(USER_NOT_FOUND));
+        // 1. 게시물 정보 조회, (스크랩, 좋아요, 사용자) 여부 조회
+        PostDetailDTO dto =
+                postRepository
+                        .findPostDetail(postId, userId)
+                        .orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
-        boolean isAuthor = post.isOwnedBy(userId);
-        boolean isLiked = postLikeRepository.existsByPostIdAndUserId(postId, userId);
-        boolean isScrapped = postScrapRepository.existsByPostIdAndUserId(postId, userId);
-
+        // 2. 이미지 정보 조회
         List<ImageResponse> imageResponses =
                 imageRepository.findByPostId(postId).stream().map(ImageResponse::from).toList();
+
+        // 3. 댓글 정보 조회
         List<CommentResponseDTO> commentDTOs = commentQueryUseCase.getComments(postId, userId);
 
-        return PostResponseDTO.of(
-                post, author, imageResponses, commentDTOs, isScrapped, isLiked, isAuthor);
+        return PostResponseDTO.of(dto, imageResponses, commentDTOs);
     }
 
     public PostPreviewListResponseDTO searchPosts(
