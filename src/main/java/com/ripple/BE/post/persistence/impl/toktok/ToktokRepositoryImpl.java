@@ -3,6 +3,7 @@ package com.ripple.BE.post.persistence.impl.toktok;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.persistence.ToktokRepository;
+import com.ripple.BE.post.persistence.dto.ToktokDetailDTO;
 import com.ripple.BE.post.persistence.dto.ToktokWithImageDTO;
 import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import com.ripple.BE.post.persistence.jpa.repository.comment.CommentJpaRepository;
@@ -78,5 +79,10 @@ public class ToktokRepositoryImpl implements ToktokRepository {
     @Override
     public Map<Long, List<User>> findUsersByToktokPostIds(final List<Long> postIds) {
         return commentJpaRepository.findUsersByToktokPostIds(postIds);
+    }
+
+    @Override
+    public Optional<ToktokDetailDTO> findToktokDetail(final long postId, final long userId) {
+        return toktokJpaRepository.findToktokDetail(postId, userId);
     }
 }

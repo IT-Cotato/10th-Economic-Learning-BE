@@ -2,6 +2,8 @@ package com.ripple.BE.post.persistence.jpa.repository.post;
 
 import static com.ripple.BE.image.persistence.jpa.entity.QImageJpaEntity.*;
 import static com.ripple.BE.post.persistence.jpa.entity.QPostJpaEntity.*;
+import static com.ripple.BE.post.persistence.jpa.entity.QPostLikeJpaEntity.*;
+import static com.ripple.BE.post.persistence.jpa.entity.QPostScrapJpaEntity.*;
 
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.OrderSpecifier;
@@ -12,6 +14,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.domain.type.PostType;
+import com.ripple.BE.post.persistence.dto.ToktokDetailDTO;
 import com.ripple.BE.post.persistence.dto.ToktokWithImageDTO;
 import com.ripple.BE.post.persistence.jpa.entity.PostJpaEntity;
 import java.time.LocalDate;
@@ -101,6 +104,48 @@ public class ToktokQueryRepositoryImpl implements ToktokQueryRepository {
         ToktokWithImageDTO dto =
                 jpaQueryFactory
                         .select(toktokPreviewProjection())
+                        .from(postJpaEntity)
+                        .where(predicate)
+                        .fetchOne();
+
+        return Optional.ofNullable(dto);
+    }
+
+    @Override
+    public Optional<ToktokDetailDTO> findToktokDetail(long postId, long userId) {
+        BooleanExpression predicate =
+                postJpaEntity
+                        .id
+                        .eq(postId)
+                        .and(postJpaEntity.type.eq(PostType.ECONOMY_TALK))
+                        .and(postJpaEntity.usedDate.isNotNull());
+
+        ToktokDetailDTO dto =
+                jpaQueryFactory
+                        .select(
+                                Projections.constructor(
+                                        ToktokDetailDTO.class,
+                                        postJpaEntity.title,
+                                        postJpaEntity.content,
+                                        postJpaEntity.likeCount,
+                                        postJpaEntity.scrapCount,
+                                        JPAExpressions.select(postScrapJpaEntity.id.count())
+                                                .from(postScrapJpaEntity)
+                                                .where(
+                                                        postScrapJpaEntity
+                                                                .postId
+                                                                .eq(postId)
+                                                                .and(postScrapJpaEntity.userId.eq(userId)))
+                                                .gt(0L),
+                                        JPAExpressions.select(postLikeJpaEntity.id.count())
+                                                .from(postLikeJpaEntity)
+                                                .where(
+                                                        postLikeJpaEntity
+                                                                .postId
+                                                                .eq(postId)
+                                                                .and(postLikeJpaEntity.userId.eq(userId)))
+                                                .gt(0L),
+                                        postJpaEntity.usedDate))
                         .from(postJpaEntity)
                         .where(predicate)
                         .fetchOne();
