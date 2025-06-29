@@ -1,5 +1,6 @@
 package com.ripple.BE.post.persistence.jpa.repository.comment;
 
+import static com.ripple.BE.image.persistence.jpa.entity.QImageJpaEntity.*;
 import static com.ripple.BE.post.persistence.jpa.entity.QCommentJpaEntity.*;
 import static com.ripple.BE.post.persistence.jpa.entity.QPostJpaEntity.*;
 import static com.ripple.BE.user.domain.QUser.*;
@@ -65,12 +66,12 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
                                         commentJpaEntity.isDeleted,
                                         user.id,
                                         user.nickname,
-                                        user.profileImage,
+                                        user.profileImage.s3Info.url,
                                         commentJpaEntity.createdDate))
                         .from(commentJpaEntity)
                         .leftJoin(user)
                         .on(commentJpaEntity.commenterId.eq(user.id))
-                        .leftJoin(user.profileImage)
+                        .leftJoin(user.profileImage, imageJpaEntity)
                         .where(commentJpaEntity.postId.eq(postId))
                         .fetch();
 
