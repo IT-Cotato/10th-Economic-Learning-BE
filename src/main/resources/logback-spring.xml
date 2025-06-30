@@ -66,7 +66,6 @@
     <!-- com.ripple 로그 설정: 운영 환경일 경우만 파일/디스코드 추가 -->
     <logger name="com.ripple" level="INFO" additivity="false">
         <springProfile name="prod">
-            <appender-ref ref="CONSOLE" />
             <appender-ref ref="ERROR_FILE" />
             <appender-ref ref="ASYNC_DISCORD" />
         </springProfile>
