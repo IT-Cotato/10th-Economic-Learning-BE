@@ -8,6 +8,7 @@ import com.ripple.BE.chatbot.repository.ChatbotRepository;
 import com.ripple.BE.image.domain.Image;
 import com.ripple.BE.image.persistence.ImageRepository;
 import com.ripple.BE.image.persistence.jpa.entity.ImageJpaEntity;
+import com.ripple.BE.learning.application.learningset.event.UserCreatedEvent;
 import com.ripple.BE.learning.persistence.ConceptScrapRepository;
 import com.ripple.BE.learning.persistence.FailQuizRepository;
 import com.ripple.BE.learning.persistence.QuizScrapRepository;
@@ -42,6 +43,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,6 +81,8 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final ApplicationEventPublisher applicationEventPublisher;
+
     @Transactional
     public Long findOrCreateUser(KakaoUserInfoResponse response) {
         User user =
@@ -91,9 +95,33 @@ public class UserService {
                                         .keyCode(response.id().toString())
                                         .buildKakaoUser());
 
-        userRepository.save(user);
+        user = userRepository.save(user);
+
+        applicationEventPublisher.publishEvent(
+                new UserCreatedEvent(user)); // 유저 생성 이벤트 발행, 학습 세트 생성 등 처리
 
         return user.getId();
+    }
+
+    @Transactional
+    public void createUser(String accountEmail, String password) {
+        // 이미 존재하는 이메일인지 확인
+        userRepository
+                .findByAccountEmail(accountEmail)
+                .ifPresent(
+                        user -> {
+                            throw new UserException(INVALID_EMAIL);
+                        });
+
+        User user =
+                userRepository.save(
+                        basicBuilder()
+                                .accountEmail(accountEmail)
+                                .password(passwordEncoder.encode(password))
+                                .buildBasicUser());
+
+        applicationEventPublisher.publishEvent(
+                new UserCreatedEvent(user)); // 유저 생성 이벤트 발행, 학습 세트 생성 등 처리
     }
 
     @Transactional
@@ -128,23 +156,6 @@ public class UserService {
     @Transactional(readOnly = true)
     public User findUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new UserException(USER_NOT_FOUND));
-    }
-
-    @Transactional
-    public void createUser(String accountEmail, String password) {
-        // 이미 존재하는 이메일인지 확인
-        userRepository
-                .findByAccountEmail(accountEmail)
-                .ifPresent(
-                        user -> {
-                            throw new UserException(INVALID_EMAIL);
-                        });
-
-        userRepository.save(
-                basicBuilder()
-                        .accountEmail(accountEmail)
-                        .password(passwordEncoder.encode(password))
-                        .buildBasicUser());
     }
 
     @Transactional
