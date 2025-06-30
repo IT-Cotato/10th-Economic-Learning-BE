@@ -6,8 +6,6 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -105,35 +103,29 @@ public class SseEmitterManager {
 
     /** 연결 종료 처리 */
     private void closeEmitter(String clientId, Throwable cause) {
-        emitterClosedMap.computeIfAbsent(clientId, k -> false);
-        if (Boolean.TRUE.equals(emitterClosedMap.get(clientId))) return;
+        if (Boolean.TRUE.equals(emitterClosedMap.getOrDefault(clientId, false))) {
+            return;
+        }
 
         emitterClosedMap.put(clientId, true);
         SseEmitter emitter = emitterMap.remove(clientId);
         stopHeartbeat(clientId);
 
-        if (emitter != null) {
-            Future<?> shutdownTask =
-                    threadPoolTaskExecutor.submit(
-                            () -> {
-                                try {
-                                    if (cause instanceof IOException) { // IOException은 클라이언트 연결 문제
-                                        emitter.complete();
-                                    } else if (cause != null) {
-                                        emitter.completeWithError(cause);
-                                    } else {
-                                        emitter.complete();
-                                    }
-                                } catch (Exception e) {
-                                    log.error("Emitter 종료 중 오류 발생: {}", clientId, e);
-                                }
-                            });
-            try {
-                shutdownTask.get(5, TimeUnit.SECONDS);
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                log.error("Emitter 종료 실패", e);
-            }
+        if (emitter == null) {
+            return;
         }
+
+        threadPoolTaskExecutor.submit(
+                () -> {
+                    try {
+                        if (cause != null) {
+                            log.info("Emitter 종료: {}, 원인: {}", clientId, cause.getMessage());
+                        }
+                        emitter.complete();
+                    } catch (Exception e) {
+                        log.error("Emitter 종료 중 오류 발생: {}", clientId, e);
+                    }
+                });
     }
 
     /** 하트비트 정지 */
