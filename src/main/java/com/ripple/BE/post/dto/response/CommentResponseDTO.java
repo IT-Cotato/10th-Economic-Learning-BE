@@ -29,7 +29,7 @@ public record CommentResponseDTO(
                 dto.likeCount(),
                 dto.commenterId(),
                 dto.commenterName(),
-                dto.profileImage() != null ? dto.profileImage().getS3Info().getUrl() : null,
+                dto.profileImageUrl(),
                 dto.isDeleted(),
                 isAuthor,
                 isLiked,

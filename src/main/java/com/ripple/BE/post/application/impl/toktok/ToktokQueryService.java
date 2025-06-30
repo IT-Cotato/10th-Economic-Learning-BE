@@ -8,16 +8,14 @@ import com.ripple.BE.post.application.CommentQueryUseCase;
 import com.ripple.BE.post.application.ToktokQueryUseCase;
 import com.ripple.BE.post.application.cache.PostCacheKey;
 import com.ripple.BE.post.application.cache.PostCacheManager;
-import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.dto.response.CommentResponseDTO;
 import com.ripple.BE.post.dto.response.ToktokPreviewListResponseDTO;
 import com.ripple.BE.post.dto.response.ToktokPreviewResponseDTO;
 import com.ripple.BE.post.dto.response.ToktokResponseDTO;
 import com.ripple.BE.post.exception.PostException;
-import com.ripple.BE.post.persistence.PostLikeRepository;
-import com.ripple.BE.post.persistence.PostScrapRepository;
 import com.ripple.BE.post.persistence.ToktokRepository;
+import com.ripple.BE.post.persistence.dto.ToktokDetailDTO;
 import com.ripple.BE.post.persistence.dto.ToktokWithImageDTO;
 import com.ripple.BE.user.domain.User;
 import java.time.LocalDate;
@@ -38,8 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ToktokQueryService implements ToktokQueryUseCase {
 
     private final ToktokRepository toktokRepository;
-    private final PostLikeRepository postLikeRepository;
-    private final PostScrapRepository postScrapRepository;
     private final ImageRepository imageRepository;
 
     private final CommentQueryUseCase commentQueryUseCase;
@@ -66,22 +62,24 @@ public class ToktokQueryService implements ToktokQueryUseCase {
     @Override
     public ToktokResponseDTO getToktok(final long id, final long userId) {
 
-        Post toktok =
-                toktokRepository.findById(id).orElseThrow(() -> new PostException(POST_NOT_FOUND));
+        // 1. 댓글 제외한 정보만 쿼리로 조회
+        ToktokDetailDTO dto =
+                toktokRepository
+                        .findToktokDetail(id, userId)
+                        .orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
-        if (toktok.getUsedDate() == null) {
-            throw new PostException(POST_NOT_FOUND);
-        }
+        // 2. 댓글 조회
+        List<CommentResponseDTO> commentDTOs = commentQueryUseCase.getComments(id, userId);
 
-        boolean isLiked = postLikeRepository.existsByPostIdAndUserId(id, userId);
-        boolean isScrapped = postScrapRepository.existsByPostIdAndUserId(id, userId);
+        // 3. 참여자 수 조회
+        long participantCount =
+                commentDTOs.stream().map(CommentResponseDTO::commenterId).distinct().count();
 
+        // 이미지 조회
         List<ImageResponse> imageResponses =
                 imageRepository.findByPostId(id).stream().map(ImageResponse::from).toList();
 
-        List<CommentResponseDTO> commentDTOs = commentQueryUseCase.getComments(toktok.getId(), userId);
-
-        return ToktokResponseDTO.of(toktok, imageResponses, commentDTOs, isScrapped, isLiked);
+        return ToktokResponseDTO.of(dto, imageResponses, commentDTOs, participantCount);
     }
 
     @Override

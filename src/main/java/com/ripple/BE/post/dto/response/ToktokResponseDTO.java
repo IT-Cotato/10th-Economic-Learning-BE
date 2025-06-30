@@ -2,7 +2,7 @@ package com.ripple.BE.post.dto.response;
 
 import com.ripple.BE.global.utils.RelativeTimeFormatter;
 import com.ripple.BE.image.dto.response.ImageResponse;
-import com.ripple.BE.post.domain.post.Post;
+import com.ripple.BE.post.persistence.dto.ToktokDetailDTO;
 import java.util.List;
 
 public record ToktokResponseDTO(
@@ -18,21 +18,20 @@ public record ToktokResponseDTO(
         String createdDate) {
 
     public static ToktokResponseDTO of(
-            Post toktokPost,
+            ToktokDetailDTO dto,
             List<ImageResponse> imageList,
             List<CommentResponseDTO> commentList,
-            boolean isScraped,
-            boolean isLiked) {
+            long participantCount) {
         return new ToktokResponseDTO(
-                toktokPost.getTitle(),
-                toktokPost.getContent(),
-                toktokPost.getCommentCount(),
-                toktokPost.getLikeCount(),
-                toktokPost.getScrapCount(),
-                isScraped,
-                isLiked,
+                dto.title(),
+                dto.content(),
+                participantCount,
+                dto.likeCount(),
+                dto.scrapCount(),
+                dto.isScraped(),
+                dto.isLiked(),
                 imageList,
                 commentList,
-                RelativeTimeFormatter.formatRelativeTime(toktokPost.getCreatedDate()));
+                RelativeTimeFormatter.formatRelativeTime(dto.usedDate().atStartOfDay()));
     }
 }

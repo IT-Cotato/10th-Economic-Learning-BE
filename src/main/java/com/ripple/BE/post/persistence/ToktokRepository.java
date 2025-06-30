@@ -2,6 +2,7 @@ package com.ripple.BE.post.persistence;
 
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.domain.type.PostSort;
+import com.ripple.BE.post.persistence.dto.ToktokDetailDTO;
 import com.ripple.BE.post.persistence.dto.ToktokWithImageDTO;
 import com.ripple.BE.user.domain.User;
 import java.time.LocalDate;
@@ -34,4 +35,6 @@ public interface ToktokRepository {
     Page<ToktokWithImageDTO> searchUsedToktokPosts(final String keyword, final Pageable pageable);
 
     Map<Long, List<User>> findUsersByToktokPostIds(List<Long> postIds);
+
+    Optional<ToktokDetailDTO> findToktokDetail(final long postId, final long userId);
 }

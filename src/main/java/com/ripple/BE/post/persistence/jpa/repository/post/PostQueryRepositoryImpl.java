@@ -2,6 +2,9 @@ package com.ripple.BE.post.persistence.jpa.repository.post;
 
 import static com.ripple.BE.image.persistence.jpa.entity.QImageJpaEntity.*;
 import static com.ripple.BE.post.persistence.jpa.entity.QPostJpaEntity.*;
+import static com.ripple.BE.post.persistence.jpa.entity.QPostLikeJpaEntity.*;
+import static com.ripple.BE.post.persistence.jpa.entity.QPostScrapJpaEntity.*;
+import static com.ripple.BE.user.domain.QUser.*;
 
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.OrderSpecifier;
@@ -12,8 +15,10 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.domain.type.PostType;
+import com.ripple.BE.post.persistence.dto.PostDetailDTO;
 import com.ripple.BE.post.persistence.dto.PostWithImageDTO;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -107,6 +112,50 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                 .where(predicate)
                 .orderBy(postJpaEntity.createdDate.desc())
                 .fetch();
+    }
+
+    @Override
+    public Optional<PostDetailDTO> findPostDetail(long postId, long userId) {
+        return Optional.ofNullable(
+                queryFactory
+                        .select(
+                                Projections.constructor(
+                                        PostDetailDTO.class,
+                                        postJpaEntity.id, // 1. postId
+                                        postJpaEntity.title, // 2. title
+                                        postJpaEntity.content, // 3. content
+                                        user.id, // 4. authorId
+                                        user.nickname, // 5. authorNickname
+                                        user.profileImage.s3Info.url, // 6. profileImageUrl
+                                        postJpaEntity.type, // 7. PostType
+                                        postJpaEntity.likeCount, // 8. likeCount
+                                        postJpaEntity.scrapCount, // 9. scrapCount
+                                        postJpaEntity.commentCount, // 10. commentCount
+                                        JPAExpressions.select(postLikeJpaEntity.count()) // 11. isLiked
+                                                .from(postLikeJpaEntity)
+                                                .where(
+                                                        postLikeJpaEntity
+                                                                .postId
+                                                                .eq(postId)
+                                                                .and(postLikeJpaEntity.userId.eq(userId)))
+                                                .gt(0L),
+                                        JPAExpressions.select(postScrapJpaEntity.count()) // 12. isScrapped
+                                                .from(postScrapJpaEntity)
+                                                .where(
+                                                        postScrapJpaEntity
+                                                                .postId
+                                                                .eq(postId)
+                                                                .and(postScrapJpaEntity.userId.eq(userId)))
+                                                .gt(0L),
+                                        postJpaEntity.authorId.eq(userId), // 13. isAuthor
+                                        postJpaEntity.createdDate // 14. createdDate
+                                        ))
+                        .from(postJpaEntity)
+                        .leftJoin(user)
+                        .on(postJpaEntity.authorId.eq(user.id))
+                        .leftJoin(user.profileImage, imageJpaEntity)
+                        .where(postJpaEntity.id.eq(postId))
+                        .fetchOne());
     }
 
     // 공통 정렬 조건
