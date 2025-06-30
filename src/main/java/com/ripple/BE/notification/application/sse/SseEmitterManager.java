@@ -95,7 +95,7 @@ public class SseEmitterManager {
                                     .name("heartbeat")
                                     .comment("Total connections: " + emitterMap.size())
                                     .data("keep-alive"));
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.warn("하트비트 실패: {}", clientId);
             closeEmitter(clientId, e);
         }
