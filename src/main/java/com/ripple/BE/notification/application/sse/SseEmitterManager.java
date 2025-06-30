@@ -116,10 +116,18 @@ public class SseEmitterManager {
             Future<?> shutdownTask =
                     threadPoolTaskExecutor.submit(
                             () -> {
-                                if (cause != null) emitter.completeWithError(cause);
-                                else emitter.complete();
+                                try {
+                                    if (cause instanceof IOException) { // IOException은 클라이언트 연결 문제
+                                        emitter.complete();
+                                    } else if (cause != null) {
+                                        emitter.completeWithError(cause);
+                                    } else {
+                                        emitter.complete();
+                                    }
+                                } catch (Exception e) {
+                                    log.error("Emitter 종료 중 오류 발생: {}", clientId, e);
+                                }
                             });
-
             try {
                 shutdownTask.get(5, TimeUnit.SECONDS);
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
