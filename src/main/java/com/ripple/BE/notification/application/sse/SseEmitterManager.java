@@ -123,7 +123,7 @@ public class SseEmitterManager {
                         }
                         emitter.complete();
                     } catch (Exception e) {
-                        log.error("Emitter 종료 중 오류 발생: {}", clientId, e);
+                        log.info("Emitter 종료 중 오류 발생: {}", clientId, e);
                     }
                 });
     }
