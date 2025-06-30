@@ -71,10 +71,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         // SSE 요청일 경우 빈 응답 또는 연결 닫기 처리
         if (MediaType.TEXT_EVENT_STREAM_VALUE.equals(contentType)) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
+        logger.error("예외 발생: {}", e);
         return handleExceptionInternal(GlobalErrorCode.INTERNAL_SERVER_ERROR);
     }
 
