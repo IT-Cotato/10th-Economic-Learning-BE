@@ -85,15 +85,18 @@ public class UserService {
 
     @Transactional
     public Long findOrCreateUser(KakaoUserInfoResponse response) {
+        Optional<User> optionalUser = userRepository.findByKeyCode(response.id().toString());
+
+        if (optionalUser.isPresent()) {
+            return optionalUser.get().getId(); // 이미 존재하는 경우 이벤트 없이 바로 반환
+        }
+
         User user =
-                userRepository
-                        .findByKeyCode(response.id().toString())
-                        .orElse(
-                                User.kakaoBuilder()
-                                        .accountEmail(response.kakao_account().email())
-                                        .loginType(LoginType.KAKAO)
-                                        .keyCode(response.id().toString())
-                                        .buildKakaoUser());
+                User.kakaoBuilder()
+                        .accountEmail(response.kakao_account().email())
+                        .loginType(LoginType.KAKAO)
+                        .keyCode(response.id().toString())
+                        .buildKakaoUser();
 
         user = userRepository.save(user);
 
