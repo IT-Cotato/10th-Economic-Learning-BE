@@ -9,6 +9,7 @@ public record ToktokPreviewResponseDTO(
         Long id,
         String title,
         long participantCount,
+        long commentCount,
         long likeCount,
         long scrapCount,
         String imageUrl,
@@ -27,6 +28,7 @@ public record ToktokPreviewResponseDTO(
         return new ToktokPreviewResponseDTO(
                 dto.id(),
                 dto.title(),
+                dto.participantCount(),
                 dto.commentCount(),
                 dto.likeCount(),
                 dto.scrapCount(),

@@ -11,5 +11,6 @@ public record ToktokWithImageDTO(
         long likeCount,
         long commentCount,
         long scrapCount,
+        long participantCount,
         String imageUrl,
         LocalDate usedDate) {}
