@@ -1,6 +1,7 @@
 package com.ripple.BE.post.persistence.jpa.repository.post;
 
 import static com.ripple.BE.image.persistence.jpa.entity.QImageJpaEntity.*;
+import static com.ripple.BE.post.persistence.jpa.entity.QCommentJpaEntity.*;
 import static com.ripple.BE.post.persistence.jpa.entity.QPostJpaEntity.*;
 import static com.ripple.BE.post.persistence.jpa.entity.QPostLikeJpaEntity.*;
 import static com.ripple.BE.post.persistence.jpa.entity.QPostScrapJpaEntity.*;
@@ -163,6 +164,9 @@ public class ToktokQueryRepositoryImpl implements ToktokQueryRepository {
                 postJpaEntity.likeCount,
                 postJpaEntity.commentCount,
                 postJpaEntity.scrapCount,
+                JPAExpressions.select(commentJpaEntity.commenterId.countDistinct())
+                        .from(commentJpaEntity)
+                        .where(commentJpaEntity.postId.eq(postJpaEntity.id)),
                 JPAExpressions.select(imageJpaEntity.s3Info.url)
                         .from(imageJpaEntity)
                         .where(imageJpaEntity.postId.eq(postJpaEntity.id))

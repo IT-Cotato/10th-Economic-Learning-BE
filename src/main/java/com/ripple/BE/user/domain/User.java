@@ -80,7 +80,7 @@ public class User extends BaseJpaEntity {
     @Column(name = "login_type", nullable = false)
     private LoginType loginType;
 
-    @Size(min = 1, max = 255)
+    @Size(max = 255)
     @Column(name = "profile_intro")
     private String profileIntro; // 한줄 소개
 
