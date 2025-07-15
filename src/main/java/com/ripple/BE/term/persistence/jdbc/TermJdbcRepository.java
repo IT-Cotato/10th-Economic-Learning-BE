@@ -4,6 +4,7 @@ import com.ripple.BE.term.persistence.dto.TermWithScrapDTO;
 import com.ripple.BE.term.persistence.jpa.entity.TermJpaEntity;
 
 import java.util.List;
+import java.util.Locale;
 
 import lombok.RequiredArgsConstructor;
 
@@ -48,11 +49,12 @@ public class TermJdbcRepository {
 
 		String searchSql = """
 			SELECT t.id, t.title, t.description, t.initial,
-			       IF(ts.id IS NOT NULL, true, false) AS is_scrapped
+			       IF(ts.id IS NOT NULL, true, false) AS is_scrapped,
+					MATCH(t.title, t.description) AGAINST (? IN NATURAL LANGUAGE MODE) AS score
 			FROM terms t
 			LEFT JOIN term_scraps ts ON t.id = ts.term_id AND ts.user_id = ?
-			WHERE MATCH(t.title, t.description) AGAINST (? IN NATURAL LANGUAGE MODE)
-			ORDER BY t.id DESC
+			WHERE MATCH(t.title, t.description) AGAINST (? IN BOOLEAN MODE)
+			ORDER BY score DESC
 			LIMIT ? OFFSET ?
 			""";
 
@@ -62,7 +64,7 @@ public class TermJdbcRepository {
 			WHERE MATCH(t.title, t.description) AGAINST (? IN NATURAL LANGUAGE MODE)
 			""";
 
-		return getTermWithScrapDTOS(keyword, pageable, userId, searchSql, countSql);
+		return getTermWithScrapDTOS(keyword, '"' + keyword.trim().toLowerCase(Locale.ROOT) + "*\"", pageable, userId, searchSql, countSql);
 	}
 
 	@Transactional(readOnly = true)
@@ -87,10 +89,10 @@ public class TermJdbcRepository {
 			WHERE MATCH(t.title) AGAINST (? IN NATURAL LANGUAGE MODE)
 			""";
 
-		return getTermWithScrapDTOS(keyword, pageable, userId, searchSql, countSql);
+		return getTermWithScrapDTOS(keyword, '"' + keyword.trim().toLowerCase(Locale.ROOT) + "*\"", pageable, userId, searchSql, countSql);
 	}
 
-	private Page<TermWithScrapDTO> getTermWithScrapDTOS(String keyword, Pageable pageable, long userId,
+	private Page<TermWithScrapDTO> getTermWithScrapDTOS(String keyword, String booleanKeyword, Pageable pageable, long userId,
 		String searchSql, String countSql) {
 		List<TermWithScrapDTO> content = jdbcTemplate.query(
 			searchSql,
@@ -101,8 +103,9 @@ public class TermJdbcRepository {
 				rs.getString("initial"),
 				rs.getBoolean("is_scrapped")
 			),
-			userId,
 			keyword,
+			userId,
+			booleanKeyword,
 			pageable.getPageSize(),
 			pageable.getOffset()
 		);
