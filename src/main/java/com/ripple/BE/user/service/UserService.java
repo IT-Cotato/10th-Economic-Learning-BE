@@ -146,6 +146,9 @@ public class UserService {
             user.updateProfileImage(ImageJpaEntity.from(image)); // 추후 수정 필요
         }
         user.updateProfile(request);
+
+        userRepository.save(user); // 프로필 업데이트 후 저장
+
         attendanceService.createAttendance(user);
     }
 

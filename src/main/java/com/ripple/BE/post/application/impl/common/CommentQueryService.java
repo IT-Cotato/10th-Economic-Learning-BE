@@ -74,7 +74,7 @@ public class CommentQueryService implements CommentQueryUseCase {
     }
 
     private boolean isAuthor(CommentWithUserDTO comment, long userId) {
-        return comment.commenterId().equals(userId);
+        return comment.commenterId() != null && comment.commenterId().equals(userId);
     }
 
     private boolean isLiked(CommentWithUserDTO comment, Set<Long> likedIds) {
