@@ -49,8 +49,11 @@ public class TermJdbcRepository {
 
 		String searchSql = """
 			SELECT t.id, t.title, t.description, t.initial,
-			       IF(ts.id IS NOT NULL, true, false) AS is_scrapped,
-					MATCH(t.title, t.description) AGAINST (? IN NATURAL LANGUAGE MODE) AS score
+				IF(ts.id IS NOT NULL, true, false) AS is_scrapped,
+			    (
+			    	1.5 * MATCH(t.title) AGAINST (? IN NATURAL LANGUAGE MODE) +
+			    	0.5 * MATCH(t.description) AGAINST (? IN NATURAL LANGUAGE MODE)
+			    ) AS score
 			FROM terms t
 			LEFT JOIN term_scraps ts ON t.id = ts.term_id AND ts.user_id = ?
 			WHERE MATCH(t.title, t.description) AGAINST (? IN BOOLEAN MODE)
@@ -78,6 +81,7 @@ public class TermJdbcRepository {
 				rs.getString("initial"),
 				rs.getBoolean("is_scrapped")
 			),
+			keyword,
 			keyword,
 			userId,
 			booleanKeyword,
