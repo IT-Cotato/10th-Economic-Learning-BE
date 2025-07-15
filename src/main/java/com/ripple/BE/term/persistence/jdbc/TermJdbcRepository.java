@@ -64,7 +64,7 @@ public class TermJdbcRepository {
 			WHERE MATCH(t.title, t.description) AGAINST (? IN NATURAL LANGUAGE MODE)
 			""";
 
-		return getTermWithScrapDTOS(keyword, '"' + keyword.trim().toLowerCase(Locale.ROOT) + "*\"", pageable, userId, searchSql, countSql);
+		return getTermWithScrapDTOS(keyword, buildBooleanKeyword(keyword), pageable, userId, searchSql, countSql);
 	}
 
 	private Page<TermWithScrapDTO> getTermWithScrapDTOS(String keyword, String booleanKeyword, Pageable pageable, long userId,
@@ -88,6 +88,10 @@ public class TermJdbcRepository {
 		Integer total = jdbcTemplate.queryForObject(countSql, Integer.class, keyword);
 
 		return PageableExecutionUtils.getPage(content, pageable, () -> total != null ? total : 0);
+	}
+
+	private static String buildBooleanKeyword(String keyword) {
+		return '"' + keyword.trim().toLowerCase(Locale.ROOT) + "*\"";
 	}
 
 }
