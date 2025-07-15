@@ -56,7 +56,7 @@ public class TermJdbcRepository {
 			    ) AS score
 			FROM terms t
 			LEFT JOIN term_scraps ts ON t.id = ts.term_id AND ts.user_id = ?
-			WHERE MATCH(t.title, t.description) AGAINST (? IN BOOLEAN MODE)
+			WHERE MATCH(t.title, t.description) AGAINST (? IN NATURAL LANGUAGE MODE)
 			ORDER BY score DESC
 			LIMIT ? OFFSET ?
 			""";
@@ -67,10 +67,10 @@ public class TermJdbcRepository {
 			WHERE MATCH(t.title, t.description) AGAINST (? IN BOOLEAN MODE)
 			""";
 
-		return getTermWithScrapDTOS(keyword, buildBooleanKeyword(keyword), pageable, userId, searchSql, countSql);
+		return getTermWithScrapDTOS(keyword, pageable, userId, searchSql, countSql);
 	}
 
-	private Page<TermWithScrapDTO> getTermWithScrapDTOS(String keyword, String booleanKeyword, Pageable pageable, long userId,
+	private Page<TermWithScrapDTO> getTermWithScrapDTOS(String keyword, Pageable pageable, long userId,
 		String searchSql, String countSql) {
 		List<TermWithScrapDTO> content = jdbcTemplate.query(
 			searchSql,
@@ -84,7 +84,7 @@ public class TermJdbcRepository {
 			keyword,
 			keyword,
 			userId,
-			booleanKeyword,
+			keyword,
 			pageable.getPageSize(),
 			pageable.getOffset()
 		);
@@ -92,10 +92,6 @@ public class TermJdbcRepository {
 		Integer total = jdbcTemplate.queryForObject(countSql, Integer.class, keyword);
 
 		return PageableExecutionUtils.getPage(content, pageable, () -> total != null ? total : 0);
-	}
-
-	private static String buildBooleanKeyword(String keyword) {
-		return '"' + keyword.trim().toLowerCase(Locale.ROOT) + "*\"";
 	}
 
 }
