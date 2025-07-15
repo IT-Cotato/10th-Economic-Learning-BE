@@ -67,31 +67,6 @@ public class TermJdbcRepository {
 		return getTermWithScrapDTOS(keyword, '"' + keyword.trim().toLowerCase(Locale.ROOT) + "*\"", pageable, userId, searchSql, countSql);
 	}
 
-	@Transactional(readOnly = true)
-	public Page<TermWithScrapDTO> findByKeyword(String keyword, Pageable pageable, long userId) {
-		if (keyword == null || keyword.trim().isEmpty()) {
-			return Page.empty(pageable);
-		}
-
-		String searchSql = """
-			SELECT t.id, t.title, t.description, t.initial,
-			       IF(ts.id IS NOT NULL, true, false) AS is_scrapped
-			FROM terms t
-			LEFT JOIN term_scraps ts ON t.id = ts.term_id AND ts.user_id = ?
-			WHERE MATCH(t.title) AGAINST (? IN NATURAL LANGUAGE MODE)
-			ORDER BY t.id DESC
-			LIMIT ? OFFSET ?
-			""";
-
-		String countSql = """
-			SELECT COUNT(*)
-			FROM terms t
-			WHERE MATCH(t.title) AGAINST (? IN NATURAL LANGUAGE MODE)
-			""";
-
-		return getTermWithScrapDTOS(keyword, '"' + keyword.trim().toLowerCase(Locale.ROOT) + "*\"", pageable, userId, searchSql, countSql);
-	}
-
 	private Page<TermWithScrapDTO> getTermWithScrapDTOS(String keyword, String booleanKeyword, Pageable pageable, long userId,
 		String searchSql, String countSql) {
 		List<TermWithScrapDTO> content = jdbcTemplate.query(
