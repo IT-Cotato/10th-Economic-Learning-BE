@@ -64,7 +64,7 @@ public class TermJdbcRepository {
 		String countSql = """
 			SELECT COUNT(*)
 			FROM terms t
-			WHERE MATCH(t.title, t.description) AGAINST (? IN BOOLEAN MODE)
+			WHERE MATCH(t.title, t.description) AGAINST (? IN NATURAL LANGUAGE MODE)
 			""";
 
 		return getTermWithScrapDTOS(keyword, pageable, userId, searchSql, countSql);
