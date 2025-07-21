@@ -4,6 +4,7 @@ import com.ripple.BE.term.persistence.dto.TermWithScrapDTO;
 import com.ripple.BE.term.persistence.jpa.entity.TermJpaEntity;
 
 import java.util.List;
+import java.util.Locale;
 
 import lombok.RequiredArgsConstructor;
 
@@ -48,11 +49,15 @@ public class TermJdbcRepository {
 
 		String searchSql = """
 			SELECT t.id, t.title, t.description, t.initial,
-			       IF(ts.id IS NOT NULL, true, false) AS is_scrapped
+				IF(ts.id IS NOT NULL, true, false) AS is_scrapped,
+			    (
+			    	1.5 * MATCH(t.title) AGAINST (? IN NATURAL LANGUAGE MODE) +
+			    	0.5 * MATCH(t.description) AGAINST (? IN NATURAL LANGUAGE MODE)
+			    ) AS score
 			FROM terms t
 			LEFT JOIN term_scraps ts ON t.id = ts.term_id AND ts.user_id = ?
 			WHERE MATCH(t.title, t.description) AGAINST (? IN NATURAL LANGUAGE MODE)
-			ORDER BY t.id DESC
+			ORDER BY score DESC
 			LIMIT ? OFFSET ?
 			""";
 
@@ -60,31 +65,6 @@ public class TermJdbcRepository {
 			SELECT COUNT(*)
 			FROM terms t
 			WHERE MATCH(t.title, t.description) AGAINST (? IN NATURAL LANGUAGE MODE)
-			""";
-
-		return getTermWithScrapDTOS(keyword, pageable, userId, searchSql, countSql);
-	}
-
-	@Transactional(readOnly = true)
-	public Page<TermWithScrapDTO> findByKeyword(String keyword, Pageable pageable, long userId) {
-		if (keyword == null || keyword.trim().isEmpty()) {
-			return Page.empty(pageable);
-		}
-
-		String searchSql = """
-			SELECT t.id, t.title, t.description, t.initial,
-			       IF(ts.id IS NOT NULL, true, false) AS is_scrapped
-			FROM terms t
-			LEFT JOIN term_scraps ts ON t.id = ts.term_id AND ts.user_id = ?
-			WHERE MATCH(t.title) AGAINST (? IN NATURAL LANGUAGE MODE)
-			ORDER BY t.id DESC
-			LIMIT ? OFFSET ?
-			""";
-
-		String countSql = """
-			SELECT COUNT(*)
-			FROM terms t
-			WHERE MATCH(t.title) AGAINST (? IN NATURAL LANGUAGE MODE)
 			""";
 
 		return getTermWithScrapDTOS(keyword, pageable, userId, searchSql, countSql);
@@ -101,6 +81,8 @@ public class TermJdbcRepository {
 				rs.getString("initial"),
 				rs.getBoolean("is_scrapped")
 			),
+			keyword,
+			keyword,
 			userId,
 			keyword,
 			pageable.getPageSize(),

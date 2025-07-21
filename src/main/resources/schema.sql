@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS terms (
 
     -- ngram 기반 FULLTEXT 인덱스
     FULLTEXT INDEX idx_title_description (title, description) WITH PARSER ngram,
+    FULLTEXT INDEX idx_description (description) WITH PARSER ngram,
+    FULLTEXT INDEX idx_title (title) WITH PARSER ngram,
 
     -- 일반 B-Tree 인덱스
     INDEX idx_initial (initial)
