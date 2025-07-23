@@ -41,6 +41,15 @@ public class NotificationController {
         return sseEmitterManager.connect(currentUser.getId().toString());
     }
 
+    @Operation(summary = "알림 구독 해제", description = "알림 구독을 해제합니다. 클라이언트에서 연결을 종료하면 자동으로 해제됩니다.")
+    @PostMapping("/unsubscribe")
+    public ResponseEntity<ApiResponse<Object>> unsubscribe(
+            final @AuthenticationPrincipal CustomUserDetails currentUser) {
+
+        sseEmitterManager.closeEmitter(currentUser.getId().toString());
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.EMPTY_RESPONSE);
+    }
+
     @Operation(summary = "알림 삭제", description = "알림을 삭제합니다.")
     @DeleteMapping("/{notificationId}")
     public ResponseEntity<ApiResponse<Object>> deleteNotification(
