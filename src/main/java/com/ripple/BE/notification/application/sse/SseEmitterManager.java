@@ -154,4 +154,29 @@ public class SseEmitterManager {
                     }
                 });
     }
+
+    /** 사용자의 Emiiter 닫기 */
+    public void closeEmitter(String clientId) {
+        if (Boolean.TRUE.equals(emitterClosedMap.getOrDefault(clientId, false))) {
+            return;
+        }
+
+        emitterClosedMap.put(clientId, true);
+        stopHeartbeat(clientId);
+        SseEmitter emitter = emitterMap.remove(clientId);
+
+        if (emitter != null) {
+            try {
+                emitter.complete();
+            } catch (Exception e) {
+                log.warn("Emitter 종료 중 예외 발생: {}", clientId, e);
+            }
+        } else {
+            log.warn("Emitter가 존재하지 않습니다: {}", clientId);
+        }
+    }
+
+    public boolean isConnected(String clientId) {
+        return !Boolean.TRUE.equals(emitterClosedMap.getOrDefault(clientId, false));
+    }
 }

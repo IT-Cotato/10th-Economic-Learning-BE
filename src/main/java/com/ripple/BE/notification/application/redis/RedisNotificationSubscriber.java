@@ -25,6 +25,12 @@ public class RedisNotificationSubscriber {
 
             // SseEmitterManager를 통해 해당 알림을 구독 중인 클라이언트에게 전송
             String receiverId = notificationSseDTO.receiverId().toString();
+
+            // EmitterManager가 emitter 상태를 체크하도록 수정
+            if (!sseEmitterManager.isConnected(receiverId)) {
+                return;
+            }
+
             sseEmitterManager.pushNotification(receiverId, notificationSseDTO);
 
         } catch (Exception e) {
