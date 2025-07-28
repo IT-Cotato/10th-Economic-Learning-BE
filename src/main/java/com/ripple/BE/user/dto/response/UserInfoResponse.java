@@ -16,7 +16,8 @@ public record UserInfoResponse(
         Long currentStreak,
         Level level,
         Long quizCorrectRate,
-        Boolean isLevelTestCompleted) {
+        Boolean isLevelTestCompleted,
+        Boolean isAlarmOn) {
 
     public static UserInfoResponse toUserInfoResponse(UserInfoDTO userInfoDTO) {
         return new UserInfoResponse(
@@ -30,6 +31,7 @@ public record UserInfoResponse(
                 userInfoDTO.currentStreak(),
                 userInfoDTO.level(),
                 userInfoDTO.quizCorrectRate(),
-                userInfoDTO.isLevelTestCompleted());
+                userInfoDTO.isLevelTestCompleted(),
+                userInfoDTO.isAlarmOn());
     }
 }
