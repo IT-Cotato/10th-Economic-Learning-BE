@@ -48,8 +48,8 @@ public class NewsRepositoryImpl implements NewsRepository {
     }
 
     @Override
-    public void save(final News news) {
-        newsJpaRepository.save(NewsJpaEntity.from(news));
+    public News save(final News news) {
+        return newsJpaRepository.save(NewsJpaEntity.from(news)).toModel();
     }
 
     @Override
