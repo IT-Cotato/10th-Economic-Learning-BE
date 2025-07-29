@@ -202,6 +202,7 @@ public class UserService {
                 .level(user.getCurrentLevel())
                 .quizCorrectRate(quizCorrectRate)
                 .isLevelTestCompleted(user.isLevelTestCompleted())
+                .isAlarmOn(user.isCoummunityAlarmAllowed())
                 .build();
     }
 

@@ -16,4 +16,5 @@ public record UserInfoDTO(
         Long currentStreak,
         Level level,
         Long quizCorrectRate,
-        Boolean isLevelTestCompleted) {}
+        Boolean isLevelTestCompleted,
+        Boolean isAlarmOn) {}
