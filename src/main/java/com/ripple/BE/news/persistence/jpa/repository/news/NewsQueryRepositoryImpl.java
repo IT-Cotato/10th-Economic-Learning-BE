@@ -11,6 +11,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ripple.BE.news.domain.type.NewsCategory;
 import com.ripple.BE.news.domain.type.NewsSort;
 import com.ripple.BE.news.persistence.dto.NewsWithScrapDTO;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,6 +31,10 @@ public class NewsQueryRepositoryImpl implements NewsQueryRepository {
 
         BooleanExpression predicate = newsJpaEntity.category.eq(category);
 
+        if (newsSort == NewsSort.POPULAR) {
+            predicate = predicate.and(getTodayPredicate());
+        }
+
         List<NewsWithScrapDTO> results =
                 getNewsWithScrapByPageable(pageable, predicate, newsSort, userId);
 
@@ -39,9 +46,17 @@ public class NewsQueryRepositoryImpl implements NewsQueryRepository {
 
     @Override
     public Page<NewsWithScrapDTO> findAll(Pageable pageable, NewsSort newsSort, long userId) {
-        List<NewsWithScrapDTO> results = getNewsWithScrapByPageable(pageable, null, newsSort, userId);
+        BooleanExpression predicate = null;
 
-        JPAQuery<Long> countQuery = queryFactory.select(newsJpaEntity.count()).from(newsJpaEntity);
+        if (newsSort == NewsSort.POPULAR) {
+            predicate = getTodayPredicate();
+        }
+
+        List<NewsWithScrapDTO> results =
+                getNewsWithScrapByPageable(pageable, predicate, newsSort, userId);
+
+        JPAQuery<Long> countQuery =
+                queryFactory.select(newsJpaEntity.count()).from(newsJpaEntity).where(predicate);
 
         return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchOne);
     }
@@ -79,5 +94,13 @@ public class NewsQueryRepositoryImpl implements NewsQueryRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+    }
+
+    private BooleanExpression getTodayPredicate() {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atTime(LocalTime.MIN);
+        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+
+        return newsJpaEntity.pubDate.between(startOfDay, endOfDay);
     }
 }
