@@ -20,7 +20,7 @@ public interface NewsRepository {
 
     Optional<News> findById(long id); // 뉴스 ID로 조회
 
-    void save(News news); // 뉴스 저장
+    News save(News news); // 뉴스 저장
 
     void saveAllNews(List<News> newsList); // 뉴스 목록 저장
 
