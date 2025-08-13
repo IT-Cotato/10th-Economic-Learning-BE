@@ -7,13 +7,11 @@ import com.ripple.BE.image.domain.Image;
 import com.ripple.BE.image.exception.ImageException;
 import com.ripple.BE.image.persistence.ImageRepository;
 import com.ripple.BE.post.application.PostCommandUseCase;
-import com.ripple.BE.post.application.cache.PostCacheKey;
-import com.ripple.BE.post.application.cache.redis.PostCacheEvictionPublisher;
+import com.ripple.BE.post.application.cache.PostCacheEvictionService;
 import com.ripple.BE.post.application.command.CreatePostCommand;
 import com.ripple.BE.post.application.command.UpdatePostCommand;
 import com.ripple.BE.post.domain.comment.Comment;
 import com.ripple.BE.post.domain.post.Post;
-import com.ripple.BE.post.domain.type.PostSort;
 import com.ripple.BE.post.exception.PostException;
 import com.ripple.BE.post.persistence.CommentLikeRepository;
 import com.ripple.BE.post.persistence.CommentRepository;
@@ -38,7 +36,7 @@ public class PostCommandService implements PostCommandUseCase {
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
 
-    private final PostCacheEvictionPublisher cacheEvictionPublisher;
+    private final PostCacheEvictionService cacheEvictionService;
 
     @Override
     public void createPost(final CreatePostCommand createPostCommand) {
@@ -66,9 +64,8 @@ public class PostCommandService implements PostCommandUseCase {
             imageRepository.saveAll(imagesToUpdate);
         }
 
-        // 게시글 생성 후 캐시 무효화
-        cacheEvictionPublisher.publishEvict(
-                PostCacheKey.generatePostListKey(createPostCommand.type(), PostSort.RECENT, 0));
+        // 게시글 생성 후 캐시 무효화 (새 게시물이므로 전체 캐시 무효화)
+        cacheEvictionService.evictAllPostCaches(saved);
     }
 
     @Override
@@ -104,7 +101,10 @@ public class PostCommandService implements PostCommandUseCase {
             imageRepository.saveAll(updatedImages);
         }
 
-        postRepository.save(post);
+        Post savedPost = postRepository.save(post);
+
+        // 게시글 수정 후 캐시 무효화
+        cacheEvictionService.evictPostCachesIfContained(savedPost);
     }
 
     @Override
@@ -125,6 +125,9 @@ public class PostCommandService implements PostCommandUseCase {
         commentLikeRepository.deleteAllByPostId(post.getId());
 
         commentRepository.deleteAllByPostId(post.getId());
+
+        // 게시글 삭제 전 캐시 무효화 (삭제 후에는 post 정보가 없으므로)
+        cacheEvictionService.evictPostCachesIfContained(post);
 
         postRepository.delete(post);
     }
