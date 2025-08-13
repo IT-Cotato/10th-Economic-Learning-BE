@@ -7,10 +7,10 @@ spring:
     name: ripple-test
 
   datasource:
-    url: jdbc:mysql://localhost:3306/test
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: '0000' # 무조건 ''로 감싸야 함
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
   data:
     redis:
       host: localhost
@@ -18,15 +18,14 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         format_sql: false
         default_batch_fetch_size: 100
   sql:
     init:
-      mode: always
-      schema-locations: classpath:schema-test.sql
+      mode: never
 
   ai:
     openai:
