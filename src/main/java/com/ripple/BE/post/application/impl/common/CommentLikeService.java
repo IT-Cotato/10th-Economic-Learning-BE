@@ -3,6 +3,7 @@ package com.ripple.BE.post.application.impl.common;
 import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 
 import com.ripple.BE.post.application.CommentLikeUseCase;
+import com.ripple.BE.post.application.cache.PostCacheEvictionService;
 import com.ripple.BE.post.domain.comment.Comment;
 import com.ripple.BE.post.domain.comment.CommentLike;
 import com.ripple.BE.post.domain.post.Post;
@@ -22,6 +23,7 @@ public class CommentLikeService implements CommentLikeUseCase {
     private final CommentLikeRepository commentLikeRepository;
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final PostCacheEvictionService cacheEvictionService;
 
     @Override
     public void addLikeToComment(final long commentId, final long userId, final long postId) {
@@ -39,6 +41,9 @@ public class CommentLikeService implements CommentLikeUseCase {
         commentLikeRepository.save(commentLike);
 
         commentRepository.save(comment.increaseLikeCount());
+
+        // 댓글 좋아요 증가 후 캐시 무효화
+        cacheEvictionService.evictPostCachesIfContained(post);
     }
 
     @Override
@@ -57,6 +62,9 @@ public class CommentLikeService implements CommentLikeUseCase {
         commentLikeRepository.delete(commentLike);
 
         commentRepository.save(comment.decreaseLikeCount());
+
+        // 댓글 좋아요 감소 후 캐시 무효화
+        cacheEvictionService.evictPostCachesIfContained(post);
     }
 
     private Comment findCommentByIdForUpdate(final long id) {

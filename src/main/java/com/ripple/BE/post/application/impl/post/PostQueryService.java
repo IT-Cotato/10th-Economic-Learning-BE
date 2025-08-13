@@ -41,6 +41,7 @@ public class PostQueryService implements PostQueryUseCase {
     private final PostCacheManager postCacheManager;
 
     private static final int PAGE_SIZE = 10;
+    private static final int MAX_CACHED_PAGES = 3;
 
     @Override
     public PostPreviewListResponseDTO getPosts(
@@ -51,10 +52,13 @@ public class PostQueryService implements PostQueryUseCase {
             throw new PostException(POST_TYPE_NOT_SUPPORTED);
         }
 
-        // 2. 캐시에서 조회
+        // 2. 상위 3페이지만 캐시에서 조회
         String key = PostCacheKey.generatePostListKey(type, sort, page);
-        PostPreviewListResponseDTO cached = postCacheManager.getPosts(key);
-        if (cached != null) return cached;
+        PostPreviewListResponseDTO cached = null;
+        if (page < MAX_CACHED_PAGES) {
+            cached = postCacheManager.getPosts(key);
+            if (cached != null) return cached;
+        }
 
         // 3. 캐시에 없으면 DB에서 조회
         Pageable pageable = PageRequest.of(page, PAGE_SIZE);
@@ -68,8 +72,10 @@ public class PostQueryService implements PostQueryUseCase {
         PostPreviewListResponseDTO result =
                 PostPreviewListResponseDTO.of(previews, postPage.getTotalPages(), page);
 
-        // 4. 캐시에 저장
-        postCacheManager.putPosts(key, result);
+        // 4. 상위 3페이지만 캐시에 저장
+        if (page < MAX_CACHED_PAGES) {
+            postCacheManager.putPosts(key, result);
+        }
         return result;
     }
 

@@ -5,6 +5,7 @@ import static com.ripple.BE.post.exception.errorcode.PostErrorCode.*;
 import com.ripple.BE.notification.application.event.CommentCreatedEvent;
 import com.ripple.BE.notification.application.event.ReplyCommentCreatedEvent;
 import com.ripple.BE.post.application.CommentCommandUseCase;
+import com.ripple.BE.post.application.cache.PostCacheEvictionService;
 import com.ripple.BE.post.domain.comment.Comment;
 import com.ripple.BE.post.domain.post.Post;
 import com.ripple.BE.post.exception.PostException;
@@ -28,6 +29,7 @@ public class CommentCommandService implements CommentCommandUseCase {
     private final CommentLikeRepository commentLikeRepository;
 
     private final ApplicationEventPublisher eventPublisher;
+    private final PostCacheEvictionService cacheEvictionService;
 
     @Override
     public void addCommentToPost(final long userId, final long postId, final String content) {
@@ -37,7 +39,10 @@ public class CommentCommandService implements CommentCommandUseCase {
         Comment comment = Comment.withoutId(content, userId, postId, null);
         commentRepository.save(comment);
 
-        postRepository.save(post.increaseCommentCount());
+        post = postRepository.save(post.increaseCommentCount());
+
+        // 댓글 추가 후 스마트 캐시 무효화
+        cacheEvictionService.evictPostCachesIfContained(post);
 
         eventPublisher.publishEvent(new CommentCreatedEvent(post, comment));
     }
@@ -55,7 +60,10 @@ public class CommentCommandService implements CommentCommandUseCase {
         commentRepository.save(comment);
         commentRepository.save(parentComment.increaseReplyCount());
 
-        postRepository.save(post.increaseCommentCount());
+        post = postRepository.save(post.increaseCommentCount());
+
+        // 답글 추가 후 캐시 무효화
+        cacheEvictionService.evictPostCachesIfContained(post);
 
         eventPublisher.publishEvent(new ReplyCommentCreatedEvent(post, comment, parentComment));
     }
@@ -67,7 +75,10 @@ public class CommentCommandService implements CommentCommandUseCase {
 
         comment.validateDeletableBy(userId, post.getId());
 
-        postRepository.save(post.decreaseCommentCount());
+        post = postRepository.save(post.decreaseCommentCount());
+
+        // 댓글 삭제 후 캐시 무효화
+        cacheEvictionService.evictPostCachesIfContained(post);
 
         if (comment.isRoot()) {
             handleRootComment(comment);

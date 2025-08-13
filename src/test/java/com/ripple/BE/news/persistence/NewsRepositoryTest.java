@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 @DataJpaTest
 @Import({
@@ -36,6 +37,11 @@ import org.springframework.test.context.ActiveProfiles;
 })
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@TestPropertySource(
+        properties = {
+            "spring.sql.init.mode=always",
+            "spring.sql.init.schema-locations=classpath:schema-test.sql"
+        })
 class NewsRepositoryTest {
 
     @Autowired private NewsRepository newsRepository;
